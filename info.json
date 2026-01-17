@@ -1,0 +1,11 @@
+{
+    "name": "rabbasca-underground",
+    "version": "0.5.0",
+    "title": "Rabbasca underground",
+    "description": "This mod adds expands post-aquilo progression for Rabbasca. Utilize Rabbasca's warp technology to interact with the warp-stabilizer, which travels between the cores of various planets, to stabilize the warp field. Deep below the surface, it can not interact with space platforms. You can warp buildings in and out, but material has to be locally sourced, which might be challenging since the environment keeps changing.",
+    "factorio_version": "2.0",
+    "author": "PizzaPlanner",    
+    "dependencies": [
+        "planet-rabbasca >= 0.11.3"
+    ]
+}

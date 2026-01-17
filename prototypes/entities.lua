@@ -1,0 +1,147 @@
+local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machine-3"],
+{
+    name = "rabbasca-warp-stabilizer",
+    icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
+    icon_size = 640,
+    max_health = 10000,
+    healing_per_tick = 100,
+    crafting_speed = 1,
+    collision_box = {{-4.2, -4.2}, {4.2, 4.2}},
+    selection_box = {{-4.5, -4.5}, {4.5, 4.5}},
+    energy_usage = "1GW",
+    module_slots = 20,
+    hidden = false,
+    hidden_in_factoriopedia = false,
+    subgroup = "rabbasca-warp-stabilizer",
+    order = "a[stabilizer]",
+  }}
+stabilizer.circuit_connector = nil
+stabilizer.circuit_connector_flipped = nil
+stabilizer.ignore_output_full = true
+stabilizer.enable_logistic_control_behavior = false
+stabilizer.minable = nil
+stabilizer.placeable_by = nil
+stabilizer.allowed_effects = { "speed", "productivity", "quality" }
+stabilizer.flags = { "placeable-player", "player-creation" }
+stabilizer.energy_source = {
+  type = "fluid",
+  burns_fluid = true,
+  scale_fluid_usage = true,
+  fluid_box =   {
+    volume = 100000,
+    filter = "harene",
+    pipe_picture = assembler3pipepictures(),
+    pipe_covers = pipecoverspictures(),
+    production_type = "input",
+    pipe_connections = 
+    {
+      {
+        flow_direction = "input",
+        position = {-2, 4.2},
+        direction = defines.direction.south,
+      },
+      {
+        flow_direction = "input",
+        position = {0, 4.2},
+        direction = defines.direction.south,
+      },
+      {
+        flow_direction = "input",
+        position = {2, 4.2},
+        direction = defines.direction.south,
+      },
+    }
+  },
+}
+stabilizer.next_upgrade = nil
+stabilizer.deconstruction_alternative = nil
+stabilizer.crafting_categories = { "rabbasca-warp-stabilizer" }
+local sprite_data = {   
+  line_length = 10,
+  width = 4000 / 10,
+  height = 3840 / 8,
+  frame_count = 80,
+  scale = 0.8,
+  shift = util.by_pixel(0, -20)
+}
+
+stabilizer.graphics_set = {
+  animation = { layers = {
+      util.merge { sprite_data, { filename = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-animation.png" } },
+      util.merge { sprite_data, { filename = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-shadow.png", width = 900, height = 500, frame_count = 1, repeat_count = 80, line_length = 1, draw_as_shadow = true } },
+  }},
+  working_visualisations = {
+    {
+      fadeout = true,
+      animation = util.merge { sprite_data, 
+      { filename = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-emission1.png", draw_as_glow = true, blend_mode = "additive", apply_runtime_tint = true }},
+      apply_recipe_tint = "primary"
+    },
+    {
+      fadeout = true, 
+      animation = util.merge { sprite_data, 
+      { filename = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-emission2.png", draw_as_glow = true, blend_mode = "additive" }},
+    },
+  },
+}
+
+local lab = util.merge {
+  data.raw["lab"]["lab"],
+  {
+    name = "rabbasca-warp-tech-analyzer",
+    energy_usage = "10MW",
+    burns_fluid = true,
+    scale_fluid_usage = true,
+    placeable_by = { item = "rabbasca-warp-tech-analyzer", count = 1 }
+  }
+}
+lab.inputs = { "rabbasca-warp-matrix", "rabbasca-coordinate-calibrations", "rabbasca-spacetime-evolutionizer", "rabbasca-spatial-anchor" }
+lab.minable.result = "rabbasca-warp-tech-analyzer"
+lab.energy_source = {
+  type = "fluid",
+  fluid_box = {
+    volume = 100,
+    filter = "harene",
+    pipe_picture = assembler2pipepictures(),
+    pipe_covers = pipecoverspictures(),
+    production_type = "input",
+    pipe_connections = 
+    {
+        {
+          flow_direction = "input-output",
+          position = {0, -1.2},
+          direction = defines.direction.north,
+        },
+        {
+          flow_direction = "input-output",
+          position = {0, 1.2},
+          direction = defines.direction.south,
+        },
+    },
+  },
+}
+
+data:extend {
+  stabilizer,
+  lab,
+  util.merge {
+    data.raw["electric-energy-interface"]["rabbasca-energy-source"],
+    {
+      name = "rabbasca-stabilizer-consumer",
+      icon = stabilizer.icon,
+      factoriopedia_alternative = "rabbasca-warp-stabilizer",
+      type = "radar",
+      flags = data.raw["electric-energy-interface"]["rabbasca-energy-source"].flags,
+      energy_source = {
+        type = "electric",
+        usage_priority = "secondary-input",
+      },
+      connects_to_other_radars = true,
+      energy_per_sector = "1kJ",
+      energy_per_nearby_scan = Rabbasca.surface_megawatts() * 50 .. "MW",
+      energy_usage = Rabbasca.surface_megawatts() * 25 .. "MW",
+      max_distance_of_nearby_sector_revealed = 1,
+      max_distance_of_sector_revealed = 0,
+    }
+  }
+}

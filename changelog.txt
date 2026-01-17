@@ -1,0 +1,10 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.5.0
+Date: ??????
+  Changes:
+    - Added a new post-aquilo progression which involves locating and using the warp-field analyzer
+    - The warp-field analyzer will have its own surface deep underground, featuring a challenge mode with its own technology tree
+    - Added a new science lab with specialized science packs dedicated to working with these new techs
+    - Warp sequence: Modules now requires analyzer tech to unlock
+    - Warp pylons can now be crafted in machining assembler, requring analyzer technology to unlock
+    - [TODO] Warp pylons now wake up when a ghost from a dying entity is created
