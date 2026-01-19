@@ -8,7 +8,7 @@ data:extend {
     order = "r[rabbasca]-u",
     trigger = {
         type = "research",
-        technology = "rabbasca-underground-preparations",
+        technology = "rabbasca-underground",
     },
 }
 }

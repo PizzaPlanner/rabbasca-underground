@@ -4,21 +4,25 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
     icon_size = 640,
     max_health = 10000,
-    healing_per_tick = 100,
+    production_health_effect = {
+      producing = 5 / second,
+      not_producing = 5 / second
+    },
     crafting_speed = 1,
     collision_box = {{-4.2, -4.2}, {4.2, 4.2}},
     selection_box = {{-4.5, -4.5}, {4.5, 4.5}},
-    energy_usage = "1GW",
+    energy_usage = "500MW",
     module_slots = 20,
     hidden = false,
     hidden_in_factoriopedia = false,
     subgroup = "rabbasca-warp-stabilizer",
     order = "a[stabilizer]",
-  }}
-stabilizer.circuit_connector = nil
-stabilizer.circuit_connector_flipped = nil
+}}
+stabilizer.circuit_wire_max_distance = 0
 stabilizer.ignore_output_full = true
-stabilizer.enable_logistic_control_behavior = false
+if settings.startup["rabbasca-underground-can-pause-stabilizer"].value == false then
+  stabilizer.enable_logistic_control_behavior = false
+end
 stabilizer.minable = nil
 stabilizer.placeable_by = nil
 stabilizer.allowed_effects = { "speed", "productivity", "quality" }
@@ -95,13 +99,13 @@ local lab = util.merge {
     placeable_by = { item = "rabbasca-warp-tech-analyzer", count = 1 }
   }
 }
-lab.inputs = { "rabbasca-warp-matrix", "rabbasca-coordinate-calibrations", "rabbasca-spacetime-evolutionizer", "rabbasca-spatial-anchor" }
+lab.inputs = { "rabbasca-warp-matrix", "rabbasca-coordinate-system", "rabbasca-spacetime-sensor", "rabbasca-spatial-anchor", "rabbasca-quantum-device" }
 lab.minable.result = "rabbasca-warp-tech-analyzer"
 lab.energy_source = {
   type = "fluid",
   fluid_box = {
-    volume = 100,
-    filter = "harene",
+    volume = 20,
+    filter = "fusion-plasma",
     pipe_picture = assembler2pipepictures(),
     pipe_covers = pipecoverspictures(),
     production_type = "input",
@@ -111,11 +115,25 @@ lab.energy_source = {
           flow_direction = "input-output",
           position = {0, -1.2},
           direction = defines.direction.north,
+          connection_category = "fusion-plasma",
         },
         {
           flow_direction = "input-output",
           position = {0, 1.2},
           direction = defines.direction.south,
+          connection_category = "fusion-plasma",
+        },
+        {
+          flow_direction = "input-output",
+          position = {1.2, 0},
+          direction = defines.direction.east,
+          connection_category = "fusion-plasma",
+        },
+        {
+          flow_direction = "input-output",
+          position = {-1.2, 0},
+          direction = defines.direction.west,
+          connection_category = "fusion-plasma",
         },
     },
   },

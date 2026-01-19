@@ -2,7 +2,7 @@ data:extend {
   {
     type = "noise-expression",
     name = "rabbasca_underground_starting_island",
-    expression = "85 - distance + 12 * basis_noise{x = x, y = y, seed0 = map_seed, seed1 = 'warpten', input_scale = 1/5 }"
+    expression = "102 - distance + 12 * basis_noise{x = x, y = y, seed0 = map_seed, seed1 = 'warpten', input_scale = 1/3 }"
   },
   {
     type = "noise-expression",
@@ -17,7 +17,7 @@ data:extend {
   {
     type = "noise-expression",
     name = "rabbasca_underground_edge",
-    expression = "distance - 155"
+    expression = "distance - 164"
   },
   {
     type = "noise-expression",

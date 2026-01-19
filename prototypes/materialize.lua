@@ -70,7 +70,6 @@ end
 
 local function create_affinity_tech(planet, fluid, entities, lut)
   add_planet(planet, fluid, entities, lut)
-  local icon = data.raw["planet"][planet].icon
   local tech_pre = {
     type = "technology",
     name = "rabbasca-warp-prep-"..planet,
@@ -92,8 +91,6 @@ local function create_affinity_tech(planet, fluid, entities, lut)
   local tech_flex = {
     type = "technology",
     name = "rabbasca-warp-anchoring-"..planet,
-    icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix-2.png",
-    icon_size = 204,
     hidden = true,
     prerequisites = { "rabbasca-warp-prep-"..planet },
     effects = { },
@@ -105,12 +102,6 @@ local function create_affinity_tech(planet, fluid, entities, lut)
         trigger_description = { "rabbasca-extra.trigger-set-affinity", planet }
     }
   }
-  local item = Rabbasca.make_trigger_item({
-    name = "rabbasca-change-affinity-"..planet,
-    icon = icon,
-    localised_name = "item-name.rabbasca-change-affinity",
-    subgroup = "rabbasca-warp-stabilizer"
-  }, "rabbasca_on_change_affinity")
   mod_data.data.planets[planet].tech = tech_flex.name
   mod_data.data.planets[planet].tech_prep = tech_pre.name
   table.insert(data.raw["technology"]["rabbasca-warp-technology-analysis"].prerequisites, tech_pre.name)
@@ -126,21 +117,17 @@ create_affinity_tech("gleba", "water", nil, "__rabbasca-assets__/graphics/recolo
 create_affinity_tech("fulgora", "fulgoran-sand", nil, "__rabbasca-assets__/graphics/recolor/textures/lut-underground-gleba.png")
 create_affinity_tech("aquilo", "ice-rough", { "rabbasca-lithium-amide" }, "__rabbasca-assets__/graphics/recolor/textures/lut-underground-gleba.png")
 
+table.insert(data.raw["technology"]["rabbasca-warp-prep-aquilo"].effects, { type = "unlock-recipe", recipe = "rabbasca-lithium-amide-fission"})
+
 data:extend{
-    make_materialize_recipe("beta-carotene", "fluid", "rabbasca",
-        {{ type = "fluid", name = "beta-carotene", amount = 100, }},
+    make_materialize_recipe("carotenoid-ore", "item", "rabbasca",
+        {{ type = "item", name = "carotenoid-ore", amount = 5, }},
         {{ type = "item", name = "rabbasca-warp-matrix", amount = 1 }}),
     make_materialize_recipe("pentapod-egg", "item", "gleba",
         {{ type = "item", name = "pentapod-egg", amount = 1, }},
         {{ type = "item", name = "rabbasca-warp-matrix", amount = 1 }}),
     make_materialize_recipe("yumako", "capsule", "gleba",
         {{ type = "item", name = "yumako", amount = 15, }},
-        {{ type = "item", name = "rabbasca-warp-matrix", amount = 1 }}),
-    make_materialize_recipe("coal", "item", "vulcanus",
-        {{ type = "item", name = "coal", amount = 12, }},
-        {{ type = "item", name = "rabbasca-warp-matrix", amount = 1 }}),
-    make_materialize_recipe("tungsten-ore", "item", "vulcanus",
-        {{ type = "item", name = "tungsten-ore", amount = 9, }},
         {{ type = "item", name = "rabbasca-warp-matrix", amount = 1 }}),
     make_materialize_recipe("holmium-ore", "item", "fulgora",
         {{ type = "item", name = "holmium-ore", amount = 5, }},

@@ -48,8 +48,7 @@ util.merge {
 util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
-    type = "item",
-    name = "rabbasca-holmium-coating",
+    name = "rabbasca-quantum-device",
     icon = data.raw["item"]["tungsten-carbide"].icon,
     stack_size = 100,
     weight = 50 * kg,
@@ -60,7 +59,7 @@ util.merge {
 util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
-    name = "rabbasca-coordinate-calibrations",
+    name = "rabbasca-coordinate-system",
     icon = data.raw["item"]["ice"].icon,
     stack_size = 200,
     weight = 1 * kg,
@@ -72,7 +71,7 @@ util.merge {
 util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
-    name = "rabbasca-spacetime-evolutionizer",
+    name = "rabbasca-spacetime-sensor",
     icon = data.raw["item"]["pentapod-egg"].icon,
     stack_size = 200,
     weight = 1 * kg,

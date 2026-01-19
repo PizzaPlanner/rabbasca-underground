@@ -67,14 +67,14 @@ data:extend {
     },
     {
         type = "recipe",
-        name = "rabbasca-coordinate-calibrations",
+        name = "rabbasca-coordinate-system",
         enabled = false,
         energy_required = 5,
         ingredients = {
             { type = "item",  name = "rabbasca-warp-matrix", amount = 5 },
             { type = "item", name = "low-density-structure",  amount = 1 },
         },
-        results = { { type = "item", name = "rabbasca-coordinate-calibrations", amount = 1 } },
+        results = { { type = "item", name = "rabbasca-coordinate-system", amount = 1 } },
         surface_conditions = { Rabbasca.only_underground(true) },
         category = "cryogenics"
     },
@@ -93,7 +93,7 @@ data:extend {
     },
     {
         type = "recipe",
-        name = "rabbasca-holmium-coating",
+        name = "rabbasca-quantum-device",
         enabled = false,
         energy_required = 7,
         ingredients = {
@@ -101,7 +101,7 @@ data:extend {
             { type = "fluid", name = "holmium-solution", amount = 70 },
         },
         results = {
-            { type = "item", name = "rabbasca-holmium-coating", amount = 1 },
+            { type = "item", name = "rabbasca-quantum-device", amount = 1 },
         },
         allow_productivity = true,
         category = "metallurgy",
@@ -109,7 +109,7 @@ data:extend {
     },
     {
         type = "recipe",
-        name = "rabbasca-spacetime-evolutionizer",
+        name = "rabbasca-spacetime-sensor",
         enabled = false,
         energy_required = 12,
         ingredients = {
@@ -118,7 +118,7 @@ data:extend {
             { type = "item", name = "pentapod-egg", amount = 1 },
         },
         results = {
-            { type = "item", name = "rabbasca-spacetime-evolutionizer", amount = 1 },
+            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1 },
         },
         allow_productivity = true,
         surface_conditions = { Rabbasca.only_underground(true) },
@@ -131,10 +131,10 @@ data:extend {
         auto_recycle = false,
         energy_required = 25,
         ingredients = {
-            { type = "item", name = "rabbasca-holmium-coating", amount = 1 },
-            { type = "item", name = "rabbasca-coordinate-calibrations", amount = 1 },
+            { type = "item", name = "rabbasca-quantum-device", amount = 1 },
+            { type = "item", name = "rabbasca-coordinate-system", amount = 1 },
             { type = "item", name = "rabbasca-spatial-anchor",  amount = 1 },
-            { type = "item", name = "rabbasca-spacetime-evolutionizer",  amount = 1 },
+            { type = "item", name = "rabbasca-spacetime-sensor",  amount = 1 },
         },
         results = { { type = "item", name = "rabbasca-warp-core", amount = 1 } },
         category = "electromagnetics"

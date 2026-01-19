@@ -27,10 +27,7 @@ local function on_tick_underground(event)
     end
     M.update_logistic_section(storage.stabilizer.current_location, numbers)
     if storage.stabilizer.progress < config.stabilization_required then return end
-    local choice = { }
-    for planet, _ in pairs(config.planets) do table.insert(choice, planet) end
-    local next = choice[math.random(#choice)]
-    M.warp_to(game.surfaces[storage.stabilizer.surface], next)
+    M.warp_to(game.surfaces[storage.stabilizer.surface], M.get_next_planet())
 end
 
 local function on_warp_underground(event)
@@ -69,7 +66,8 @@ local function register_stabilizer(s)
         destroyed_id = id,
         seeds = { },
         current_location = "rabbasca",
-        last_planet_count = stabilizer_config().planet_count
+        last_planet_count = stabilizer_config().planet_count,
+        next = { weights = { }, seed = 0 }
     }
     s.set_recipe("rabbasca-reboot-stabilizer")
     s.recipe_locked = true
@@ -117,8 +115,6 @@ end
 function M.on_stabilizer_died(id)
     if storage.stabilizer and storage.stabilizer.destroyed_id == id then
         game.forces.player.print({ "rabbasca-extra.stabilizer-destroyed" })
-        game.forces.player.technologies["rabbasca-underground"].researched = false
-        game.forces.player.technologies["rabbasca-underground"].saved_progress = 0
         if game.surfaces[storage.stabilizer.surface] and game.surfaces[storage.stabilizer.surface].valid then
             game.delete_surface(storage.stabilizer.surface)
         end
@@ -130,7 +126,6 @@ end
 
 function M.replace_entities(surface, settings, planet)
     for _, e in pairs(game.surfaces["rabbasca-underground"].find_entities_filtered{force = "neutral"}) do e.destroy{} end
-    storage.underground_seed_rng = storage.underground_seed_rng or game.create_random_generator(game.default_map_gen_settings.seed + 571681)
     storage.stabilizer.seeds[planet] = storage.stabilizer.seeds[planet] or storage.underground_seed_rng(123456)
     local map_settings = surface.map_gen_settings
     map_settings.autoplace_settings.entity.settings = settings
@@ -175,6 +170,30 @@ function M.replace_tiles(surface, from, to)
     surface.set_tiles(tiles, true)
 end
 
+function M.get_next_planet()
+    local next = storage.stabilizer.next
+    if not next then return "rabbasca" end
+    local config = stabilizer_config()
+    local total_weight = 0
+    for p, w in pairs(next.weights) do 
+        if config.planets[p] then
+            total_weight = total_weight + w
+        else
+            next.weights[p] = nil -- Planet is no longer available
+        end
+    end
+    local rng = game.create_random_generator(next.seed)
+    local number = rng(total_weight)
+    for planet, w in pairs(next.weights) do
+        number = number - w
+        if number <= 0 then
+            return planet
+        end
+    end
+    log("Error in get_next_planet: no planet matched rng("..total_weight.."). using fallback")
+    return "rabbasca"
+end
+
 function M.post_warp_surface(surface)
     surface.daytime = stabilizer_config().planets[storage.stabilizer.current_location].lut_index
     surface.freeze_daytime = true
@@ -187,8 +206,17 @@ function M.warp_to(surface, planet)
     storage.stabilizer.progress = 0
     if not (surface and config.planets[planet]) then log("error: stabilizer could not warp to "..planet) return end
     storage.stabilizer.warping = { to = planet, warp_tick = game.tick + 90, finished_tick = game.tick + 180 }
-    surface.ticks_per_day = 180 * (stabilizer_config().planet_count + 1.5)
+    surface.ticks_per_day = 180 * (config.planet_count + 1.5)
     surface.freeze_daytime = false
+    storage.stabilizer.next = storage.stabilizer.next or { seed = 0, weights = { } }
+    for p, _ in pairs(config.planets) do
+        if p == planet then
+            storage.stabilizer.next.weights[p] = 0
+        else    
+            storage.stabilizer.next.weights[p] = ((storage.stabilizer.next.weights[p] or 0) + 1) * 2
+        end
+    end
+    storage.stabilizer.next.seed = storage.underground_seed_rng(10000000)
     M.register_handlers()
 end
 
@@ -202,22 +230,21 @@ function M.abandon(player)
 end
 
 function M.on_stabilization()
-    storage.stabilizer.progress = storage.stabilizer.progress + 1
+    if storage.stabilizer then
+        storage.stabilizer.progress = storage.stabilizer.progress + 1
+    end
 end
 
 function M.reboot_stabilizer(s)
     s.force = game.forces.player
-    s.set_recipe(nil)
+    game.forces.player.technologies["rabbasca-warp-stabilizer"].researched = true
+    s.set_recipe("rabbasca-warp-matrix")
 end
 
 function M.on_locate_progress(vault)
-local tech = game.forces.player.technologies["rabbasca-underground"]
     local surface = game.planets["rabbasca-underground"].surface
     if not surface then
-        if not tech.researched then
-            if math.random() < 0.2 then return end
-            tech.researched = true
-        end
+        if math.random() > 0.2 then return end
         game.planets["rabbasca-underground"].create_surface()
         return
     end
@@ -264,6 +291,7 @@ function M.init_underground(surface)
     surface.create_global_electric_network()
     surface.request_to_generate_chunks({0, 0}, 1)
     surface.force_generate_chunk_requests()
+    storage.underground_seed_rng = storage.underground_seed_rng or game.create_random_generator(game.default_map_gen_settings.seed + 571681)
     local stab = surface.create_entity {
         name = "rabbasca-warp-stabilizer",
         position = {0, 0},
@@ -287,7 +315,7 @@ if settings.global["rabbasca-debug-mode"] then
     if to then
         M.warp_to(surface, to)
     else
-        storage.stabilizer.progress = math.huge
+        storage.stabilizer.progress = stabilizer_config().stabilization_required
     end
     end)
 end

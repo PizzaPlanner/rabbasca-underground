@@ -1,7 +1,7 @@
 data:extend{
 {
     type = "technology",
-    name = "rabbasca-underground-preparations",
+    name = "rabbasca-underground",
     icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
     icon_size = 640,
     prerequisites = { "interplanetary-construction-2", "rabbasca-ears-technology-2", "fusion-reactor", "harene-synthesis" },
@@ -26,19 +26,6 @@ data:extend{
         {"athletic-science-pack", 1},
         {"cryogenic-science-pack", 1},
       }
-    }
-},
-{
-    type = "technology",
-    name = "rabbasca-underground",
-    icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
-    icon_size = 640,
-    prerequisites = { "rabbasca-underground-preparations" },
-    effects = { },
-    research_trigger =
-    {
-      type = "scripted",
-      trigger_description = { "rabbasca-extra.trigger-locate-underground" }
     }
 },
 {
@@ -71,7 +58,22 @@ data:extend{
     icon_size = 640,
     prerequisites = { "rabbasca-warp-stabilizer" },
     effects = {
-
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-spatial-anchor"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-spacetime-sensor"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-coordinate-system"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-quantum-device"
+      }
     },
     ignore_tech_cost_multiplier = true,
     order = "r[warp-tech]-0[analysis]",
@@ -80,9 +82,6 @@ data:extend{
       count = 100,
       ingredients = {
         { "rabbasca-warp-matrix", 1 },
-        { "rabbasca-spatial-anchor", 1 },
-        { "rabbasca-coordinate-calibrations", 1 },
-        { "rabbasca-spacetime-evolutionizer", 1 },
       }
     }
 },
@@ -109,14 +108,15 @@ data:extend{
       ingredients = {
         { "rabbasca-warp-matrix", 1 },
         { "rabbasca-spatial-anchor", 1 },
-        { "rabbasca-coordinate-calibrations", 1 },
-        { "rabbasca-spacetime-evolutionizer", 1 },
+        { "rabbasca-coordinate-system", 1 },
+        { "rabbasca-spacetime-sensor", 1 },
+        { "rabbasca-quantum-device", 1 },
       }
     }
 },
 {
     type = "technology",
-    name = "rabbasca-unrestricted-warp-pad",
+    name = "rabbasca-ears-powered-space-platform",
     icon = data.raw["technology"]["space-platform"].icon,
     icon_size = data.raw["technology"]["space-platform"].icon_size,
     prerequisites = { "rabbasca-warp-technology-analysis" },
@@ -129,8 +129,9 @@ data:extend{
       ingredients = {
         { "rabbasca-warp-matrix", 1 },
         { "rabbasca-spatial-anchor", 1 },
-        { "rabbasca-coordinate-calibrations", 1 },
-        { "rabbasca-spacetime-evolutionizer", 1 },
+        { "rabbasca-coordinate-system", 1 },
+        { "rabbasca-spacetime-sensor", 1 },
+        { "rabbasca-quantum-device", 1 },
       }
     }
 },
@@ -144,7 +145,8 @@ warp_tech_3.unit = {
   ingredients = {
     { "rabbasca-warp-matrix", 1 },
     { "rabbasca-spatial-anchor", 1 },
-    { "rabbasca-coordinate-calibrations", 1 },
-    { "rabbasca-spacetime-evolutionizer", 1 },
+    { "rabbasca-coordinate-system", 1 },
+    { "rabbasca-spacetime-sensor", 1 },
+    { "rabbasca-quantum-device", 1 },
   }
 }
