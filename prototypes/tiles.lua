@@ -12,4 +12,11 @@ util.merge {
       name = "rabbasca-underground-out-of-map",
       autoplace = { probability_expression = "rabbasca_underground_edge" }
     }
+},
+util.merge { 
+    table.deepcopy(data.raw["tile"]["empty-space"]),
+    {
+      name = "rabbasca-underground-empty-space",
+      autoplace = { probability_expression = "rabbasca_underground_lava" }
+    }
 }}

@@ -55,9 +55,10 @@ data:extend {
         result_is_always_fresh = true,
         -- preserve_products_in_machine_output = true,
         ingredients = { },
+        allow_productivity = true,
         results = { 
             { type = "item", name = "rabbasca-warp-matrix", amount = 5 },
-            { type = "item", name = "rabbasca-stabilize-warpfield", amount = 1 },
+            { type = "item", name = "rabbasca-stabilize-warpfield", amount = 1, ignored_by_productivity = 1 },
         },
         crafting_machine_tint =
         {
@@ -150,6 +151,19 @@ data:extend {
         },
         results = { { type = "item", name = "rabbasca-warp-tech-analyzer", amount = 1 } },
         category = "crafting"
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-space-platform-starter-pack",
+        enabled = false,
+        energy_required = 40,
+        ingredients = {
+            { type = "item", name = "space-platform-starter-pack", amount = 1 },
+            { type = "item", name = "haronite-plate",  amount = 20 },
+            { type = "fluid", name = "harene",  amount = 5000 },
+        },
+        results = { { type = "item", name = "rabbasca-space-platform-starter-pack", amount = 1 } },
+        category = "complex-machinery"
     },
 }
 

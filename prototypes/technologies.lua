@@ -86,6 +86,27 @@ data:extend{
     }
 },
 {
+  type = "technology",
+  name = "rabbasca-warp-technology-analysis-2",
+  icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix-2.png",
+  icon_size = 204,
+  prerequisites = { "rabbasca-warp-technology-analysis" },
+  effects = {
+    {
+      type = "change-recipe-productivity",
+      recipe = "rabbasca-warp-matrix",
+      change = 0.5
+    },
+  },
+  unit = {
+    time = 10,
+    count = 200,
+    ingredients = {
+      { "rabbasca-warp-matrix", 1 },
+    }
+  }
+},
+{
     type = "technology",
     name = "rabbasca-self-made-warp-pylon",
     icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-big.png",
@@ -121,6 +142,10 @@ data:extend{
     icon_size = data.raw["technology"]["space-platform"].icon_size,
     prerequisites = { "rabbasca-warp-technology-analysis" },
     effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-space-platform-starter-pack"
+      }
     },
     ignore_tech_cost_multiplier = true,
     unit = {

@@ -29,7 +29,13 @@ local function create_affinity_bar(player, numbers)
     end
     if not settings.get_player_settings(player)["rabbasca-show-alertness-ui"].value then return end
 
+    local config = stabilizer_config()
     local affinity = storage.stabilizer.current_location
+    local chances = M.get_next_planet_chances()
+    local next_tooltip = { "", { "rabbasca-extra.stabilizer-ui-current-location", { "space-location-name."..affinity } } }
+    for p, chance in pairs(chances) do
+        table.insert(next_tooltip, { "rabbasca-extra.stabilizer-ui-next-location-entry", p, math.floor(chance * 100), config.planets[p].min_stay, config.planets[p].max_stay })
+    end
 
     local frame = player.gui.top.add{
         type = "frame",
@@ -43,7 +49,7 @@ local function create_affinity_bar(player, numbers)
         sprite= affinity and "space-location/"..affinity or "entity/rabbasca-warp-stabilizer",
         style = "inventory_slot",
         name = "current_planet",
-        tooltip = { "rabbasca-extra.stabilizer-ui-current-location", { "space-location-name."..affinity } }
+        tooltip = next_tooltip
     }
     local right = frame.add {
         type = "flow",
@@ -72,14 +78,6 @@ local function create_affinity_bar(player, numbers)
     }
     recipes1.style.horizontal_spacing = 0
     recipes1.style.vertical_align = "center"
-    add_button(top, "entity/rabbasca-warp-pylon", "transparent_slot", "recipes_marker", 16)
-    local recipes2 = top.add {
-        type = "flow",
-        direction = "horizontal",
-        name = "recipes",
-    }
-    recipes2.style.horizontal_spacing = 0
-    recipes2.style.vertical_align = "center"
     local fuel = right.add {
         type = "flow",
         direction = "horizontal",
@@ -96,7 +94,7 @@ local function create_affinity_bar(player, numbers)
     bar.style.natural_width = 96
     bar.style.horizontally_stretchable = true
     right.style.top_padding = 1
-    local config = stabilizer_config().planets[affinity]
+    local config = config.planets[affinity]
     if config then
         if config.fluid then
             add_button(recipes1, "fluid/"..config.fluid, "inventory_slot", "fluid", 24)
@@ -111,7 +109,7 @@ local function create_affinity_bar(player, numbers)
             for _, reward in pairs(tech.prototype.effects) do
                 if reward.recipe then
                     i = i + 1
-                    add_button((reward.recipe.category == "rabbasca-remote" and recipes2) or recipes1, "recipe/"..reward.recipe, "inventory_slot", "icon_"..tostring(i), 24)
+                    add_button(recipes1, "recipe/"..reward.recipe, "inventory_slot", "icon_"..tostring(i), 24)
                 end
             end
         end

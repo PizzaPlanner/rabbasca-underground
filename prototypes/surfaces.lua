@@ -16,8 +16,9 @@ data:extend {
     draw_orbit = false,
     distance = 10,
     orientation = 0,
-    subgroup = "rabbasca-warp-stabilizer",
-    order = "a[surface]",
+    subgroup = "satellites",
+    -- subgroup = "rabbasca-warp-stabilizer",
+    order = "c[gleba]-r[rabbasca]-a[surface]",
     surface_properties = {
         ["rabbasca-underground"] = 1,
         ["gravity"] = 14,
@@ -44,7 +45,7 @@ data:extend {
         tile = { settings = {
           ["rabbasca-underground-rubble"] = {},
           ["rabbasca-underground-out-of-map"] = {},
-          ["harenic-lava"] = {},
+          ["rabbasca-underground-empty-space"] = {},
         }},
         entity = { settings = { }} -- filled in script
       },
@@ -73,5 +74,13 @@ data:extend {
         }
       }
     },
+  },
+  util.merge{
+    data.raw["surface"]["space-platform"],
+    {
+      name = "rabbasca-space-platform",
+    }
   }
 }
+
+data.raw["surface"]["rabbasca-space-platform"].surface_properties["harenic-energy-signatures"] = Rabbasca.surface_megawatts() * 0.1

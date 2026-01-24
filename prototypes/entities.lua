@@ -161,5 +161,20 @@ data:extend {
       max_distance_of_nearby_sector_revealed = 1,
       max_distance_of_sector_revealed = 0,
     }
+  },
+  util.merge {
+    data.raw["electric-energy-interface"]["rabbasca-energy-source"],
+    {
+      name = "rabbasca-platform-energy-source",
+      icons = Rabbasca.icons({{ proto = data.raw["fluid"]["harene"]}}),
+      energy_production = Rabbasca.surface_megawatts() * 0.1 .. "MW",
+      energy_source = { 
+        type = "electric", 
+        usage_priority = "primary-output", 
+        buffer_capacity = (Rabbasca.surface_megawatts() * 0.1 / 6) .. "MJ", 
+        output_flow_limit = Rabbasca.surface_megawatts() * 0.1 .. "MW",
+        render_no_power_icon = false
+      },
+    }
   }
 }

@@ -14,19 +14,19 @@ local function on_tick_underground(event)
     if not storage.stabilizer then return end
     local config = stabilizer_config()
     if config.planet_count ~= storage.stabilizer.last_planet_count then
-        storage.stabilizer.progress = config.stabilization_required
+        storage.stabilizer.progress = storage.stabilizer.next.required
         storage.stabilizer.last_planet_count = config.planet_count
     end
     local fluid = storage.stabilizer.entity.get_fluid(1)
     local numbers = {
-        progress = config.stabilization_required - storage.stabilizer.progress,
+        progress = storage.stabilizer.next.required - storage.stabilizer.progress,
         fuel = (fluid and fluid.amount / M.max_fuel()) or 0
     }
     for _, player in pairs(game.connected_players) do
         M.update_affinity_bar(player, numbers)
     end
     M.update_logistic_section(storage.stabilizer.current_location, numbers)
-    if storage.stabilizer.progress < config.stabilization_required then return end
+    if storage.stabilizer.progress < storage.stabilizer.next.required then return end
     M.warp_to(game.surfaces[storage.stabilizer.surface], M.get_next_planet())
 end
 
@@ -175,7 +175,7 @@ function M.get_next_planet()
     if not next then return "rabbasca" end
     local config = stabilizer_config()
     local total_weight = 0
-    for p, w in pairs(next.weights) do 
+    for p, w in pairs(next.weights) do
         if config.planets[p] then
             total_weight = total_weight + w
         else
@@ -194,6 +194,25 @@ function M.get_next_planet()
     return "rabbasca"
 end
 
+function M.get_next_planet_chances()
+    local next = storage.stabilizer.next
+    if not next then return { rabbasca = 1 } end
+    local config = stabilizer_config()
+    local total_weight = 0
+    for p, w in pairs(next.weights) do
+        if config.planets[p] then
+            total_weight = total_weight + w
+        else
+            next.weights[p] = nil -- Planet is no longer available
+        end
+    end
+    local chances = { }
+    for planet, w in pairs(next.weights) do
+        chances[planet] = w / total_weight
+    end
+    return chances
+end
+
 function M.post_warp_surface(surface)
     surface.daytime = stabilizer_config().planets[storage.stabilizer.current_location].lut_index
     surface.freeze_daytime = true
@@ -208,7 +227,7 @@ function M.warp_to(surface, planet)
     storage.stabilizer.warping = { to = planet, warp_tick = game.tick + 90, finished_tick = game.tick + 180 }
     surface.ticks_per_day = 180 * (config.planet_count + 1.5)
     surface.freeze_daytime = false
-    storage.stabilizer.next = storage.stabilizer.next or { seed = 0, weights = { } }
+    storage.stabilizer.next = storage.stabilizer.next or { seed = 0, weights = { }, required = 0 }
     for p, _ in pairs(config.planets) do
         if p == planet then
             storage.stabilizer.next.weights[p] = 0
@@ -217,6 +236,7 @@ function M.warp_to(surface, planet)
         end
     end
     storage.stabilizer.next.seed = storage.underground_seed_rng(10000000)
+    storage.stabilizer.next.required = storage.underground_seed_rng(config.planets[planet].min_stay, config.planets[planet].max_stay) 
     M.register_handlers()
 end
 
@@ -315,7 +335,7 @@ if settings.global["rabbasca-debug-mode"] then
     if to then
         M.warp_to(surface, to)
     else
-        storage.stabilizer.progress = stabilizer_config().stabilization_required
+        storage.stabilizer.progress = storage.stabilizer.next.required
     end
     end)
 end
