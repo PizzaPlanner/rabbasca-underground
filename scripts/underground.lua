@@ -142,32 +142,37 @@ function M.replace_entities(surface, settings, planet)
     end
 end
 
+-- before: 8 * 233MS ../?? // after: 9 * 133MS ../566 // 17 * 125MS ../120 OR 5*26MS ../73 after reload
 function M.replace_tiles(surface, from, to)
-    for _, tile in pairs(surface.find_tiles_filtered {
-        has_hidden_tile = true 
-    }) do
-        for _, f in pairs(from) do
-            if tile.hidden_tile == f then
-                surface.set_hidden_tile(tile.position, to)
+    storage.stabilizer.tiles = storage.stabilizer.tiles or { }
+    if not storage.stabilizer.tiles[to] then
+        storage.stabilizer.tiles[to] = { }
+        for _, tile in pairs(surface.find_tiles_filtered {
+            has_hidden_tile = true 
+        }) do
+            for _, f in pairs(from) do
+                if tile.hidden_tile == f then
+                    table.insert(storage.stabilizer.tiles[to], { name = to, position = tile.position })
+                    -- surface.set_hidden_tile(tile.position, to)
+                end
             end
         end
-    end
-    for _, tile in pairs(surface.find_tiles_filtered {
-        has_double_hidden_tile = true 
-    }) do
-        for _, f in pairs(from) do
-            if tile.hidden_tile == f then
-                surface.set_double_hidden_tile(tile.position, to)
+        for _, tile in pairs(surface.find_tiles_filtered {
+            has_double_hidden_tile = true 
+        }) do
+            for _, f in pairs(from) do
+                if tile.hidden_tile == f then
+                    table.insert(storage.stabilizer.tiles[to], { name = to, position = tile.position })
+                end
             end
         end
+        for _, tile in pairs(surface.find_tiles_filtered {
+            name = from
+        }) do
+            table.insert(storage.stabilizer.tiles[to], { name = to, position = tile.position })
+        end
     end
-    local tiles = { }
-    for _, tile in pairs(surface.find_tiles_filtered {
-        name = from
-    }) do
-        table.insert(tiles, { name = to, position = tile.position })
-    end
-    surface.set_tiles(tiles, true)
+    surface.set_tiles(storage.stabilizer.tiles[to], true)
 end
 
 function M.get_next_planet()
@@ -300,6 +305,7 @@ function M.change_affinity()
     for planet, data in pairs(prototypes.mod_data["rabbasca-stabilizer-config"].data.planets) do
         local researched = planet == storage.stabilizer.current_location
         game.forces.player.technologies[data.tech].researched = researched
+        game.forces.player.technologies[data.tech].enabled    = researched
         game.forces.player.technologies[data.tech_prep].researched = true
     end
     for _, player in pairs(game.players) do
