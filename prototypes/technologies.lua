@@ -31,8 +31,8 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-warp-stabilizer",
-    icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix-2.png",
-    icon_size = 204,
+    icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
+    icon_size = 1024,
     prerequisites = { "rabbasca-underground" },
     effects = {
       {
@@ -88,8 +88,8 @@ data:extend{
 {
   type = "technology",
   name = "rabbasca-warp-technology-analysis-2",
-  icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix-2.png",
-  icon_size = 204,
+  icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
+  icon_size = 1024,
   prerequisites = { "rabbasca-warp-technology-analysis" },
   effects = {
     {

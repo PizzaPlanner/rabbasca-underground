@@ -1,10 +1,12 @@
+if not data then return end
+
 local function create_affinity_tech(planet)
   local tech_pre = {
     type = "technology",
     name = "rabbasca-warp-prep-"..planet,
     icons = Rabbasca.icons({
-        { proto = data.raw["technology"]["planet-discovery-"..planet] or data.raw["planet"][planet], },
-        { proto = data.raw["item"]["rabbasca-warp-stabilizer"] }
+        { proto = data.raw["technology"]["planet-discovery-"..planet] or data.raw["planet"][planet], scale = 0.8 },
+        { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"], scale = 1 }
     }),
     prerequisites = { "rabbasca-warp-stabilizer" },
     localised_name = { "technology-name.rabbasca-warp-prep", { "space-location-name."..planet } },
@@ -20,7 +22,11 @@ local function create_affinity_tech(planet)
   local tech_flex = {
     type = "technology",
     name = "rabbasca-warp-anchoring-"..planet,
-    hidden = true,
+    icons = Rabbasca.icons({
+        { proto = data.raw["technology"]["planet-discovery-"..planet] or data.raw["planet"][planet], scale = 0.8 },
+        { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"], scale = 1 }
+    }),
+    enabled = false,
     prerequisites = { "rabbasca-warp-prep-"..planet },
     effects = { },
     localised_name = { "technology-name.rabbasca-warp-anchoring", planet },
@@ -28,7 +34,7 @@ local function create_affinity_tech(planet)
     research_trigger =
     {
         type = "scripted",
-        trigger_description = { "rabbasca-extra.trigger-set-affinity", planet }
+        trigger_description = { "rabbasca-extra.trigger-rabbasca-warp-current", planet }
     }
   }
   local mod_data = data.raw["mod-data"]["rabbasca-stabilizer-config"]
@@ -112,4 +118,15 @@ function Rabbasca.Stabilizer.make_pylon_recipe(name, type, planet, results, ingr
         subgroup = "rabbasca-remote",
         order = "f[planet]-"..planet.."-b[materialized]-"..name,
     }
+end
+
+function Rabbasca.underground_pressure() return 45312 end
+
+function Rabbasca.only_underground(needs_stabilizer)
+    if needs_stabilizer then return { property = "rabbasca-underground", min = 1, max = 1 }
+    else return { property = "pressure", min = Rabbasca.underground_pressure(), max = Rabbasca.underground_pressure() } end
+end
+
+function Rabbasca.not_underground()
+    return { property = "rabbasca-underground", min = 0, max = 0 }
 end

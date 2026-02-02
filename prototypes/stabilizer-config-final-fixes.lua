@@ -1,12 +1,9 @@
 local config = data.raw["mod-data"]["rabbasca-stabilizer-config"].data
 local planet = data.raw["planet"]["rabbasca-underground"]
-local planet_count = 0
+local planet_count = table_size(config.planets)
 local lut_table = { 
     { 0.0, "identity" } -- to make fog of war normal color
 }
-for planet, data in pairs(config.planets) do
-    planet_count = planet_count + 1
-end
 config.planet_count = planet_count
 local lut_step = 1 / (3 + 2 * planet_count)
 local current_lut_step = 0

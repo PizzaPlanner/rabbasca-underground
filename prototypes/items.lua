@@ -52,8 +52,8 @@ util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
     name = "rabbasca-warp-matrix",
-    icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix-2.png",
-    icon_size = 204,
+    icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
+    icon_size = 1024,
     stack_size = 1000,
     weight = 1 * kg,
     localised_description = { "item-description.rabbasca-warp-matrix" },
@@ -67,7 +67,8 @@ util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
     name = "rabbasca-quantum-device",
-    icon = data.raw["item"]["tungsten-carbide"].icon,
+    icon = "__rabbasca-assets__/graphics/by-openai/quantum-foam-encapsulator.png",
+    icon_size = 432,
     stack_size = 100,
     weight = 50 * kg,
     subgroup = "rabbasca-warp-stabilizer",
@@ -78,7 +79,8 @@ util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
     name = "rabbasca-coordinate-system",
-    icon = data.raw["item"]["ice"].icon,
+    icon = "__rabbasca-assets__/graphics/by-openai/coordinate-system.png",
+    icon_size = 432,
     stack_size = 200,
     weight = 1 * kg,
     auto_recycle = false,
@@ -90,7 +92,8 @@ util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
     name = "rabbasca-spacetime-sensor",
-    icon = data.raw["item"]["pentapod-egg"].icon,
+    icon = "__rabbasca-assets__/graphics/by-openai/spacetime-fluctuation-sensor.png",
+    icon_size = 432,
     stack_size = 200,
     weight = 1 * kg,
     auto_recycle = false,
@@ -102,7 +105,8 @@ util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
     name = "rabbasca-spatial-anchor",
-    icon = data.raw["item"]["holmium-plate"].icon,
+    icon = "__rabbasca-assets__/graphics/by-openai/spatial-anchor.png",
+    icon_size = 432,
     stack_size = 50,
     weight = 10 * kg,
     auto_recycle = false,
