@@ -5,13 +5,11 @@ local function handle_script_events(event)
   local effect_id = event.effect_id
   if effect_id == "rabbasca_warp_progress" then
     underground.on_stabilization()
+  elseif effect_id == "rabbasca_on_reboot_underground" then
+    underground.reboot_stabilizer()
   elseif effect_id == "rabbasca_on_send_pylon_underground" then
     local from = Rabbasca.get_spoiled_in(event)
-    if from and from.name == "rabbasca-warp-stabilizer" then
-      underground.reboot_stabilizer(from)
-    else
-      underground.on_locate_progress(from)
-    end
+    underground.on_locate_progress(from)
   end
 end
 
@@ -52,3 +50,5 @@ script.on_event(defines.events.on_gui_click, function(event)
     underground.abandon(game.players[event.player_index])
   end
 end)
+
+script.on_configuration_changed(underground.on_config_changed)

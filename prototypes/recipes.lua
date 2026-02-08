@@ -36,9 +36,10 @@ data:extend {
         enabled = true,
         hidden = true,
         hidden_in_factoriopedia = true,
-        energy_required = 30,
-        ingredients = { { type = "item", name = "stone-brick", amount = 5 } },
-        results = { { type = "item", name = "rabbasca-reboot-stabilizer", amount = 1 } },
+        main_product = "rabbasca-reboot-stabilizer",
+        energy_required = 0.1,
+        ingredients = { },
+        results = { { type = "item", name = "rabbasca-reboot-stabilizer", amount = 1 }, { type = "item", name = "ice", amount = 50 } },
         category = "rabbasca-warp-stabilizer",
         result_is_always_fresh = true,
         auto_recycle = false,
@@ -48,23 +49,38 @@ data:extend {
     },
     {
         type = "recipe",
-        name = "rabbasca-warp-matrix",
+        name = "rabbasca-stabilize-warpfield",
+        -- icons = Rabbasca.icons({proto = data.raw["tool"]["rabbasca-warp-matrix"]}),
         enabled = false,
-        main_product = "rabbasca-warp-matrix",
         energy_required = 2,
         result_is_always_fresh = true,
         -- preserve_products_in_machine_output = true,
         ingredients = { },
-        allow_productivity = true,
-        results = { 
-            { type = "item", name = "rabbasca-warp-matrix", amount = 5 },
-            { type = "item", name = "rabbasca-stabilize-warpfield", amount = 1, ignored_by_productivity = 1 },
-        },
+        allow_productivity = false,
+        results = { { type = "item", name = "rabbasca-stabilize-warpfield", amount = 1 } },
         crafting_machine_tint =
         {
             primary = { 0.5, 0.83, 1 }
         },
         category = "rabbasca-warp-stabilizer"
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-amplify-anomaly",
+        icons = Rabbasca.icons({proto = data.raw["tool"]["rabbasca-warp-matrix"]}),
+        enabled = false,
+        energy_required = 3600,
+        result_is_always_fresh = true,
+        -- preserve_products_in_machine_output = true,
+        ingredients = { { type = "item", name = "rabbasca-warp-matrix", amount = 1 } },
+        allow_productivity = false,
+        overload_multiplier = 999,
+        results = { },
+        crafting_machine_tint =
+        {
+            primary = { 0.81, 0.27, 1 }
+        },
+        category = "rabbasca-remote"
     },
     {
         type = "recipe",
@@ -85,8 +101,8 @@ data:extend {
         enabled = false,
         energy_required = 5,
         ingredients = {
-            { type = "item",  name = "rabbasca-warp-matrix", amount = 5 },
-            { type = "item",  name = "haronite-plate",  amount = 5 },
+            { type = "fluid",  name = "holmium-solution", amount = 20 },
+            { type = "item",  name = "low-density-structure",  amount = 5 },
         },
         results = { { type = "item", name = "rabbasca-spatial-anchor", amount = 1 } },
         category = "electromagnetics",
@@ -114,16 +130,15 @@ data:extend {
         enabled = false,
         energy_required = 12,
         ingredients = {
-            { type = "item", name = "rabbasca-warp-matrix", amount = 5 },
+            { type = "fluid", name = "harene", amount = 5 },
             { type = "item", name = "carbon-fiber", amount = 5 },
-            { type = "item", name = "pentapod-egg", amount = 1 },
+            { type = "item", name = "display-panel", amount = 1 },
         },
         results = {
             { type = "item", name = "rabbasca-spacetime-sensor", amount = 1 },
         },
         allow_productivity = true,
-        surface_conditions = { Rabbasca.only_underground(true) },
-        category = "organic",
+        category = "electromagnetics",
     },
     {
         type = "recipe",
@@ -151,6 +166,20 @@ data:extend {
         },
         results = { { type = "item", name = "rabbasca-warp-tech-analyzer", amount = 1 } },
         category = "crafting"
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-collector-pylon",
+        enabled = false,
+        energy_required = 2,
+        ingredients = {
+            { type = "item", name = "rabbasca-warp-core", amount = 2 },
+            { type = "item", name = "haronite-plate",  amount = 5 },
+            { type = "item", name = "processing-unit",  amount = 10 },
+            { type = "item", name = "rabbasca-spacetime-sensor",  amount = 1 },
+        },
+        results = { { type = "item", name = "rabbasca-collector-pylon", amount = 1 } },
+        category = "complex-machinery"
     },
     {
         type = "recipe",

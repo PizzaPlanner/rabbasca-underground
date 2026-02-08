@@ -47,7 +47,7 @@ data:extend {
           ["rabbasca-underground-out-of-map"] = {},
           ["rabbasca-underground-empty-space"] = {},
         }},
-        entity = { settings = { }} -- filled in script
+        entity = { settings = { ["rabbasca-warp-anomaly"] = { } } }
       },
       territory_settings =
       {

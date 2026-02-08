@@ -1,24 +1,6 @@
 if not data then return end
 
 local function create_affinity_tech(planet)
-  local tech_pre = {
-    type = "technology",
-    name = "rabbasca-warp-prep-"..planet,
-    icons = Rabbasca.icons({
-        { proto = data.raw["technology"]["planet-discovery-"..planet] or data.raw["planet"][planet], scale = 0.8 },
-        { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"], scale = 1 }
-    }),
-    prerequisites = { "rabbasca-warp-stabilizer" },
-    localised_name = { "technology-name.rabbasca-warp-prep", { "space-location-name."..planet } },
-    localised_description = { "technology-description.rabbasca-warp-prep" },
-    effects = { },
-    order = "r[warp-tech]-"..planet,
-    research_trigger =
-    {
-        type = "scripted",
-        trigger_description = { "rabbasca-extra.trigger-rabbasca-warp-prep", planet }
-    }
-  }
   local tech_flex = {
     type = "technology",
     name = "rabbasca-warp-anchoring-"..planet,
@@ -27,7 +9,8 @@ local function create_affinity_tech(planet)
         { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"], scale = 1 }
     }),
     enabled = false,
-    prerequisites = { "rabbasca-warp-prep-"..planet },
+    rabbasca_underground_temporary = true,
+    prerequisites = { "rabbasca-warp-stabilizer" },
     effects = { },
     localised_name = { "technology-name.rabbasca-warp-anchoring", planet },
     localised_description = { "technology-description.rabbasca-warp-anchoring", planet },
@@ -39,10 +22,9 @@ local function create_affinity_tech(planet)
   }
   local mod_data = data.raw["mod-data"]["rabbasca-stabilizer-config"]
   mod_data.data.planets[planet].tech = tech_flex.name
-  mod_data.data.planets[planet].tech_prep = tech_pre.name
-  table.insert(data.raw["technology"]["rabbasca-warp-technology-analysis"].prerequisites, tech_pre.name)
+--   mod_data.data.planets[planet].tech_prep = tech_pre.name
   data:extend{
-    tech_pre,
+    -- tech_pre,
     tech_flex,
   }
 end
@@ -53,12 +35,13 @@ function Rabbasca.Stabilizer.add_location(config)
     local mod_data = data.raw["mod-data"]["rabbasca-stabilizer-config"]
     mod_data.data.planets[config.planet] = {
         water = config.filler_tile or "lava-hot",
-        autoplace_entities = { },
+        autoplace_entities = { ["rabbasca-warp-anomaly"] = { } },
+        anomaly_replace_entities = config.anomaly_replace_entities or { },
         min_stay = config.min_stay or 50,
         max_stay = config.max_stay or 75,
         lut = config.lut_texture or "identity",
         tech = nil,
-        tech_prep = nil,
+        -- tech_prep = nil,
         -- in final fixes for better change resilience
         fluid = nil,
         lut_index = nil
@@ -67,10 +50,10 @@ function Rabbasca.Stabilizer.add_location(config)
         mod_data.data.planets[config.planet].autoplace_entities[e] = { }
     end
     create_affinity_tech(config.planet)
-    local tech_pre = data.raw["technology"]["rabbasca-warp-prep-"..config.planet]
-    for _, recipe in pairs(config.permanent_recipes or { }) do
-        table.insert(tech_pre.effects, { type = "unlock-recipe", recipe = recipe })
-    end
+    -- local tech_pre = data.raw["technology"]["rabbasca-warp-prep-"..config.planet]
+    -- for _, recipe in pairs(config.permanent_recipes or { }) do
+    --     table.insert(tech_pre.effects, { type = "unlock-recipe", recipe = recipe })
+    -- end
 end
 
 function Rabbasca.Stabilizer.make_atmospheric_recipe(planet, results)

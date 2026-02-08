@@ -1,7 +1,8 @@
 Rabbasca.Stabilizer.add_location{
     planet = "rabbasca",
     filler_tile = "harenic-lava",
-    autoplace_entities = { "haronite", "rabbasca-energy-source" },
+    autoplace_entities = { "rabbasca-energy-source" },
+    anomaly_replace_entities = { { type = "resource", name = "haronite", probability = 0.0063, richness = 165, floor = "volcanic-folds-warm" }, },
     lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground.png",
     min_stay = 60,
     max_stay = 75,
@@ -9,7 +10,7 @@ Rabbasca.Stabilizer.add_location{
 Rabbasca.Stabilizer.add_location{
     planet = "vulcanus",
     filler_tile = "lava-hot",
-    autoplace_entities = { "rabbasca-underground-tungsten-ore" },
+    anomaly_replace_entities = { { type = "resource", name = "tungsten-ore", probability = 0.0011, richness = 290, floor = "volcanic-cracks-hot" }, },
     lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-vulcanus.png",
     min_stay = 50,
     max_stay = 60,
@@ -32,9 +33,9 @@ Rabbasca.Stabilizer.add_location{
 Rabbasca.Stabilizer.add_location{
     planet = "aquilo",
     filler_tile = "ice-rough",
-    autoplace_entities = { "rabbasca-lithium-amide" },
+    -- autoplace_entities = { "rabbasca-lithium-amide" },
+    anomaly_replace_entities = { { type = "resource", name = "rabbasca-lithium-amide", probability = 0.008, richness = 200, floor = "ice-rough" }, },
     lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-gleba.png",
-    permanent_recipes = { "rabbasca-lithium-amide-fission" },
     min_stay = 30,
     max_stay = 55,
 }

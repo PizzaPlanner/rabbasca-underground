@@ -11,15 +11,23 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     crafting_speed = 1,
     collision_box = {{-4.2, -4.2}, {4.2, 4.2}},
     selection_box = {{-4.5, -4.5}, {4.5, 4.5}},
-    energy_usage = "500MW",
+    energy_usage = "1GW",
+    energy_source = {
+      type = "burner",
+      fuel_inventory_size = 1,
+      fuel_categories = { "rabbasca-warp-anomaly" },
+      initial_fuel = "rabbasca-warp-matrix",
+      initial_fuel_percent = 0.5
+    },
     module_slots = 20,
+    trash_inventory_size = 19,
     hidden = false,
     hidden_in_factoriopedia = false,
     subgroup = "rabbasca-warp-stabilizer",
     order = "a[stabilizer]",
 }}
 stabilizer.circuit_wire_max_distance = 0
-stabilizer.ignore_output_full = true
+stabilizer.ignore_output_full = false
 if settings.startup["rabbasca-underground-can-pause-stabilizer"].value == false then
   stabilizer.enable_logistic_control_behavior = false
 end
@@ -27,36 +35,11 @@ stabilizer.minable = nil
 stabilizer.placeable_by = nil
 stabilizer.allowed_effects = { "speed", "productivity", "quality" }
 stabilizer.flags = { "placeable-player", "player-creation" }
-stabilizer.energy_source = {
-  type = "fluid",
-  burns_fluid = true,
-  scale_fluid_usage = true,
-  fluid_box =   {
-    volume = 100000,
-    filter = "harene",
-    pipe_picture = assembler3pipepictures(),
-    pipe_covers = pipecoverspictures(),
-    production_type = "input",
-    pipe_connections = 
-    {
-      {
-        flow_direction = "input",
-        position = {-2, 4.2},
-        direction = defines.direction.south,
-      },
-      {
-        flow_direction = "input",
-        position = {0, 4.2},
-        direction = defines.direction.south,
-      },
-      {
-        flow_direction = "input",
-        position = {2, 4.2},
-        direction = defines.direction.south,
-      },
-    }
-  },
-}
+-- stabilizer.energy_source = {
+--   type = "electric",
+--   buffer_capacity = "1GJ",
+--   usage_priority = "primary-input",
+-- }
 stabilizer.next_upgrade = nil
 stabilizer.deconstruction_alternative = nil
 stabilizer.crafting_categories = { "rabbasca-warp-stabilizer" }
@@ -139,29 +122,50 @@ lab.energy_source = {
   },
 }
 
+local minelon  = util.merge {
+  data.raw["assembling-machine"]["rabbasca-warp-pylon"],
+  {
+    name = "rabbasca-collector-pylon",
+    type = "mining-drill",
+    resource_searching_radius = 8,
+    shuffle_resources_to_mine = true,
+    mining_speed = 1,
+    resource_categories = { "rabbasca-warp-anomaly" },
+    vector_to_place_result = { 0, 1.25 },
+    uses_force_mining_productivity_bonus = false,
+    quality_affects_mining_radius = true,
+    minable = { result = "rabbasca-collector-pylon" }
+  }
+}
+minelon.allowed_effects = {"speed", "productivity", "quality"}
+minelon.flags = { "placeable-player", "player-creation" }
+
+local passive_miner = util.merge {
+  data.raw["electric-energy-interface"]["rabbasca-energy-source"],
+  {
+    name = "rabbasca-stabilizer-consumer",
+    type = "mining-drill",
+    icon = stabilizer.icon,
+    factoriopedia_alternative = "rabbasca-warp-stabilizer",
+    resource_searching_radius = 100,
+    shuffle_resources_to_mine = true,
+    mining_speed = 10,
+    resource_categories = { "rabbasca-warp-anomaly" },
+    vector_to_place_result = { 0, 0 },
+    uses_force_mining_productivity_bonus = false,
+    quality_affects_mining_radius = false,
+    energy_source = { type = "void", },
+    energy_usage = Rabbasca.surface_megawatts() * 50 .. "MW",
+    alert_icon_shift = { 0, 32 },
+    alert_icon_scale = 2
+  }
+}
+passive_miner.allowed_effects = { }
 data:extend {
   stabilizer,
   lab,
-  util.merge {
-    data.raw["electric-energy-interface"]["rabbasca-energy-source"],
-    {
-      name = "rabbasca-stabilizer-consumer",
-      icon = stabilizer.icon,
-      factoriopedia_alternative = "rabbasca-warp-stabilizer",
-      type = "radar",
-      flags = data.raw["electric-energy-interface"]["rabbasca-energy-source"].flags,
-      energy_source = {
-        type = "electric",
-        usage_priority = "secondary-input",
-      },
-      connects_to_other_radars = true,
-      energy_per_sector = "1kJ",
-      energy_per_nearby_scan = Rabbasca.surface_megawatts() * 50 .. "MW",
-      energy_usage = Rabbasca.surface_megawatts() * 25 .. "MW",
-      max_distance_of_nearby_sector_revealed = 1,
-      max_distance_of_sector_revealed = 0,
-    }
-  },
+  minelon,
+  passive_miner,
   util.merge {
     data.raw["electric-energy-interface"]["rabbasca-energy-source"],
     {

@@ -31,3 +31,9 @@ if planet_count < 2 then
     log("ERROR: Underground planet count is too low: "..planet_count..". Game will now crash")
     data.raw["crash"]["too-few-planets"] = 3
 end
+
+for _, tech in pairs(data.raw["technology"]) do
+    if tech.rabbasca_underground_temporary then
+        table.insert(config.per_surface_techs, tech.name)
+    end
+end

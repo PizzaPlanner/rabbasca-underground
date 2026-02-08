@@ -15,17 +15,14 @@ local function add_button(parent, sprite, style, name, size)
 end
 
 local function create_affinity_bar(player, numbers)
-    if numbers ~= nil and player.gui.top.rabbasca_affinity then
-        player.gui.top.rabbasca_affinity.current_planet.number = numbers.progress
-        local bar = player.gui.top.rabbasca_affinity.right.fuel.bar
-        bar.value = numbers.fuel
-        if bar.value > 0.33 then bar.style.color = { 0.9, 0, 1 }
-        elseif bar.value > 0.1 then bar.style.color = { 1, 1, 0 }
-        else bar.style.color = { 1, 0, 0 } end
+    if numbers ~= nil and player.gui.top.rabbasca_ug_stats then
+        player.gui.top.rabbasca_ug_stats.current_planet.number = numbers.progress
+        local bar = player.gui.top.rabbasca_ug_stats.right.fuel.bar
+        bar.caption = { "", "[item=rabbasca-warp-matrix]", tostring(numbers.fuel), "/", tostring(numbers.progress) }
         return
     end
-    if player.gui.top.rabbasca_affinity then
-        player.gui.top.rabbasca_affinity.destroy()
+    if player.gui.top.rabbasca_ug_stats then
+        player.gui.top.rabbasca_ug_stats.destroy()
     end
     if not settings.get_player_settings(player)["rabbasca-show-alertness-ui"].value then return end
 
@@ -39,7 +36,7 @@ local function create_affinity_bar(player, numbers)
 
     local frame = player.gui.top.add{
         type = "frame",
-        name = "rabbasca_affinity",
+        name = "rabbasca_ug_stats",
         direction = "horizontal",
         style = "slot_window_frame",
     }
@@ -84,15 +81,12 @@ local function create_affinity_bar(player, numbers)
         name = "fuel",
     }
     fuel.style.vertical_align = "center"
-    add_button(fuel, "fluid/harene", "transparent_slot", "icon", 16)
-    local bar = fuel.add {
-        type = "progressbar",
+    -- add_button(fuel, "fluid/harene", "transparent_slot", "icon", 16)
+    fuel.add {
+        type = "label",
         name = "bar",
-        value = 0,
+        caption = { "", "[item=rabbasca-warp-matrix]", numbers and numbers.fuel or "Calculating..." }
     }
-    bar.style.minimal_width = 96
-    bar.style.natural_width = 96
-    bar.style.horizontally_stretchable = true
     right.style.top_padding = 1
     local config = config.planets[affinity]
     if config then
@@ -119,9 +113,11 @@ end
 
 function M.update_affinity_bar(player, numbers)
     local is_on_rabbasca = player.surface and player.surface.name == "rabbasca-underground"
-    local ui = player.gui.top.rabbasca_affinity
+    local ui = player.gui.top.rabbasca_ug_stats
     if ui and not is_on_rabbasca then
         ui.destroy()
+        local ui_legacy = player.gui.top.rabbasca_affinity
+        if ui_legacy then ui_legacy.destroy() end
     elseif is_on_rabbasca then
         create_affinity_bar(player, numbers)
     end

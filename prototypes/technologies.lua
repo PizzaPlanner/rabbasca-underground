@@ -11,6 +11,10 @@ data:extend{
         recipe = "rabbasca-locate-stabilizer"
       },
       {
+        type = "unlock-recipe",
+        recipe = "rabbasca-spacetime-sensor"
+      },
+      {
         type = "unlock-space-location",
         space_location = "rabbasca-underground",
         use_icon_overlay_constant = true
@@ -18,7 +22,7 @@ data:extend{
     },
     unit = {
       time = 60,
-      count = 100,
+      count = 1000,
       ingredients = {
         {"metallurgic-science-pack", 1},
         {"electromagnetic-science-pack", 1},
@@ -33,16 +37,17 @@ data:extend{
     name = "rabbasca-warp-stabilizer",
     icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
     icon_size = 1024,
+    rabbasca_underground_temporary = true,
     prerequisites = { "rabbasca-underground" },
     effects = {
       {
         type = "unlock-recipe",
-        recipe = "rabbasca-warp-matrix"
+        recipe = "rabbasca-stabilize-warpfield"
       },
       {
-        type = "unlock-recipe",
-        recipe = "rabbasca-warp-tech-analyzer"
-      },
+        type = "nothing",
+        effect_description = { "recipe-description.rabbasca-stabilizer-consumer" }
+      }
     },
     research_trigger =
     {
@@ -53,65 +58,120 @@ data:extend{
 },
 {
     type = "technology",
-    name = "rabbasca-warp-technology-analysis",
-    icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
-    icon_size = 640,
-    prerequisites = { "rabbasca-warp-stabilizer" },
+    name = "rabbasca-warp-technology-analysis-1",
+    icons = Rabbasca.icons({proto = data.raw["tool"]["rabbasca-spatial-anchor"]}),
+    prerequisites = { "rabbasca-underground" },
     effects = {
       {
         type = "unlock-recipe",
         recipe = "rabbasca-spatial-anchor"
       },
-      {
-        type = "unlock-recipe",
-        recipe = "rabbasca-spacetime-sensor"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "rabbasca-coordinate-system"
-      },
-      {
-        type = "unlock-recipe",
-        recipe = "rabbasca-quantum-device"
-      }
     },
     ignore_tech_cost_multiplier = true,
     order = "r[warp-tech]-0[analysis]",
+    research_trigger =
+    {
+        type = "craft-item",
+        item = "rabbasca-stabilize-warpfield",
+        count = 150
+    }
+},
+{
+    type = "technology",
+    name = "rabbasca-warp-technology-analysis-2",
+    icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
+    icon_size = 640,
+    prerequisites = { "rabbasca-warp-technology-analysis-1" },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-warp-tech-analyzer"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-collector-pylon"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-amplify-anomaly"
+      },
+    },
+    ignore_tech_cost_multiplier = true,
+    order = "r[warp-tech]-0[analysis]",
+    research_trigger =
+    {
+        type = "craft-item",
+        item = "rabbasca-spatial-anchor",
+        count = 10
+    }
+},
+{
+    type = "technology",
+    name = "rabbasca-warp-floor-expansion",
+    icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
+    icon_size = 1024,
+    prerequisites = { "rabbasca-warp-stabilizer" },
+    rabbasca_underground_temporary = true,
+    effects = {
+      {
+        type = "give-item",
+        item = "rabbasca-reboot-stabilizer",
+        count = 1,
+      }
+    },
+    ignore_tech_cost_multiplier = true,
+    max_level = 8,
     unit = {
       time = 10,
-      count = 100,
+      count_formula = "(10 + L ^ 4) * L^2",
       ingredients = {
         { "rabbasca-warp-matrix", 1 },
       }
     }
 },
 {
-  type = "technology",
-  name = "rabbasca-warp-technology-analysis-2",
-  icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
-  icon_size = 1024,
-  prerequisites = { "rabbasca-warp-technology-analysis" },
-  effects = {
-    {
-      type = "change-recipe-productivity",
-      recipe = "rabbasca-warp-matrix",
-      change = 0.5
+    type = "technology",
+    name = "rabbasca-total-recall",
+    icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
+    icon_size = 1024,
+    prerequisites = { "rabbasca-warp-technology-analysis-2" },
+    effects = {
+      {
+        type = "nothing",
+        effect_description = { "recipe-description.rabbasca-total-recall" }
+      }
     },
-  },
-  unit = {
-    time = 10,
-    count = 200,
-    ingredients = {
-      { "rabbasca-warp-matrix", 1 },
+    ignore_tech_cost_multiplier = true,
+    unit = {
+      time = 10,
+      count = 2000,
+      ingredients = {
+        { "rabbasca-warp-matrix", 1 },
+      }
     }
-  }
+},
+{
+    type = "technology",
+    name = "rabbasca-lithium-amide-fission",
+    icons = Rabbasca.icons({{proto = data.raw["recipe"]["rabbasca-lithium-amide-fission"]}}),
+    prerequisites = { "rabbasca-warp-technology-analysis-1" },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-lithium-amide-fission"
+      }
+    },
+    research_trigger = {
+      type = "mine-entity",
+      entity = "rabbasca-lithium-amide"
+    }
 },
 {
     type = "technology",
     name = "rabbasca-self-made-warp-pylon",
     icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-big.png",
     icon_size = 640,
-    prerequisites = { "rabbasca-warp-technology-analysis" },
+    prerequisites = { "rabbasca-warp-technology-analysis-2" },
     effects = {
       {
         type = "unlock-recipe",
@@ -140,14 +200,13 @@ data:extend{
     name = "rabbasca-ears-powered-space-platform",
     icon = data.raw["technology"]["space-platform"].icon,
     icon_size = data.raw["technology"]["space-platform"].icon_size,
-    prerequisites = { "rabbasca-warp-technology-analysis" },
+    prerequisites = { "rabbasca-warp-technology-analysis-2" },
     effects = {
       {
         type = "unlock-recipe",
         recipe = "rabbasca-space-platform-starter-pack"
       }
     },
-    ignore_tech_cost_multiplier = true,
     unit = {
       time = 10,
       count = 1000,

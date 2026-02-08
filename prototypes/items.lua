@@ -17,6 +17,10 @@ local make_tile_area = function(area, name)
 end
 
 data:extend{
+{
+  type = "fuel-category",
+  name = "rabbasca-warp-anomaly",
+},
 Rabbasca.make_trigger_item({
   name = "rabbasca-locate-stabilizer",
   subgroup = "rabbasca-warp-stabilizer",
@@ -30,7 +34,7 @@ Rabbasca.make_trigger_item({
   order = "z[locate-underground-reboot]",
   icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
   icon_size = 640,
-}, "rabbasca_on_send_pylon_underground"),
+}, "rabbasca_on_reboot_underground"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-stabilize-warpfield",
   subgroup = "rabbasca-warp-stabilizer",
@@ -55,6 +59,8 @@ util.merge {
     icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
     icon_size = 1024,
     stack_size = 1000,
+    fuel_value = "1GJ",
+    fuel_category = "rabbasca-warp-anomaly",
     weight = 1 * kg,
     localised_description = { "item-description.rabbasca-warp-matrix" },
     spoil_ticks = 20 * second,
@@ -123,6 +129,19 @@ util.merge {
   weight = 100 * kg,
   subgroup = data.raw["item"]["lab"].subgroup,
   order = data.raw["item"]["lab"].order.."-r[rabbasca-underground]",
+},
+{
+  type = "item",
+  name = "rabbasca-collector-pylon",
+  icons = Rabbasca.icons{
+    { proto = data.raw["assembling-machine"]["rabbasca-warp-pylon"] },
+    { proto = data.raw["item"]["rabbasca-warp-matrix"], scale = 0.4, shift = { 8, 8 } },
+  },
+  place_result = "rabbasca-collector-pylon",
+  stack_size = 10,
+  weight = 100 * kg,
+  subgroup = data.raw["item"]["rabbasca-warp-pylon"].subgroup,
+  order = data.raw["item"]["rabbasca-warp-pylon"].order.."-r[rabbasca-underground]",
 },
 {
   type = "space-platform-starter-pack",
