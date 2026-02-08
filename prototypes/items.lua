@@ -39,13 +39,13 @@ Rabbasca.make_trigger_item({
   name = "rabbasca-stabilize-warpfield",
   subgroup = "rabbasca-warp-stabilizer",
   order = "z[stabilize]",
-  icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
-  icon_size = 640,
+  icons = Rabbasca.icons({ proto = data.raw["virtual-signal"]["signal-recycle"], tint = { 0.83, 1, 0.15} })
 }, "rabbasca_warp_progress"),
 {
   type = "item",
   name = "rabbasca-lithium-amide",
-  icon = data.raw["item"]["lithium"].icon,
+  icon = "__rabbasca-assets__/graphics/recolor/icons/lithium-amide.png",
+  icon_size = 128,
   stack_size = 50,
   weight = 25 * kg,
   auto_recycle = false,

@@ -22,12 +22,18 @@ data:extend {
   {
     type = "noise-expression",
     name = "rabbasca_underground_anomaly_chance",
-    expression = "(voronoi_spot_noise{x = x, y = y, seed0 = map_seed, seed1 = 'randombob', grid_size = 7, distance_type = 'manhattan', jitter = 1} < 0.05) * (distance > 17)"
+    expression = "aquilo_spot_noise{seed = 4567801,\z
+                                    count = 2,\z
+                                    skip_offset = 0,\z
+                                    region_size = 28,\z
+                                    density = 0.6,\z
+                                    radius = 3,\z
+                                    favorability = 1} > 0.95"
   },
   {
     type = "noise-expression",
     name = "rabbasca_underground_anomaly_richness",
-    expression = "10 + basis_noise{x = x, y = y, input_scale = 8, output_scale = 10, seed0 = map_seed, seed1 = 'whatwasthat'}"
+    expression = "17 + basis_noise{x = x, y = y, input_scale = 0.82, output_scale = 8, seed0 = map_seed, seed1 = 'whatwasthat'}"
   },
   {
     type = "noise-expression",

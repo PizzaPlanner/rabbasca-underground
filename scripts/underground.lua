@@ -47,7 +47,7 @@ local function on_warp_underground(event)
         for _, tag in pairs(storage.stabilizer.resource_tags or {}) do
             tag.destroy{}
         end
-        M.replace_tiles(surface, config.water_tiles, config.planets[data.to].water)
+        M.replace_tiles(surface, config.planets[data.to].water)
         M.replace_entities(surface, config.planets, data.to)
         M.change_affinity()
         local lut_step = 1 / (3 + 2 * config.planet_count)
@@ -69,9 +69,7 @@ local function register_stabilizer(s)
     }
     s.set_recipe("rabbasca-reboot-stabilizer")
     s.get_inventory(defines.inventory.crafter_output).insert({name = "ice", count = 50})
-    s.get_inventory(defines.inventory.crafter_trash).insert({name = "ice", count = 450})
-    s.get_inventory(defines.inventory.crafter_trash).insert({name = "solid-fuel", count = 500})
-    -- s.recipe_locked = true
+    s.recipe_locked = true
     -- s.set_fluid(1, { name = "harene", amount = settings.global["rabbasca-underground-starting-fuel"].value })
     M.warp_to(s.surface, "aquilo", "gleba", 5)
     M.register_handlers()
@@ -156,7 +154,7 @@ function M.try_manifest(source, chance_mult, possible_anomalies)
                 local tiles = { }
                 if total_amount > 0 then
                     storage.stabilizer.resource_tags = storage.stabilizer.resource_tags or { }
-                    table.insert(storage.stabilizer.resource_tags, game.forces.player.add_chart_tag(source.surface, { position = p.position, text = string.format("[entity=%s]%i // %d%% * %d = %d%% lol", new.name, total_amount, new.probability * 100, chance_mult, prob_total * 100)}))
+                    table.insert(storage.stabilizer.resource_tags, game.forces.player.add_chart_tag(source.surface, { position = p.position, text = string.format("[entity=%s] %i", new.name, total_amount)}))
                     if source.name == "rabbasca-warp-anomaly" then
                         local radius = 3
                         local cx = p.position.x
@@ -243,33 +241,17 @@ function M.replace_entities(surface, config, planet)
 end
 
 -- before: 8 * 233MS ../?? // after: 9 * 133MS ../566 // 17 * 125MS ../120 OR 5*26MS ../73 after reload
-function M.replace_tiles(surface, from, to)
+function M.replace_tiles(surface, to)
     storage.stabilizer.tiles = storage.stabilizer.tiles or { }
-    if not storage.stabilizer.tiles[to] then
+    storage.stabilizer.last_safe_radius = storage.stabilizer.last_safe_radius or { }
+    local safe_radius = 10 + game.forces.player.technologies["rabbasca-warp-floor-expansion"].level * 4
+
+    if not (storage.stabilizer.tiles[to] and storage.stabilizer.last_safe_radius[to] == safe_radius) then
+        storage.stabilizer.last_safe_radius[to] = safe_radius
         storage.stabilizer.tiles[to] = { }
-        for _, tile in pairs(surface.find_tiles_filtered {
-            has_hidden_tile = true 
-        }) do
-            for _, f in pairs(from) do
-                if tile.hidden_tile == f then
-                    table.insert(storage.stabilizer.tiles[to], { name = to, position = tile.position })
-                    -- surface.set_hidden_tile(tile.position, to)
-                end
-            end
-        end
-        for _, tile in pairs(surface.find_tiles_filtered {
-            has_double_hidden_tile = true 
-        }) do
-            for _, f in pairs(from) do
-                if tile.hidden_tile == f then
-                    table.insert(storage.stabilizer.tiles[to], { name = to, position = tile.position })
-                end
-            end
-        end
-        for _, tile in pairs(surface.find_tiles_filtered {
-            name = from
-        }) do
-            table.insert(storage.stabilizer.tiles[to], { name = to, position = tile.position })
+        for _, tile in pairs(surface.find_tiles_filtered { name = "rabbasca-underground-out-of-map", invert = true, radius = 100 }) do
+            local is_safe = math.max(math.abs(tile.position.x), math.abs(tile.position.y)) <= safe_radius
+            table.insert(storage.stabilizer.tiles[to], { name = is_safe and "rabbasca-underground-rubble-powered" or to, position = tile.position })
         end
     end
     surface.set_tiles(storage.stabilizer.tiles[to], true)
@@ -365,27 +347,16 @@ function M.reboot_stabilizer()
     local s = storage.stabilizer and storage.stabilizer.entity
     if not (s and s.valid) then return end
     if s.get_recipe().name == "rabbasca-reboot-stabilizer" then
-        -- storage.stabilizer.reboots_left = (storage.stabilizer.reboots_left or 5) - 1
-        -- if storage.stabilizer.reboots_left > 0 then return end
-        -- storage.stabilizer.reboots_left = nil
         s.force = game.forces.player
         game.forces.player.technologies["rabbasca-warp-stabilizer"].researched = true
-        game.forces.player.technologies["rabbasca-warp-floor-expansion"].level = 1
-        s.set_recipe("rabbasca-warp-matrix")
+        s.set_recipe("rabbasca-stabilize-warpfield")
+        s.recipe_locked = false
         s.surface.create_entity {
         name = "rabbasca-stabilizer-consumer",
         position = s.position,
         force = s.force
     }
     end
-    local tiles = { }
-    local tile_width = 16 + game.forces.player.technologies["rabbasca-warp-floor-expansion"].level * 4
-    for x = -tile_width,tile_width do
-    for y = -tile_width,tile_width do
-        table.insert(tiles, { position = { x, y }, name = "rabbasca-underground-rubble-powered"})
-    end
-    end
-    s.surface.set_tiles(tiles, true, false)
 end
 
 function M.on_locate_progress(vault)

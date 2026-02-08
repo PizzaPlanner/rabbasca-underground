@@ -113,11 +113,6 @@ data:extend{
     prerequisites = { "rabbasca-warp-stabilizer" },
     rabbasca_underground_temporary = true,
     effects = {
-      {
-        type = "give-item",
-        item = "rabbasca-reboot-stabilizer",
-        count = 1,
-      }
     },
     ignore_tech_cost_multiplier = true,
     max_level = 8,

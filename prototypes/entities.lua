@@ -145,7 +145,6 @@ local passive_miner = util.merge {
   {
     name = "rabbasca-stabilizer-consumer",
     type = "mining-drill",
-    icon = stabilizer.icon,
     factoriopedia_alternative = "rabbasca-warp-stabilizer",
     resource_searching_radius = 100,
     shuffle_resources_to_mine = true,
@@ -160,6 +159,11 @@ local passive_miner = util.merge {
     alert_icon_scale = 2
   }
 }
+passive_miner.icon = nil
+passive_miner.icons = Rabbasca.icons({
+  { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"] },
+  { proto = data.raw["item"]["engine-unit"], scale = 0.4, shift = { 8, 8 } },
+})
 passive_miner.allowed_effects = { }
 data:extend {
   stabilizer,

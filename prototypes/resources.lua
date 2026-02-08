@@ -14,8 +14,8 @@ local anomaly_anim = {
   height = 330,
   frame_count = 33,
   scale = 0.25,
-  -- draw_as_glow = true, 
-  -- blend_mode = "additive"
+  draw_as_glow = true, 
+  blend_mode = "additive"
 }
 
 local st_anomaly = util.merge {
@@ -87,37 +87,23 @@ local lithium_amide = util.merge {
   table.deepcopy(data.raw["resource"]["calcite"]),
   {
     name = "rabbasca-lithium-amide",
-    icon = data.raw["item"]["calcite"].icon,
+    icon = data.raw["item"]["rabbasca-lithium-amide"].icon,
+    icon_size = 128,
     minimum = 100,
     normal = 100,
     infinite = false,
-    map_color = { 0.85, 0.94, 0.92 },
-    -- stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/icons/carotenoid-ore.png" } },
+    stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/textures/lithium-amide-ore.png" } },
     cliff_removal_probability = 0,
     tree_removal_probability = 0,
   }
 }
+lithium_amide.map_color = { 0.74, 0.94, 0.92 }
 lithium_amide.minable.mining_time = 0.5
 lithium_amide.minable.results = {{ type = "item", name = "rabbasca-lithium-amide", amount = 1 }}
 lithium_amide.autoplace = nil
 
-local tungsten_ore = util.merge {
-  data.raw["resource"]["tungsten-ore"],
-  {
-    name = "rabbasca-underground-tungsten-ore",
-    factoriopedia_alternative = "tungsten-ore",
-    localised_name = { "entity-name.tungsten-ore" },
-    localised_description = { "entity-description.tungsten-ore" }
-  }
-}
-
-tungsten_ore.autoplace = {
-  probability_expression = "rabbasca_underground_resource_spots",
-  richness_expression = "rabbasca_underground_resource_richness",
-}
-
 local haronite_ore = util.merge {
-  tungsten_ore,
+  data.raw["resource"]["tungsten-ore"],
   data.raw["item"]["haronite"],
   {
     name = "haronite",
@@ -125,10 +111,27 @@ local haronite_ore = util.merge {
     category = "basic-solid",
     factoriopedia_alternative = "haronite",
     localised_name = { "item-name.haronite" },
+    -- stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/textures/haronite-ore.png" } },
     localised_description = { "item-description.haronite" }
   }
 }
 haronite_ore.minable.mining_time = 3
-haronite_ore.minable.results = {{ type = "item", name = "haronite", amount = 1, percent_spoiled = 0.9 }}
+haronite_ore.minable.results = {{ type = "item", name = "haronite", amount = 1, percent_spoiled = 0.8 }}
 
-data:extend{ lithium_amide, tungsten_ore, haronite_ore, st_anomaly, anomaly_anim }
+local holmium_ore = util.merge {
+  data.raw["resource"]["tungsten-ore"],
+  data.raw["item"]["holmium-ore"],
+  {
+    name = "rabbasca-holmium-ore",
+    type = "resource",
+    category = "basic-solid",
+    -- factoriopedia_alternative = "holmium-ore",
+    localised_name = { "item-name.holmium-ore" },
+    stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/textures/holmium-ore.png" } },
+    localised_description = { "item-description.holmium-ore" }
+  }
+}
+holmium_ore.minable.mining_time = 1.5
+holmium_ore.minable.results = {{ type = "item", name = "holmium-ore", amount = 1 }}
+
+data:extend{ lithium_amide, haronite_ore, st_anomaly, anomaly_anim, holmium_ore }

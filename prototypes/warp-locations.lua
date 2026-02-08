@@ -25,6 +25,7 @@ Rabbasca.Stabilizer.add_location{
 Rabbasca.Stabilizer.add_location{
     planet = "fulgora",
     filler_tile = "fulgoran-sand",
+    anomaly_replace_entities = { { type = "resource", name = "rabbasca-holmium-ore", probability = 0.06, richness = 21, floor = "fulgoran-rock" }, },
     lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-gleba.png",
     min_stay = 40,
     max_stay = 60,
@@ -34,7 +35,7 @@ Rabbasca.Stabilizer.add_location{
     planet = "aquilo",
     filler_tile = "ice-rough",
     -- autoplace_entities = { "rabbasca-lithium-amide" },
-    anomaly_replace_entities = { { type = "resource", name = "rabbasca-lithium-amide", probability = 0.008, richness = 200, floor = "ice-rough" }, },
+    anomaly_replace_entities = { { type = "resource", name = "rabbasca-lithium-amide", probability = 0.008, richness = 200, floor = "space-platform-foundation" }, },
     lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-gleba.png",
     min_stay = 30,
     max_stay = 55,

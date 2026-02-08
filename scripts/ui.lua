@@ -16,9 +16,12 @@ end
 
 local function create_affinity_bar(player, numbers)
     if numbers ~= nil and player.gui.top.rabbasca_ug_stats then
-        player.gui.top.rabbasca_ug_stats.current_planet.number = numbers.progress
-        local bar = player.gui.top.rabbasca_ug_stats.right.fuel.bar
-        bar.caption = { "", "[item=rabbasca-warp-matrix]", tostring(numbers.fuel), "/", tostring(numbers.progress) }
+        -- player.gui.top.rabbasca_ug_stats.current_planet.number = numbers.progress
+        local bar = player.gui.top.rabbasca_ug_stats.bar
+        bar.caption = { "", "[item=rabbasca-warp-matrix] ", tostring(numbers.fuel), "\n", "[item=rabbasca-stabilize-warpfield] ", tostring(numbers.progress) }
+
+        storage.stabilizer.map_tag = storage.stabilizer.map_tag or player.force.add_chart_tag(storage.stabilizer.surface, { position = { -150, -150 }, text = "  "})
+        storage.stabilizer.map_tag.text = string.format("[item=rabbasca-warp-matrix] %i\n[item=rabbasca-stabilize-warpfield] %i", numbers.fuel, numbers.progress)
         return
     end
     if player.gui.top.rabbasca_ug_stats then
@@ -48,12 +51,12 @@ local function create_affinity_bar(player, numbers)
         name = "current_planet",
         tooltip = next_tooltip
     }
-    local right = frame.add {
-        type = "flow",
-        direction = "vertical",
-        name = "right",
+    local label = frame.add {
+        type = "label",
+        name = "bar",
+        caption = { "", "[item=rabbasca-warp-matrix] [...]" }
     }
-    right.style.vertical_spacing = 0
+    label.style.font = "default-semibold"
     frame.add {
         type = "sprite-button",
         sprite = "virtual-signal/signal-trash-bin",
@@ -61,53 +64,6 @@ local function create_affinity_bar(player, numbers)
         name = "rabbasca_abandon_stabilizer",
         tooltip = { "rabbasca-extra.abandon-stabilizer" }
     }
-    local top = right.add {
-        type = "flow",
-        direction = "horizontal",
-        name = "top",
-    }
-    top.style.vertical_align = "center"
-    add_button(top, "virtual-signal/signal-map-marker", "transparent_slot", "resources_marker", 16)
-    local recipes1 = top.add {
-        type = "flow",
-        direction = "horizontal",
-        name = "resources",
-    }
-    recipes1.style.horizontal_spacing = 0
-    recipes1.style.vertical_align = "center"
-    local fuel = right.add {
-        type = "flow",
-        direction = "horizontal",
-        name = "fuel",
-    }
-    fuel.style.vertical_align = "center"
-    -- add_button(fuel, "fluid/harene", "transparent_slot", "icon", 16)
-    fuel.add {
-        type = "label",
-        name = "bar",
-        caption = { "", "[item=rabbasca-warp-matrix]", numbers and numbers.fuel or "Calculating..." }
-    }
-    right.style.top_padding = 1
-    local config = config.planets[affinity]
-    if config then
-        if config.fluid then
-            add_button(recipes1, "fluid/"..config.fluid, "inventory_slot", "fluid", 24)
-        end
-        local i = 0
-        for e, _ in pairs(config.autoplace_entities) do
-            i = i + 1
-            add_button(recipes1, "entity/"..e, "inventory_slot", "icon_"..tostring(i), 24)
-        end
-        local tech = player.force.technologies["rabbasca-warp-anchoring-"..affinity]
-        if tech then
-            for _, reward in pairs(tech.prototype.effects) do
-                if reward.recipe then
-                    i = i + 1
-                    add_button(recipes1, "recipe/"..reward.recipe, "inventory_slot", "icon_"..tostring(i), 24)
-                end
-            end
-        end
-    end
     -- create_affinity_bar(player, true)
 end
 
