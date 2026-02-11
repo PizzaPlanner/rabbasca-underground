@@ -49,13 +49,6 @@ data:extend {
         }},
         entity = { settings = { ["rabbasca-warp-anomaly"] = { } } }
       },
-      territory_settings =
-      {
-        units = {"rabbasca-underground-devourer"},
-        territory_index_expression = "rabbasca_devourer_territory_expression",
-        territory_variation_expression = "demolisher_variation_expression",
-        minimum_territory_size = 8
-      },
     },
     surface_render_parameters = {
       shadow_opacity = 0.3,

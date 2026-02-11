@@ -17,7 +17,9 @@ local function on_tick_underground(event)
     end
     local numbers = {
         progress = storage.stabilizer.next.required - storage.stabilizer.progress,
-        fuel = fuel
+        fuel = fuel,
+        progress_ratio = storage.stabilizer.progress / storage.stabilizer.next.required,
+        progress_max = storage.stabilizer.next.required
     }
     for _, player in pairs(game.connected_players) do
         M.update_affinity_bar(player, numbers)
@@ -44,11 +46,9 @@ local function on_warp_underground(event)
             data.to = M.get_next_planet()
         end
         storage.stabilizer.current_location = data.to
-        for _, tag in pairs(storage.stabilizer.resource_tags or {}) do
-            tag.destroy{}
-        end
         M.replace_tiles(surface, config.planets[data.to].water)
         M.replace_entities(surface, config.planets, data.to)
+        surface.regenerate_decorative()
         M.change_affinity()
         local lut_step = 1 / (3 + 2 * config.planet_count)
         surface.daytime = config.planets[storage.stabilizer.current_location].lut_index - lut_step
@@ -68,10 +68,9 @@ local function register_stabilizer(s)
         next = { weights = { }, seed = 0 }
     }
     s.set_recipe("rabbasca-reboot-stabilizer")
-    s.get_inventory(defines.inventory.crafter_output).insert({name = "ice", count = 50})
     s.recipe_locked = true
     -- s.set_fluid(1, { name = "harene", amount = settings.global["rabbasca-underground-starting-fuel"].value })
-    M.warp_to(s.surface, "aquilo", "gleba", 5)
+    M.warp_to(s.surface, "aquilo", "rabbasca", 17)
     M.register_handlers()
     game.forces.player.chart(s.surface, {{-48, -48}, {48, 48}})
     game.forces.player.print({ "rabbasca-extra.created-underground-stabilizer", s.gps_tag})
@@ -153,8 +152,6 @@ function M.try_manifest(source, chance_mult, possible_anomalies)
                 local entities = { }
                 local tiles = { }
                 if total_amount > 0 then
-                    storage.stabilizer.resource_tags = storage.stabilizer.resource_tags or { }
-                    table.insert(storage.stabilizer.resource_tags, game.forces.player.add_chart_tag(source.surface, { position = p.position, text = string.format("[entity=%s] %i", new.name, total_amount)}))
                     if source.name == "rabbasca-warp-anomaly" then
                         local radius = 3
                         local cx = p.position.x
@@ -222,14 +219,10 @@ function M.replace_entities(surface, config, planet)
     surface.map_gen_settings = map_settings
     surface.regenerate_entity()
 
-    -- for _, e in pairs(surface.find_entities_filtered { name = "rabbasca-warp-anomaly" }) do
-    --     rendering.draw_animation { 
-    --         animation = "rabbasca-warp-anomaly-animation",
-    --         surface = e.surface,
-    --         target = e,
-    --         render_layer = "resource",
-    --     }
-    -- end
+    storage.stabilizer.anomalies = { initial = 0 }
+    for _, e in pairs(surface.find_entities_filtered { name = "rabbasca-warp-anomaly" }) do
+        storage.stabilizer.anomalies.initial = storage.stabilizer.anomalies.initial + e.amount
+    end
 
     for _, e in pairs(surface.find_entities_filtered { type = { "offshore-pump", "mining-drill" } }) do
         e.update_connections()
@@ -244,7 +237,10 @@ end
 function M.replace_tiles(surface, to)
     storage.stabilizer.tiles = storage.stabilizer.tiles or { }
     storage.stabilizer.last_safe_radius = storage.stabilizer.last_safe_radius or { }
-    local safe_radius = 10 + game.forces.player.technologies["rabbasca-warp-floor-expansion"].level * 4
+    local safe_radius = 10 
+        + game.forces.player.technologies["rabbasca-warp-floor-expansion"].level * 4
+        + (game.forces.player.technologies["rabbasca-permanent-floor-expansion-1"].researched and 4 or 0)
+        + (game.forces.player.technologies["rabbasca-permanent-floor-expansion-2"].researched and 4 or 0)
 
     if not (storage.stabilizer.tiles[to] and storage.stabilizer.last_safe_radius[to] == safe_radius) then
         storage.stabilizer.last_safe_radius[to] = safe_radius

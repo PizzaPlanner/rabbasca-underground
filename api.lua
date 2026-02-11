@@ -5,8 +5,8 @@ local function create_affinity_tech(planet)
     type = "technology",
     name = "rabbasca-warp-anchoring-"..planet,
     icons = Rabbasca.icons({
-        { proto = data.raw["technology"]["planet-discovery-"..planet] or data.raw["planet"][planet], scale = 0.8 },
-        { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"], scale = 1 }
+        { proto = data.raw["planet"][planet], scale = 1, shift = {0, 32} },
+        { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"], scale = 0.5 },
     }),
     enabled = false,
     rabbasca_underground_temporary = true,
@@ -50,10 +50,6 @@ function Rabbasca.Stabilizer.add_location(config)
         mod_data.data.planets[config.planet].autoplace_entities[e] = { }
     end
     create_affinity_tech(config.planet)
-    -- local tech_pre = data.raw["technology"]["rabbasca-warp-prep-"..config.planet]
-    -- for _, recipe in pairs(config.permanent_recipes or { }) do
-    --     table.insert(tech_pre.effects, { type = "unlock-recipe", recipe = recipe })
-    -- end
 end
 
 function Rabbasca.Stabilizer.make_atmospheric_recipe(planet, results)
@@ -63,12 +59,11 @@ function Rabbasca.Stabilizer.make_atmospheric_recipe(planet, results)
         type = "recipe",
         name = "rabbasca-underground-"..planet.."-extract-atmosphere",
         icons = Rabbasca.icons({
+            { proto = data.raw["planet"]["rabbasca-underground"], scale = 0.5, shift = {-8, -8} },
             { proto = data.raw["fluid"][name], scale = 0.8 },
-            { proto = data.raw["planet"]["rabbasca-underground"], scale = 0.3, shift = {-8, -8} },
         }),
         energy_required = 5,
         localised_name = { "recipe-name.rabbasca-underground-extract-atmosphere", { "fluid-name."..name } },
-        localised_description = { "recipe-description.rabbasca-local-materialize", planet },
         ingredients = { },
         results = results,
         enabled = false,
@@ -77,29 +72,6 @@ function Rabbasca.Stabilizer.make_atmospheric_recipe(planet, results)
         category = "cryogenics",
         subgroup = "rabbasca-remote",
         order = "f[planet]-"..planet.."-d[atmosphere]-"..name,
-    }
-end
-
-function Rabbasca.Stabilizer.make_pylon_recipe(name, type, planet, results, ingredients)
-    table.insert(data.raw["technology"]["rabbasca-warp-anchoring-"..planet].effects, { type = "unlock-recipe", recipe = "rabbasca-local-materialize-"..name })
-    return {
-        type = "recipe",
-        name = "rabbasca-local-materialize-"..name,
-        icons = Rabbasca.icons({
-            { proto = data.raw[type][name], scale = 0.8 },
-            { proto = data.raw["tool"]["rabbasca-warp-matrix"], scale = 0.3, shift = {-8, -8} },
-        }),
-        energy_required = 2,
-        localised_name = { "recipe-name.rabbasca-local-materialize", { type == "fluid" and "fluid-name."..name or "item-name."..name } },
-        localised_description = { "recipe-description.rabbasca-local-materialize", planet },
-        ingredients = ingredients,
-        results = results,
-        enabled = false,
-        auto_recycle = false,
-        surface_conditions = { Rabbasca.only_underground(true) },
-        category = "rabbasca-remote",
-        subgroup = "rabbasca-remote",
-        order = "f[planet]-"..planet.."-b[materialized]-"..name,
     }
 end
 

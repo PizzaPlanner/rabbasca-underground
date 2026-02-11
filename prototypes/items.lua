@@ -133,10 +133,8 @@ util.merge {
 {
   type = "item",
   name = "rabbasca-collector-pylon",
-  icons = Rabbasca.icons{
-    { proto = data.raw["assembling-machine"]["rabbasca-warp-pylon"] },
-    { proto = data.raw["item"]["rabbasca-warp-matrix"], scale = 0.4, shift = { 8, 8 } },
-  },
+  icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-2.png",
+  icon_size = 64,
   place_result = "rabbasca-collector-pylon",
   stack_size = 10,
   weight = 100 * kg,
@@ -144,45 +142,30 @@ util.merge {
   order = data.raw["item"]["rabbasca-warp-pylon"].order.."-r[rabbasca-underground]",
 },
 {
-  type = "space-platform-starter-pack",
-  name = "rabbasca-space-platform-starter-pack",
-  icons = Rabbasca.icons({
-    { proto = data.raw["space-platform-starter-pack"]["space-platform-starter-pack"], scale = 1 },
-    { proto = data.raw["fluid"]["harene"], scale = 0.3, shift = { 8, 8 } },
-  }),
-  inventory_move_sound = item_sounds.mechanical_large_inventory_move,
-  pick_sound = item_sounds.mechanical_large_inventory_pickup,
-  drop_sound = item_sounds.mechanical_large_inventory_move,
-  stack_size = 1,
-  weight = 1*tons,
-  trigger =
-  {
-    {
-      type = "direct",
-      action_delivery =
-      {
-        type = "instant",
-        source_effects =
-        {
-          {
-            type = "create-entity",
-            entity_name = "space-platform-hub"
-          },
-          {
-            type = "create-entity",
-            entity_name = "rabbasca-platform-energy-source"
-          },
-        }
-      }
-    }
-  },
-  surface = "rabbasca-space-platform",
-  create_electric_network = true,
-  tiles = make_tile_area({{-5, -5}, {4, 4}}, "space-platform-foundation"),
-  subgroup = "space-rocket",
-  order = "b[space-platform-starter-pack]-r[rabbasca]",
-  initial_items = {
-    { type = "item", name = "haronite-plate", amount = 20 }
-  }
-}
+  type = "item",
+  name = "rabbasca-warp-uplink-2",
+  icons = { { icon = "__rabbasca-assets__/graphics/by-hurricane/research-center-icon.png", icon_size = 64, tint = { 0.7, 0.5, 1 } } },
+  stack_size = 10,
+  place_result = "rabbasca-warp-uplink-2",
+  weight = 100 * kg,
+  subgroup = "rabbasca-remote-warping",
+  order = "a[placeable]-b[input-2]",
+},
+-- {
+--     type = "ammo",
+--     name = "self-replicating-firearm-magazine",
+--     category = data.raw["ammo"]["firearm-magazine"].category,
+--     icons = {
+--       { icon = "__base__/graphics/icons/firearm-magazine.png", tint = { r = 0.95, g = 1, b = 1 }, shift = { -8, -8 } },
+--       { icon = "__base__/graphics/icons/firearm-magazine.png", tint = { r = 0.95, g = 1, b = 1 }, shift = { 0,   0 } },
+--       { icon = "__base__/graphics/icons/firearm-magazine.png", tint = { r = 0.95, g = 1, b = 1 }, shift = { 8,   8 } } 
+--     },
+--     stack_size = 20,
+--     weight = 25 * kg,
+--     ammo_type = table.deepcopy(data.raw["ammo"]["firearm-magazine"].ammo_type),
+--     ammo_category = "bullet",
+--     magazine_size = 500,
+--     spoil_ticks = 10 * second,
+--     spoil_result = "self-replicating-firearm-magazine"
+-- },
 }

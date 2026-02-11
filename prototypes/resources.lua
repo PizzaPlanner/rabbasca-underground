@@ -5,19 +5,6 @@ data:extend {
   }
 }
 
-local anomaly_anim = {
-  type = "animation",
-  name = "rabbasca-warp-anomaly-animation",
-  filename = "__rabbasca-assets__/graphics/entities/anomaly.png",
-  line_length = 9,
-  width = 434,
-  height = 330,
-  frame_count = 33,
-  scale = 0.25,
-  draw_as_glow = true, 
-  blend_mode = "additive"
-}
-
 local st_anomaly = util.merge {
   table.deepcopy(data.raw["resource"]["calcite"]),
   {
@@ -44,12 +31,12 @@ st_anomaly.stateless_visualisation = {
     animation = {
       priority = "extra-high",
       filename = "__rabbasca-assets__/graphics/entities/anomaly.png",
-      line_length = 9,
-      width = 434,
-      height = 330,
+      line_length = 5,
+      width = 412,
+      height = 318,
       frame_count = 33,
       scale = 0.25,
-      shift = util.by_pixel(0, -14)
+      shift = util.by_pixel(0, -13)
     }
   },
 }
@@ -74,7 +61,7 @@ st_anomaly.factoriopedia_simulation = {
   ]]
 }
 
-st_anomaly.minable.mining_time = 5
+st_anomaly.minable.mining_time = 1
 st_anomaly.category = "rabbasca-warp-anomaly"
 st_anomaly.minable.results = {{ type = "item", name = "rabbasca-warp-matrix", amount = 1 }}
 st_anomaly.collision_mask = { layers = { out_of_map = true, harene = true, object = true } }
@@ -101,6 +88,28 @@ lithium_amide.map_color = { 0.74, 0.94, 0.92 }
 lithium_amide.minable.mining_time = 0.5
 lithium_amide.minable.results = {{ type = "item", name = "rabbasca-lithium-amide", amount = 1 }}
 lithium_amide.autoplace = nil
+
+local mashup = util.merge {
+  table.deepcopy(data.raw["resource"]["calcite"]),
+  {
+    name = "rabbasca-yumako-mashup",
+    icons = Rabbasca.icons({ proto = data.raw["capsule"]["yumako-mash"] }),
+    minimum = 100,
+    normal = 100,
+    infinite = false,
+    stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/icons/carotenoid-ore.png" } },
+    cliff_removal_probability = 0,
+    tree_removal_probability = 0,
+  }
+}
+mashup.map_color = { 0.74, 0.38, 0.1 }
+mashup.minable.mining_time = 0.5
+mashup.minable.results = {
+  { type = "item", name = "spoilage", amount = 1, probability = 0.4 },
+  { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.7, probability = 0.15 },
+  { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.4, probability = 0.08 },
+}
+mashup.autoplace = nil
 
 local haronite_ore = util.merge {
   data.raw["resource"]["tungsten-ore"],
@@ -134,4 +143,4 @@ local holmium_ore = util.merge {
 holmium_ore.minable.mining_time = 1.5
 holmium_ore.minable.results = {{ type = "item", name = "holmium-ore", amount = 1 }}
 
-data:extend{ lithium_amide, haronite_ore, st_anomaly, anomaly_anim, holmium_ore }
+data:extend{ lithium_amide, haronite_ore, st_anomaly, holmium_ore, mashup }

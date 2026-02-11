@@ -11,13 +11,11 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     crafting_speed = 1,
     collision_box = {{-4.2, -4.2}, {4.2, 4.2}},
     selection_box = {{-4.5, -4.5}, {4.5, 4.5}},
-    energy_usage = "1GW",
+    energy_usage = "17.5GW",
     energy_source = {
       type = "burner",
       fuel_inventory_size = 1,
       fuel_categories = { "rabbasca-warp-anomaly" },
-      initial_fuel = "rabbasca-warp-matrix",
-      initial_fuel_percent = 0.5
     },
     module_slots = 20,
     trash_inventory_size = 19,
@@ -76,50 +74,16 @@ local lab = util.merge {
   data.raw["lab"]["lab"],
   {
     name = "rabbasca-warp-tech-analyzer",
-    energy_usage = "10MW",
-    burns_fluid = true,
-    scale_fluid_usage = true,
+    energy_usage = "400MJ",
     placeable_by = { item = "rabbasca-warp-tech-analyzer", count = 1 }
   }
 }
 lab.inputs = { "rabbasca-warp-matrix", "rabbasca-coordinate-system", "rabbasca-spacetime-sensor", "rabbasca-spatial-anchor", "rabbasca-quantum-device" }
 lab.minable.result = "rabbasca-warp-tech-analyzer"
 lab.energy_source = {
-  type = "fluid",
-  fluid_box = {
-    volume = 20,
-    filter = "fusion-plasma",
-    pipe_picture = assembler2pipepictures(),
-    pipe_covers = pipecoverspictures(),
-    production_type = "input",
-    pipe_connections = 
-    {
-        {
-          flow_direction = "input-output",
-          position = {0, -1.2},
-          direction = defines.direction.north,
-          connection_category = "fusion-plasma",
-        },
-        {
-          flow_direction = "input-output",
-          position = {0, 1.2},
-          direction = defines.direction.south,
-          connection_category = "fusion-plasma",
-        },
-        {
-          flow_direction = "input-output",
-          position = {1.2, 0},
-          direction = defines.direction.east,
-          connection_category = "fusion-plasma",
-        },
-        {
-          flow_direction = "input-output",
-          position = {-1.2, 0},
-          direction = defines.direction.west,
-          connection_category = "fusion-plasma",
-        },
-    },
-  },
+  type = "burner",
+  fuel_categories = { "fusion" },
+  fuel_inventory_size = 1,
 }
 
 local minelon  = util.merge {
@@ -127,18 +91,25 @@ local minelon  = util.merge {
   {
     name = "rabbasca-collector-pylon",
     type = "mining-drill",
-    resource_searching_radius = 8,
+    icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-2.png",
+    resource_searching_radius = 24,
     shuffle_resources_to_mine = true,
-    mining_speed = 1,
+    mining_speed = 2,
     resource_categories = { "rabbasca-warp-anomaly" },
-    vector_to_place_result = { 0, 1.25 },
+    vector_to_place_result = { 0.5, 1.25 },
     uses_force_mining_productivity_bonus = false,
     quality_affects_mining_radius = true,
-    minable = { result = "rabbasca-collector-pylon" }
+    minable = { result = "rabbasca-collector-pylon" },
+    graphics_set = { 
+      idle_animation = { layers = { { filename = "__rabbasca-assets__/graphics/by-hurricane/conduit-animation-2.png", }, { } } },
+      working_visualisations = {{ animation = { tint = { 0.75, 0.2, 0.42 } } }}
+    }
   }
 }
+minelon.placeable_by = { item = "rabbasca-collector-pylon", count = 1 }
 minelon.allowed_effects = {"speed", "productivity", "quality"}
 minelon.flags = { "placeable-player", "player-creation" }
+minelon.custom_tooltip_fields = nil
 
 local passive_miner = util.merge {
   data.raw["electric-energy-interface"]["rabbasca-energy-source"],
@@ -148,7 +119,7 @@ local passive_miner = util.merge {
     factoriopedia_alternative = "rabbasca-warp-stabilizer",
     resource_searching_radius = 100,
     shuffle_resources_to_mine = true,
-    mining_speed = 10,
+    mining_speed = 20,
     resource_categories = { "rabbasca-warp-anomaly" },
     vector_to_place_result = { 0, 0 },
     uses_force_mining_productivity_bonus = false,
@@ -165,11 +136,23 @@ passive_miner.icons = Rabbasca.icons({
   { proto = data.raw["item"]["engine-unit"], scale = 0.4, shift = { 8, 8 } },
 })
 passive_miner.allowed_effects = { }
+
+local uplink_2 = util.merge {
+  data.raw["logistic-container"]["rabbasca-warp-uplink"],
+  {
+    name = "rabbasca-warp-uplink-2",
+    inventory_size = 24,
+    minable = { result = "rabbasca-warp-uplink-2" }
+  }
+}
+uplink_2.surface_conditions = { { property = "gravity", min = 0.1 } }
+
 data:extend {
   stabilizer,
   lab,
   minelon,
   passive_miner,
+  uplink_2,
   util.merge {
     data.raw["electric-energy-interface"]["rabbasca-energy-source"],
     {

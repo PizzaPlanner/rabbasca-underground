@@ -33,7 +33,7 @@ data:extend {
   {
     type = "noise-expression",
     name = "rabbasca_underground_anomaly_richness",
-    expression = "17 + basis_noise{x = x, y = y, input_scale = 0.82, output_scale = 8, seed0 = map_seed, seed1 = 'whatwasthat'}"
+    expression = "153 + basis_noise{x = x, y = y, input_scale = 0.82, output_scale = 26, seed0 = map_seed, seed1 = 'whatwasthat'}"
   },
   {
     type = "noise-expression",
