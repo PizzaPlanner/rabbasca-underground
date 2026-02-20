@@ -11,24 +11,29 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     crafting_speed = 1,
     collision_box = {{-4.2, -4.2}, {4.2, 4.2}},
     selection_box = {{-4.5, -4.5}, {4.5, 4.5}},
-    energy_usage = "17.5GW",
+    energy_usage = "5GW",
     energy_source = {
       type = "burner",
       fuel_inventory_size = 1,
+      burnt_inventory_size = 0,
       fuel_categories = { "rabbasca-warp-anomaly" },
     },
-    module_slots = 20,
-    trash_inventory_size = 19,
+    fixed_recipe = "rabbasca-stabilize-warpfield",
+    module_slots = 0,
+    trash_inventory_size = 10,
     hidden = false,
     hidden_in_factoriopedia = false,
     subgroup = "rabbasca-warp-stabilizer",
     order = "a[stabilizer]",
 }}
-stabilizer.circuit_wire_max_distance = 0
+stabilizer.effect_receiver = {
+  base_effect = { },
+  uses_module_effects = false,
+  uses_beacon_effects = false,
+  uses_surface_effects = false
+}
+stabilizer.circuit_wire_max_distance = 120
 stabilizer.ignore_output_full = false
-if settings.startup["rabbasca-underground-can-pause-stabilizer"].value == false then
-  stabilizer.enable_logistic_control_behavior = false
-end
 stabilizer.minable = nil
 stabilizer.placeable_by = nil
 stabilizer.allowed_effects = { "speed", "productivity", "quality" }

@@ -17,7 +17,6 @@ for planet, c in pairs(config.planets) do
 
     -- Water
     local water_tile = c.water or "hot-lava"
-    table.insert(config.water_tiles, water_tile)
     c.fluid = data.raw["tile"][water_tile].fluid
 
     log("Underground: added "..planet.. " with "..serpent.line(c))

@@ -1,8 +1,6 @@
 local M = { }
 
-local function stabilizer_config()
-    return prototypes.mod_data["rabbasca-stabilizer-config"].data
-end
+local warp = require("scripts.warp")
 
 local function add_button(parent, sprite, style, name, size)
     local btn = parent.add{
@@ -15,27 +13,22 @@ local function add_button(parent, sprite, style, name, size)
 end
 
 local function create_affinity_bar(player, numbers)
-    if numbers ~= nil and player.gui.top.rabbasca_ug_stats then
+    if numbers and player.gui.top.rabbasca_ug_stats then
         if not player.gui.top.rabbasca_ug_stats.right then return end
-        local fuel_initial = (storage.stabilizer.anomalies and storage.stabilizer.anomalies.initial or 1)
-        local fuel_ratio = numbers.fuel / fuel_initial
-        -- local is_fuel_critical = fuel_ratio < 0.5 and fuel_ratio < numbers.progress_ratio
-        -- player.gui.top.rabbasca_ug_stats.current_planet.number = numbers.progress
-        player.gui.top.rabbasca_ug_stats.right.anomalies.bar.value = fuel_ratio
-        player.gui.top.rabbasca_ug_stats.right.anomalies.bar.tooltip = { "", numbers.fuel, "/", fuel_initial }
-        player.gui.top.rabbasca_ug_stats.right.repairs.bar.value = numbers.progress_ratio or 0
-        player.gui.top.rabbasca_ug_stats.right.repairs.bar.tooltip = { "", numbers.progress, "/", numbers.progress_max }
-        player.gui.top.rabbasca_ug_stats.right.repairs.bar.caption = { "", numbers.progress }
+        if not storage.stabilizer.anomalies then return end
+        player.gui.top.rabbasca_ug_stats.right.repairs.bar.value = storage.stabilizer.charge.current / storage.stabilizer.charge.max
+        player.gui.top.rabbasca_ug_stats.right.repairs.bar.tooltip = { "", storage.stabilizer.charge.current, "/", storage.stabilizer.charge.max }
+        player.gui.top.rabbasca_ug_stats.right.anomalies.bar.value = storage.stabilizer.anomalies.current / storage.stabilizer.anomalies.initial
+        player.gui.top.rabbasca_ug_stats.right.anomalies.bar.tooltip = { "", storage.stabilizer.anomalies.current, "/", storage.stabilizer.anomalies.initial }
         return
     end
     if player.gui.top.rabbasca_ug_stats then
         player.gui.top.rabbasca_ug_stats.destroy()
     end
-    if not settings.get_player_settings(player)["rabbasca-show-alertness-ui"].value then return end
 
-    local config = stabilizer_config()
+    local config = storage.stabilizer.config
     local affinity = storage.stabilizer.current_location
-    local chances = M.get_next_planet_chances()
+    local chances = warp.get_next_planet_chances()
     local next_tooltip = { "", { "rabbasca-extra.stabilizer-ui-current-location", { "space-location-name."..affinity } } }
     for p, chance in pairs(chances) do
         table.insert(next_tooltip, { "rabbasca-extra.stabilizer-ui-next-location-entry", p, math.floor(chance * 100), config.planets[p].min_stay, config.planets[p].max_stay })
@@ -52,7 +45,7 @@ local function create_affinity_bar(player, numbers)
         type = "sprite-button",
         sprite= affinity and "space-location/"..affinity or "entity/rabbasca-warp-stabilizer",
         style = "inventory_slot",
-        name = "current_planet",
+        name = "rabbasca_ug_current_planet",
         tooltip = next_tooltip
     }
     local right = frame.add {
@@ -68,7 +61,7 @@ local function create_affinity_bar(player, numbers)
         name = "repairs",
     }
     repairs.style.vertical_align = "center"
-    add_button(repairs, "item/rabbasca-stabilize-warpfield", "transparent_slot", "icon", 16)
+    add_button(repairs, "item/rabbasca-warp-cell", "transparent_slot", "icon", 16)
     local bar2 = repairs.add {
         type = "progressbar",
         name = "bar",
@@ -99,15 +92,240 @@ local function create_affinity_bar(player, numbers)
     bar.style.color = { 0.15, 0.4, 0.85 }
     bar.style.horizontal_align = "center"
     bar.style.font = "default-tiny-bold"
+end
 
-    frame.add {
-        type = "sprite-button",
-        sprite = "virtual-signal/signal-trash-bin",
-        style = "side_menu_button",
-        name = "rabbasca_abandon_stabilizer",
-        tooltip = { "rabbasca-extra.abandon-stabilizer" },
+function M.set_stabilizer_ui(player)
+    local frame = player.gui.relative.rabbasca_stabilizer_ui
+    if (not storage.stabilizer) or player.opened ~= storage.stabilizer.entity then
+        if frame then frame.destroy() end
+        return
+    end
+    local info = { 
+        progress = storage.stabilizer.charge.current,
+        progress_max = storage.stabilizer.charge.max,
+        discharge_rate = -storage.stabilizer.charge.drain
     }
-    
+    if not frame then
+        frame = player.gui.relative.add{
+            type = "frame",
+            name = "rabbasca_stabilizer_ui",
+            caption = "Control Panel",
+            direction = "vertical",
+            anchor = {
+                gui = defines.relative_gui_type.assembling_machine_gui,
+                position = defines.relative_gui_position.right
+            }
+        }
+        local subframe = frame.add {
+            type = "frame",
+            name = "rabbasca_su_content",
+            style = "entity_frame",
+            direction = "vertical"
+        }
+        subframe.add {
+            type = "label",
+            caption = { "", "[img=virtual-signal.signal-alert] Authorized Personnel only!"}
+        }
+        local f1 = subframe.add { type = "table", name = "rabbasca_su_table", column_count = 3 }
+        if player.force.technologies["rabbasca-stabilizer-extractor"].researched then
+            f1.add {
+                type = "checkbox",
+                name = "su_agreement_reboot",
+                tooltip = { "", "\"I have read the instructions and am aware that my actions can render the stabilizer useless.\"\n[ [color=yellow]Sign liability agreement with RABBASCORP[/color] ]" },
+                state = false
+            }
+            f1.add {
+                type = "label",
+                caption = { "", "[entity=rabbasca-stabilizer-consumer] Extractor" },
+            }
+            f1.add {
+                type = "switch",
+                name = "rabbasca_su_switch_miner_reboot",
+                tooltip = { "", "Requires 5 [item=rabbasca-warp-cell] to boot. When active, discharges [item=rabbasca-warp-cell] at a rate of 2%/s\n[img=virtual-signal.signal-check] Confirm that you read the instructions to proceed" },
+                left_label_caption = "",
+                right_label_caption = { "", storage.stabilizer.anomaly_recycler and "[color=green]Online[/color]" or "[color=red]Offline[/color]" },
+                enabled = false
+            }
+        end
+        f1.add {
+            type = "checkbox",
+            name = "su_agreement_warp",
+            tooltip = { "", "\"I have read the instructions and am aware that my actions can render the stabilizer useless.\"\n[ [color=yellow]Sign liability agreement with RABBASCORP[/color] ]" },
+            state = false
+        }
+        f1.add {
+            type = "label",
+            caption = { "", "[item=rabbasca-coordinate-system] Warp-drive" }
+        }
+        f1.add {
+            type = "switch",
+            name = "rabbasca_su_manual_warp",
+            tooltip = { "", "Immediately warp to the next location. Costs 1 [item=rabbasca-warp-cell].\n[entity=rabbasca-stabilizer-consumer] must be Online.\n[img=virtual-signal.signal-check] Confirm that you read the instructions to proceed" },
+            left_label_caption = "",
+            right_label_caption = { "", "Warp now" },
+            enabled = false
+        }
+        f1.add {
+            type = "checkbox",
+            name = "su_agreement_abandon",
+            tooltip = { "", "\"I have read the instructions and am aware that my actions can render the stabilizer useless.\"\n[ [color=yellow]Sign liability agreement with RABBASCORP[/color] ]" },
+            state = false
+        }
+        f1.add {
+            type = "label",
+            caption = { "", "[item=explosives] Kill-switch" }
+        }
+        f1.add {
+            type = "switch",
+            name = "rabbasca_su_abandon",
+            tooltip = { "", "Initiate self-destruction protocol. The stabilizer and the area surrounding it will be destroyed permanently.\n[img=virtual-signal.signal-check] Confirm that you read the instructions to proceed" },
+            switch_state = "left",
+            left_label_caption = "",
+            right_label_caption = { "", "Lights out" },
+            enabled = false
+        }
+        f1.add { type = "empty-widget" } f1.add { type = "line" } f1.add { type = "line" }
+        f1.add { type = "empty-widget" }
+        f1.add {
+            type = "label",
+            caption = { "", "[virtual-signal=rabbasca-warp-inventory] Autopilot" },
+        }
+        f1.add {
+            type = "switch",
+            name = "rabbasca_su_autopilot",
+            left_label_caption = "",
+            right_label_caption = { "", "Enabled" }
+        }
+        if player.force.technologies["rabbasca-total-recall"].researched then
+            f1.add { type = "empty-widget" }
+            f1.add {
+                type = "label",
+                caption = { "", "[virtual-signal=rabbasca-warp-inventory] Mass-recall" },
+            }
+            f1.add {
+                type = "switch",
+                name = "rabbasca_su_recall",
+                left_label_caption = "",
+                right_label_caption = { "", "Enabled" }
+            }
+        end
+
+        local max_safe_radius = 10
+            + (player.force.technologies["rabbasca-warp-floor-expansion"].level - 1) * 4
+            + (player.force.technologies["rabbasca-permanent-floor-expansion-1"].researched and 4 or 0)
+            + (player.force.technologies["rabbasca-permanent-floor-expansion-2"].researched and 4 or 0)
+        if storage.stabilizer.safe_zone_setting and max_safe_radius > 10 then
+            local safe_zone_frame = subframe.add { type = "flow", direction = "horizontal", name = "rabbasca_su_safe" }
+            safe_zone_frame.add { type = "label", caption = {"", "[tile=rabbasca-underground-rubble-powered]"}}
+            safe_zone_frame.add { 
+                type = "slider",
+                name = "rabbasca_su_safe_zone",
+                style = "notched_slider",
+                minimum_value = 10,
+                maximum_value = max_safe_radius,
+                value_step = 4,
+                value = storage.stabilizer.safe_zone_setting,
+                tooltip = { "", "Set the radius of [tile=rabbasca-underground-rubble-powered] around the stabilizer. Discharges [item=rabbasca-warp-cell] at a rate of 0.2% per second per step of 4.\nThis setting only takes effect after warping to a new location." }
+            }
+            safe_zone_frame.add { 
+                type = "label", 
+                name = "rabbasca_su_safe_zone_text",
+                caption = storage.stabilizer.safe_zone_setting
+            }
+        end
+
+        frame.add {
+            type = "label",
+            style = "frame_title",
+            caption = { "", "[entity=rabbasca-warp-anomaly] Anomalies" }
+        }
+        local fuel_frame = frame.add {
+            type = "frame",
+            name = "rabbasca_su_fuel",
+            style = "entity_frame",
+            direction = "vertical"
+        }
+        fuel_frame.add {
+            type = "label",
+            name = "rabbasca_su_fuel_left",
+        }
+        frame.add {
+            type = "label",
+            style = "frame_title",
+            caption = { "", "[virtual-signal=signal-lightning] Battery" }
+        }
+        local batt_frame = frame.add {
+            type = "frame",
+            name = "rabbasca_su_batt",
+            style = "entity_frame",
+            direction = "vertical"
+        }
+        batt_frame.add {
+            type = "label",
+            -- style = "frame_title",
+            name = "rabbasca_su_battery_caption",
+        }
+        local batt_status = batt_frame.add {
+            type = "table",
+            column_count = 2,
+            -- style = "subheader_frame",
+            -- direction = "vertical",
+            name = "rabbasca_su_battery_status",
+            -- caption = "[item=rabbasca-warp-cell] Fuel tank",
+            -- items = fuel_status,
+            -- ignored_by_interaction = true
+        }
+        batt_status.style.vertical_spacing = 0
+        for i = 1,info.progress_max do
+            local bar = batt_status.add {
+                type = "progressbar",
+                value = 0,
+                style = "production_progressbar"
+            }
+            bar.style.horizontally_stretchable = true
+            -- bar.style.vertically_stretchable   = true
+            bar.style.margin = 0
+            bar.style.color = { 0, 0.63, 1 }
+            -- bar.style.padding = 0
+            -- bar.style.minimal_height = 16
+            -- bar.style.natural_height = 16
+        end
+    end
+    local t = frame.rabbasca_su_content.rabbasca_su_table
+    if t.rabbasca_su_switch_miner_reboot then
+        t.rabbasca_su_switch_miner_reboot.enabled = t.su_agreement_reboot.state
+        t.rabbasca_su_switch_miner_reboot.switch_state = storage.stabilizer.anomaly_recycler and "right" or "left"
+    end
+    t.rabbasca_su_manual_warp.enabled = t.su_agreement_warp.state
+    t.rabbasca_su_manual_warp.switch_state = storage.stabilizer.warping and "right" or "left"
+    t.rabbasca_su_abandon.enabled = t.su_agreement_abandon.state
+
+    t.rabbasca_su_autopilot.switch_state = storage.stabilizer.settings.autopilot and "right" or "left"
+
+    if t.rabbasca_su_recall then
+        t.rabbasca_su_autopilot.switch_state = storage.stabilizer.settings.recall and "right" or "left"
+    end
+
+    if frame.rabbasca_su_content.rabbasca_su_safe then
+        frame.rabbasca_su_content.rabbasca_su_safe.rabbasca_su_safe_zone.slider_value = storage.stabilizer.safe_zone_setting
+        frame.rabbasca_su_content.rabbasca_su_safe.rabbasca_su_safe_zone_text.caption = tostring(storage.stabilizer.safe_zone_setting)
+    end
+
+    frame.rabbasca_su_fuel.rabbasca_su_fuel_left.caption = { "", string.format("Anomalies left: %i", storage.stabilizer.anomalies.current or 0) }
+
+    frame.rabbasca_su_batt.rabbasca_su_battery_caption.caption = { "", string.format("[item=rabbasca-warp-cell] %i/%i, [color=yellow]Change[/color]: %s%.1f%%/s [img=virtual-signal.signal-info]", math.floor(info.progress), info.progress_max, info.discharge_rate > 0 and "+" or "", info.discharge_rate * 100) }
+    local battery = frame.rabbasca_su_batt.rabbasca_su_battery_status
+    for i, child in pairs(battery.children) do
+        local rep_progress = info.progress_max - i
+        local is_current_bar = math.floor(info.progress) == rep_progress
+        local value = math.min(info.progress - rep_progress, 1)
+        child.caption = { "", is_current_bar and string.format("[%i%%]", (info.progress - rep_progress) * 100) or "" }
+        child.style.color = is_current_bar and { 1, 0.85, 0 } or { 0, 0.63, 1 }
+        child.value = value
+        if is_current_bar and storage.stabilizer.warping then
+            child.style.color = { 1, 0, 1 }
+        end
+    end
 end
 
 function M.update_affinity_bar(player, numbers)

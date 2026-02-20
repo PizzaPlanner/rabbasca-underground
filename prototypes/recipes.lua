@@ -67,15 +67,28 @@ data:extend {
     },
     {
         type = "recipe",
-        name = "rabbasca-stabilize-warpfield",
-        -- icons = Rabbasca.icons({proto = data.raw["tool"]["rabbasca-warp-matrix"]}),
-        enabled = false,
-        energy_required = 2,
+        name = "rabbasca-stabilizer-warp-sequence",
+        enabled = true,
+        energy_required = 30,
         result_is_always_fresh = true,
-        -- preserve_products_in_machine_output = true,
-        ingredients = { },
+        ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
+        results = { { type = "item", name = "rabbasca-stabilizer-warp-sequence", amount = 1 } },
         allow_productivity = false,
+        crafting_machine_tint =
+        {
+            primary = { 0.85, 0.42, 1 }
+        },
+        category = "rabbasca-warp-stabilizer"
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-stabilize-warpfield",
+        enabled = true,
+        energy_required = 5,
+        result_is_always_fresh = true,
+        ingredients = { }, -- { type = "item", name = "rabbasca-warp-matrix", amount = 50 } },
         results = { { type = "item", name = "rabbasca-stabilize-warpfield", amount = 1 } },
+        allow_productivity = false,
         crafting_machine_tint =
         {
             primary = { 0.5, 0.83, 1 }
@@ -85,15 +98,13 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-amplify-anomaly",
-        icons = Rabbasca.icons({proto = data.raw["tool"]["rabbasca-warp-matrix"]}),
         enabled = false,
-        energy_required = 3600,
+        energy_required = 3,
         result_is_always_fresh = true,
-        -- preserve_products_in_machine_output = true,
-        ingredients = { { type = "item", name = "rabbasca-warp-matrix", amount = 1 } },
+        reset_freshness_on_craft = true,
+        ingredients = { { type = "item", name = "rabbasca-warp-matrix", amount = 5 } },
         allow_productivity = false,
-        overload_multiplier = 999,
-        results = { },
+        results = { { type = "item", name = "rabbasca-destabilize-warpfield", amount = 1 } },
         crafting_machine_tint =
         {
             primary = { 0.51, 0.24, 1 }

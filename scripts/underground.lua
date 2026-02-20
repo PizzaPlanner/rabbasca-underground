@@ -1,59 +1,50 @@
-local M = require("scripts.ui")
-
-local function stabilizer_config()
-    return prototypes.mod_data["rabbasca-stabilizer-config"].data
-end
+local M = {
+    ui = require("scripts.ui"),
+    warp = require("scripts.warp")
+}
 
 local function logistics_group_name()
     return tostring(settings.global["rabbasca-underground-logistics-group-name"].value)
 end
 
-local function on_tick_underground(event)
+function M.on_tick_underground(event)
     if not storage.stabilizer then return end
-    local surface = game.surfaces[storage.stabilizer.surface]
-    local fuel = 0
-    for _, e in pairs(surface.find_entities_filtered{ name = "rabbasca-warp-anomaly" }) do
-        fuel = fuel + e.amount
-    end
-    local numbers = {
-        progress = storage.stabilizer.next.required - storage.stabilizer.progress,
-        fuel = fuel,
-        progress_ratio = storage.stabilizer.progress / storage.stabilizer.next.required,
-        progress_max = storage.stabilizer.next.required
-    }
-    for _, player in pairs(game.connected_players) do
-        M.update_affinity_bar(player, numbers)
-    end
-    M.update_logistic_section(storage.stabilizer.current_location, numbers)
-    if storage.stabilizer.progress < storage.stabilizer.next.required then return end
-    M.warp_to(surface, M.get_next_planet())
-end
+    
+    storage.stabilizer.charge.drain = 
+          (storage.stabilizer.anomaly_recycler and 0.01 or 0)
+        + (storage.stabilizer.warping and 0.33 or 0)
+        + (((storage.stabilizer.safe_zone_radius or 10) - 10) / 4 * 0.005)
+        - ((storage.stabilizer.charging_until or 0) > event.tick and 0.02 or 0)
+    storage.stabilizer.charge.current = math.max(0, storage.stabilizer.charge.current - storage.stabilizer.charge.drain / 60)
 
-local function on_warp_underground(event)
-    if not storage.stabilizer then M.register_handlers() return end
-    local data = storage.stabilizer.warping
-    local surface = game.surfaces[storage.stabilizer.surface]
-    if not (data and surface and surface.valid) then
-        storage.stabilizer.warping = nil -- if surface got removed in between
-         M.register_handlers()
-        return
+    if storage.stabilizer.settings.autopilot == true and storage.stabilizer.anomalies and storage.stabilizer.anomalies.current == 0 then
+        M.initiate_warp()
     end
-    if event.tick > data.warp_tick  then
-        storage.stabilizer.warping.warp_tick = math.huge
-        local config = stabilizer_config()
-        if not config.planets[data.to] then
-            game.print("[ERROR]: Could not warp to "..data.to)
-            data.to = M.get_next_planet()
+
+    if event.tick % 120 == 0 then
+        local surface = game.surfaces[storage.stabilizer.surface]
+        if storage.stabilizer.anomalies then
+            local fuel = 0
+            for _, e in pairs(surface.find_entities_filtered{ name = "rabbasca-warp-anomaly" }) do
+                fuel = fuel + e.amount
+            end
+            storage.stabilizer.anomalies.current = fuel
+            for _, player in pairs(game.connected_players) do
+                M.ui.update_affinity_bar(player, true)
+            end
+            M.update_logistic_section(storage.stabilizer.current_location)
         end
-        storage.stabilizer.current_location = data.to
-        M.replace_tiles(surface, config.planets[data.to].water)
-        M.replace_entities(surface, config.planets, data.to)
-        surface.regenerate_decorative()
-        M.change_affinity()
-        local lut_step = 1 / (3 + 2 * config.planet_count)
-        surface.daytime = config.planets[storage.stabilizer.current_location].lut_index - lut_step
-    elseif event.tick > data.finished_tick then
-        M.post_warp_surface(surface)
+        if storage.stabilizer.entity.get_signal({ name = "rabbasca-warp-inventory", type = "virtual" }, defines.wire_connector_id.circuit_green, defines.wire_connector_id.circuit_red) > 0 then
+            M.initiate_warp()
+        end
+    end
+
+    if event.tick % 5 == 0 and storage.stabilizer.warping then
+        M.warp.on_warp_underground(event)
+    end
+
+    for _, player in pairs(game.connected_players) do
+        M.ui.set_stabilizer_ui(player)
     end
 end
 
@@ -65,36 +56,28 @@ local function register_stabilizer(s)
         entity = s,
         destroyed_id = id,
         current_location = "rabbasca",
-        next = { weights = { }, seed = 0 }
+        next = { weights = { }, seed = 0 },
+        settings = {
+            autopilot = true,
+            recall = false
+        },
+        config = prototypes.mod_data["rabbasca-stabilizer-config"].data, -- accessing prototypes is expensive, so cache it here too
+        charge = { current = 17, max = 20 }
     }
-    s.set_recipe("rabbasca-reboot-stabilizer")
-    s.recipe_locked = true
-    -- s.set_fluid(1, { name = "harene", amount = settings.global["rabbasca-underground-starting-fuel"].value })
-    M.warp_to(s.surface, "aquilo", "rabbasca", 17)
-    M.register_handlers()
+    s.get_inventory(defines.inventory.fuel).insert({name = "rabbasca-warp-cell", amount = 37})
+    M.warp.warp_to(s.surface, "aquilo")
     game.forces.player.chart(s.surface, {{-48, -48}, {48, 48}})
     game.forces.player.print({ "rabbasca-extra.created-underground-stabilizer", s.gps_tag})
 end
 
 function M.on_config_changed(handler)
     if not storage.stabilizer then return end
-    local config = stabilizer_config()
-    if not config.planets[storage.stabilizer.current_location] then
-        M.warp_to(storage.stabilizer.entity.surface, M.get_next_planet())
-    end
-    if storage.stabilizer.warping and config.planets[storage.stabilizer.warping.to] == nil then
+    storage.stabilizer.config = prototypes.mod_data["rabbasca-stabilizer-config"].data -- re-cache in case it changed
+    if storage.stabilizer.warping and storage.stabilizer.config.planets[storage.stabilizer.warping.to] == nil then
         storage.stabilizer.warping = nil
-        M.warp_to(storage.stabilizer.entity.surface, M.get_next_planet())
-    end
-end
-
--- called in on_load: must adhere to https://lua-api.factorio.com/latest/classes/LuaBootstrap.html#on_load
-function M.register_handlers()
-    if storage.stabilizer then
-        script.on_nth_tick(120, on_tick_underground)
-        if storage.stabilizer.warping then
-            script.on_nth_tick(5, on_warp_underground)
-        end
+        M.warp.warp_to(storage.stabilizer.entity.surface, M.get_next_planet())
+    elseif not storage.stabilizer.config.planets[storage.stabilizer.current_location] then
+        M.warp.warp_to(storage.stabilizer.entity.surface, M.get_next_planet())
     end
 end
 
@@ -130,198 +113,10 @@ function M.on_stabilizer_died(id)
         end
         storage.stabilizer = nil
         M.update_logistic_section()
-        for _, tech in pairs(stabilizer_config().per_surface_techs) do
+        for _, tech in pairs(storage.stabilizer.config.per_surface_techs) do
             game.forces.player.technologies[tech].researched = false
         end
-        script.on_nth_tick(120, nil)
     end
-end
-
-function M.try_manifest(source, chance_mult, possible_anomalies)
-    if chance_mult <= 0 then return end
-    for _, new in pairs(possible_anomalies) do
-        local prob_total = new.probability * chance_mult
-        if prob_total >= math.random() then
-            local p = {
-                name = new.name,
-                position = source.position,
-                quality = source.quality
-            }
-            if new.type == "resource" then
-                local total_amount = (new.richness or 100) * math.random(0.8, 1.2)
-                local entities = { }
-                local tiles = { }
-                if total_amount > 0 then
-                    if source.name == "rabbasca-warp-anomaly" then
-                        local radius = 3
-                        local cx = p.position.x
-                        local cy = p.position.y
-                        for dx = -radius, radius do
-                            for dy = -radius, radius do
-                                local pos = { cx + dx, cy + dy }
-                                local existing = source.surface.get_tile(pos[1], pos[2])
-                                if not (existing.collides_with("out_of_map") or existing.collides_with("harene")) then
-                                    local dist = math.sqrt(dx * dx + dy * dy)
-                                    if dist <= radius then
-                                        table.insert(tiles, {position = pos, name = new.floor})
-                                    end
-                                end
-                            end
-                        end
-                        table.insert(entities, { name = p.name, position = p.position, quality = p.quality, amount = math.floor(total_amount / 2) })
-                        table.insert(entities, { name = p.name, position = { p.position.x + 1, p.position.y }, quality = p.quality, amount = math.floor(total_amount / 8) })
-                        table.insert(entities, { name = p.name, position = { p.position.x - 1, p.position.y }, quality = p.quality, amount = math.floor(total_amount / 8) })
-                        table.insert(entities, { name = p.name, position = { p.position.x, p.position.y + 1 }, quality = p.quality, amount = math.floor(total_amount / 8) })
-                        table.insert(entities, { name = p.name, position = { p.position.x, p.position.y - 1 }, quality = p.quality, amount = math.floor(total_amount / 8) })
-                    end
-                else
-                    local amount_per = math.floor(total_amount / 4)
-                    if amount_per >= 1 then
-                        for x = p.position.x - 1, p.position.x do
-                        for y = p.position.y - 1, p.position.y do
-                            table.insert(entities, { name = p.name, position = { x, y }, quality = p.quality, amount = amount_per })
-                        end
-                        end
-                    end
-                end
-                source.surface.set_tiles(tiles)
-                for _, entry in pairs(entities) do
-                    source.surface.create_entity(entry)
-                end
-            else
-                source.surface.set_tiles({{position = p.position, name = "red-desert-0"}})
-                source.surface.create_entity(p)
-            end
-
-        end
-    end
-end
-
-function M.replace_entities(surface, config, planet)
-    local autoplace = config[planet].autoplace_entities
-    local anomalies = config[planet].anomaly_replace_entities
-    for _, e in pairs(surface.find_entities_filtered{force = "neutral"}) do
-        if e.name == "rabbasca-warp-anomaly" then
-            M.try_manifest(e, e.amount, anomalies)
-        end
-        e.destroy{}
-    end
-    for _, e in pairs(surface.find_entities_filtered{name = "rabbasca-warp-pylon"}) do
-        local recipe = e.get_recipe()
-        if recipe and recipe.name == "rabbasca-amplify-anomaly" then
-            local amount = e.get_inventory(defines.inventory.crafter_input).get_item_count()
-            M.try_manifest(e, amount * 3, anomalies)
-        end
-    end
-    local map_settings = surface.map_gen_settings
-    map_settings.autoplace_settings.entity.settings = autoplace
-    map_settings.seed = storage.underground_seed_rng(123456)
-    surface.map_gen_settings = map_settings
-    surface.regenerate_entity()
-
-    storage.stabilizer.anomalies = { initial = 0 }
-    for _, e in pairs(surface.find_entities_filtered { name = "rabbasca-warp-anomaly" }) do
-        storage.stabilizer.anomalies.initial = storage.stabilizer.anomalies.initial + e.amount
-    end
-
-    for _, e in pairs(surface.find_entities_filtered { type = { "offshore-pump", "mining-drill" } }) do
-        e.update_connections()
-        if e.type == "offshore-pump" then
-            local fluid = e.get_fluid_source_fluid()
-            e.fluidbox.set_filter(1, fluid and { name = fluid, force = true })
-        end
-    end
-end
-
--- before: 8 * 233MS ../?? // after: 9 * 133MS ../566 // 17 * 125MS ../120 OR 5*26MS ../73 after reload
-function M.replace_tiles(surface, to)
-    storage.stabilizer.tiles = storage.stabilizer.tiles or { }
-    storage.stabilizer.last_safe_radius = storage.stabilizer.last_safe_radius or { }
-    local safe_radius = 10 
-        + game.forces.player.technologies["rabbasca-warp-floor-expansion"].level * 4
-        + (game.forces.player.technologies["rabbasca-permanent-floor-expansion-1"].researched and 4 or 0)
-        + (game.forces.player.technologies["rabbasca-permanent-floor-expansion-2"].researched and 4 or 0)
-
-    if not (storage.stabilizer.tiles[to] and storage.stabilizer.last_safe_radius[to] == safe_radius) then
-        storage.stabilizer.last_safe_radius[to] = safe_radius
-        storage.stabilizer.tiles[to] = { }
-        for _, tile in pairs(surface.find_tiles_filtered { name = "rabbasca-underground-out-of-map", invert = true, radius = 100 }) do
-            local is_safe = math.max(math.abs(tile.position.x), math.abs(tile.position.y)) <= safe_radius
-            table.insert(storage.stabilizer.tiles[to], { name = is_safe and "rabbasca-underground-rubble-powered" or to, position = tile.position })
-        end
-    end
-    surface.set_tiles(storage.stabilizer.tiles[to], true)
-end
-
-function M.get_next_planet()
-    local next = storage.stabilizer.next
-    if not next then return "rabbasca" end
-    local config = stabilizer_config()
-    local total_weight = 0
-    for p, w in pairs(next.weights) do
-        if config.planets[p] then
-            total_weight = total_weight + w
-        else
-            next.weights[p] = nil -- Planet is no longer available
-        end
-    end
-    local rng = game.create_random_generator(next.seed)
-    local number = rng(total_weight)
-    for planet, w in pairs(next.weights) do
-        number = number - w
-        if number <= 0 then
-            return planet
-        end
-    end
-    log("Error in get_next_planet: no planet matched rng("..total_weight.."). using fallback")
-    return "rabbasca"
-end
-
-function M.get_next_planet_chances()
-    local next = storage.stabilizer.next
-    if not next then return { rabbasca = 1 } end
-    local config = stabilizer_config()
-    local total_weight = 0
-    for p, w in pairs(next.weights) do
-        if config.planets[p] then
-            total_weight = total_weight + w
-        else
-            next.weights[p] = nil -- Planet is no longer available
-        end
-    end
-    local chances = { }
-    for planet, w in pairs(next.weights) do
-        chances[planet] = w / total_weight
-    end
-    return chances
-end
-
-function M.post_warp_surface(surface)
-    surface.daytime = stabilizer_config().planets[storage.stabilizer.current_location].lut_index
-    surface.freeze_daytime = true
-    surface.min_brightness = 1
-    storage.stabilizer.warping = nil
-end
-
-function M.warp_to(surface, planet, fixed_followup, fixed_stay)
-    local config = stabilizer_config()
-    storage.stabilizer.progress = 0
-    storage.stabilizer.anomaly_progress = 0
-    if not (surface and config.planets[planet]) then log("error: stabilizer could not warp to "..planet) return end
-    storage.stabilizer.warping = { to = planet, warp_tick = game.tick + 90, finished_tick = game.tick + 180 }
-    surface.ticks_per_day = 180 * (config.planet_count + 1.5)
-    surface.freeze_daytime = false
-    storage.stabilizer.next = storage.stabilizer.next or { seed = 0, weights = { }, required = 0 }
-    for p, _ in pairs(config.planets) do
-        if p == planet or (fixed_followup and p ~= fixed_followup) then
-            storage.stabilizer.next.weights[p] = 0
-        else    
-            storage.stabilizer.next.weights[p] = ((storage.stabilizer.next.weights[p] or 0) + 1) * 2
-        end
-    end
-    storage.stabilizer.next.seed = storage.underground_seed_rng(10000000)
-    storage.stabilizer.next.required = fixed_stay or storage.underground_seed_rng(config.planets[planet].min_stay, config.planets[planet].max_stay) 
-    M.register_handlers()
 end
 
 function M.abandon(player)
@@ -334,24 +129,38 @@ function M.abandon(player)
 end
 
 function M.on_stabilization()
-    if storage.stabilizer then
-        storage.stabilizer.progress = storage.stabilizer.progress + 1
-    end
+    if not storage.stabilizer then return end
+    storage.stabilizer.charging_until = game.tick + 60 * 5
 end
 
-function M.reboot_stabilizer()
+function M.on_destabilization(entity)
+    if not storage.stabilizer then return end
+    local key = string.format("%i,%i", entity.position.x, entity.position.y)
+    if not storage.stabilizer.selfmade_anomalies[key] then
+        local text = rendering.draw_text { text =  { "rabbasca-extra.selfmade-anomaly", 0 }, surface = entity.surface, target = entity.position, 
+                                           color = { 1, 1, 1 }, alignment = "center", use_rich_text = true, only_in_alt_mode = true }
+        storage.stabilizer.selfmade_anomalies[key] = { amount = 0, text = text, position = entity.position }
+    end
+    local my_anomaly = storage.stabilizer.selfmade_anomalies[key]
+    my_anomaly.amount = my_anomaly.amount + 1
+    my_anomaly.text.text = { "rabbasca-extra.selfmade-anomaly", my_anomaly.amount }
+end
+
+function M.reboot_stabilizer(player, value)
     local s = storage.stabilizer and storage.stabilizer.entity
     if not (s and s.valid) then return end
-    if s.get_recipe().name == "rabbasca-reboot-stabilizer" then
-        s.force = game.forces.player
-        game.forces.player.technologies["rabbasca-warp-stabilizer"].researched = true
-        s.set_recipe("rabbasca-stabilize-warpfield")
-        s.recipe_locked = false
-        s.surface.create_entity {
-        name = "rabbasca-stabilizer-consumer",
-        position = s.position,
-        force = s.force
-    }
+    if (not value) and storage.stabilizer.anomaly_recycler then
+        storage.stabilizer.anomaly_recycler.destroy{}
+        storage.stabilizer.anomaly_recycler = nil
+    elseif value and not storage.stabilizer.anomaly_recycler and storage.stabilizer.charge.current >= 5 then
+        storage.stabilizer.anomaly_recycler = s.surface.create_entity {
+            name = "rabbasca-stabilizer-consumer",
+            position = s.position,
+            force = s.force
+        }
+        storage.stabilizer.charge.current = storage.stabilizer.charge.current - 5
+        player.force.technologies["rabbasca-warp-stabilizer"].researched = true
+        s.force = player.force
     end
 end
 
@@ -359,8 +168,7 @@ function M.on_locate_progress(vault)
     local surface = game.planets["rabbasca-underground"].surface
     if not surface then
         if math.random() > 0.2 then return end
-        game.planets["rabbasca-underground"].create_surface()
-        return
+        surface = game.planets["rabbasca-underground"].create_surface()
     end
     local offset = {0, 10}
     local radius = 3 * 32
@@ -383,18 +191,6 @@ function M.on_locate_progress(vault)
     end
 end
 
-function M.change_affinity()
-    for planet, data in pairs(prototypes.mod_data["rabbasca-stabilizer-config"].data.planets) do
-        local researched = planet == storage.stabilizer.current_location
-        game.forces.player.technologies[data.tech].researched = researched
-        game.forces.player.technologies[data.tech].enabled    = researched
-        -- game.forces.player.technologies[data.tech_prep].researched = true
-    end
-    for _, player in pairs(game.players) do
-        M.update_affinity_bar(player)
-    end
-end
-
 function M.init_underground(surface)
     surface.create_global_electric_network()
     surface.request_to_generate_chunks({0, 0}, 1)
@@ -409,17 +205,23 @@ function M.init_underground(surface)
     register_stabilizer(stab)
 end
 
+function M.initiate_warp()
+    if not storage.stabilizer then return end
+
+    M.warp.warp_to(game.surfaces[storage.stabilizer.surface], M.warp.get_next_planet())
+end
+
 if settings.global["rabbasca-debug-mode"] then
     commands.add_command("rabbasca_ug_warp", nil, function(command)
-    game.print("[DEBUG] [planet=rabbasca-underground] warp initiated")
-    local surface = game.surfaces["rabbasca-underground"]
-    if not surface then return end
-    local to = command.parameter
-    if to then
-        M.warp_to(surface, to)
-    else
-        storage.stabilizer.progress = storage.stabilizer.next.required
-    end
+        game.print("[DEBUG] [planet=rabbasca-underground] warp initiated")
+        local surface = game.surfaces["rabbasca-underground"]
+        if not surface then return end
+        local to = command.parameter
+        if to then
+            M.warp.warp_to(surface, to)
+        else
+            M.warp.warp_to(surface, M.get_next_planet())
+        end
     end)
 end
 

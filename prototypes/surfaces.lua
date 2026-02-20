@@ -45,7 +45,6 @@ data:extend {
         tile = { settings = {
           ["rabbasca-underground-rubble"] = {},
           ["rabbasca-underground-out-of-map"] = {},
-          ["rabbasca-underground-empty-space"] = {},
         }},
         entity = { settings = { ["rabbasca-warp-anomaly"] = { } } }
       },

@@ -41,6 +41,20 @@ Rabbasca.make_trigger_item({
   order = "z[stabilize]",
   icons = Rabbasca.icons({ proto = data.raw["virtual-signal"]["signal-recycle"], tint = { 0.83, 1, 0.15} })
 }, "rabbasca_warp_progress"),
+Rabbasca.make_trigger_item({
+  name = "rabbasca-stabilizer-warp-sequence",
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "z[stabilize]-b",
+  icons = Rabbasca.icons({ proto = data.raw["virtual-signal"]["rabbasca-warp-inventory"], tint = { 0.83, 1, 0.15} })
+}, "rabbasca_warp_progress_warp"),
+Rabbasca.make_trigger_item({
+  name = "rabbasca-destabilize-warpfield",
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "z[destabilize]",
+  icons = Rabbasca.icons({
+    { proto = data.raw["virtual-signal"]["signal-recycle"], tint = { 0.83, 1, 0.15} }
+  })
+}, "rabbasca_warp_unprogress"),
 {
   type = "item",
   name = "rabbasca-lithium-amide",
@@ -52,6 +66,18 @@ Rabbasca.make_trigger_item({
   subgroup = "rabbasca-processes",
   order = "u[underground]-a[amide]"
 },
+{
+  type = "item",
+  name = "rabbasca-warp-cell",
+  icons = Rabbasca.icons({{ proto = data.raw["item"]["fusion-power-cell"], tint = {0.8, 0.8, 1} }}),
+  -- fuel_value = "10GJ",
+  -- fuel_category = "rabbasca-warp-anomaly",
+  spoil_ticks = 5 * minute,
+  spoil_result = "rabbasca-warp-matrix",
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "a[warp-matrix]-b[warp-cell]",
+  stack_size = 1,
+},
 util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
@@ -59,7 +85,7 @@ util.merge {
     icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
     icon_size = 1024,
     stack_size = 1000,
-    fuel_value = "1GJ",
+    fuel_value = "300MJ",
     fuel_category = "rabbasca-warp-anomaly",
     weight = 1 * kg,
     localised_description = { "item-description.rabbasca-warp-matrix" },
