@@ -124,15 +124,14 @@ local passive_miner = util.merge {
     factoriopedia_alternative = "rabbasca-warp-stabilizer",
     resource_searching_radius = 100,
     shuffle_resources_to_mine = true,
-    mining_speed = 20,
+    mining_speed = 10,
     resource_categories = { "rabbasca-warp-anomaly" },
     vector_to_place_result = { 0, 0 },
     uses_force_mining_productivity_bonus = false,
     quality_affects_mining_radius = false,
     energy_source = { type = "void", },
     energy_usage = Rabbasca.surface_megawatts() * 50 .. "MW",
-    alert_icon_shift = { 0, 32 },
-    alert_icon_scale = 2
+    show_alert_icon = false
   }
 }
 passive_miner.icon = nil

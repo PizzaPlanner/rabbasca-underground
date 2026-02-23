@@ -20,7 +20,7 @@ data:extend {
     expression = "aquilo_spot_noise{seed = 4567801,\z
                                     count = 2,\z
                                     skip_offset = 0,\z
-                                    region_size = 28,\z
+                                    region_size = 36,\z
                                     density = 0.6,\z
                                     radius = 3,\z
                                     favorability = 1} > 0.95"
@@ -28,6 +28,6 @@ data:extend {
   {
     type = "noise-expression",
     name = "rabbasca_underground_anomaly_richness",
-    expression = "153 + basis_noise{x = x, y = y, input_scale = 0.82, output_scale = 26, seed0 = map_seed, seed1 = 'whatwasthat'}"
+    expression = "140 + basis_noise{x = x, y = y, input_scale = 0.82, output_scale = 22, seed0 = map_seed, seed1 = 'whatwasthat'}"
   },
 }

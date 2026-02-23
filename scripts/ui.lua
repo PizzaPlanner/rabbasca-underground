@@ -160,7 +160,7 @@ function M.set_stabilizer_ui(player)
         f1.add {
             type = "switch",
             name = "rabbasca_su_manual_warp",
-            tooltip = { "", "Immediately warp to the next location. Costs 1 [item=rabbasca-warp-cell].\n[entity=rabbasca-stabilizer-consumer] must be Online.\n[img=virtual-signal.signal-check] Confirm that you read the instructions to proceed" },
+            tooltip = { "", "Immediately warp to the next location. Costs [item=rabbasca-warp-cell], depending on stabilization progress.\n[img=virtual-signal.signal-check] Confirm that you read the instructions to proceed" },
             left_label_caption = "",
             right_label_caption = { "", "Warp now" },
             enabled = false
@@ -237,7 +237,7 @@ function M.set_stabilizer_ui(player)
         frame.add {
             type = "label",
             style = "frame_title",
-            caption = { "", "[entity=rabbasca-warp-anomaly] Anomalies" }
+            caption = { "", "[virtual-signal=signal-info] Dashboard" }
         }
         local fuel_frame = frame.add {
             type = "frame",
@@ -248,6 +248,15 @@ function M.set_stabilizer_ui(player)
         fuel_frame.add {
             type = "label",
             name = "rabbasca_su_fuel_left",
+        }
+        fuel_frame.add {
+            type = "label",
+            name = "rabbasca_su_repairs",
+            tooltip = { "", "After changing location, gains [item=rabbasca-warp-cell] depending on stabilization progress in the previous location" }
+        }
+        fuel_frame.add {
+            type = "label",
+            caption = { "", string.format("[font=default-bold]%i[/font] warps without incident", storage.stabilizer.finished_warps or 0) }
         }
         frame.add {
             type = "label",
@@ -303,7 +312,7 @@ function M.set_stabilizer_ui(player)
     t.rabbasca_su_autopilot.switch_state = storage.stabilizer.settings.autopilot and "right" or "left"
 
     if t.rabbasca_su_recall then
-        t.rabbasca_su_autopilot.switch_state = storage.stabilizer.settings.recall and "right" or "left"
+        t.rabbasca_su_recall.switch_state = storage.stabilizer.settings.recall and "right" or "left"
     end
 
     if frame.rabbasca_su_content.rabbasca_su_safe then
@@ -311,9 +320,10 @@ function M.set_stabilizer_ui(player)
         frame.rabbasca_su_content.rabbasca_su_safe.rabbasca_su_safe_zone_text.caption = tostring(storage.stabilizer.safe_zone_setting)
     end
 
-    frame.rabbasca_su_fuel.rabbasca_su_fuel_left.caption = { "", string.format("Anomalies left: %i", storage.stabilizer.anomalies.current or 0) }
+    frame.rabbasca_su_fuel.rabbasca_su_fuel_left.caption = { "", string.format("Anomalies left: %i", storage.stabilizer.anomalies.current) }
+    frame.rabbasca_su_fuel.rabbasca_su_repairs.caption =   { "", string.format("Stabilization:  %i (Warp costs %.2f [item=rabbasca-warp-cell])", storage.stabilizer.progress.repairs, warp.get_warp_cost()) }
 
-    frame.rabbasca_su_batt.rabbasca_su_battery_caption.caption = { "", string.format("[item=rabbasca-warp-cell] %i/%i, [color=yellow]Change[/color]: %s%.1f%%/s [img=virtual-signal.signal-info]", math.floor(info.progress), info.progress_max, info.discharge_rate > 0 and "+" or "", info.discharge_rate * 100) }
+    frame.rabbasca_su_batt.rabbasca_su_battery_caption.caption = { "", string.format("[item=rabbasca-warp-cell] %i/%i, [color=yellow]Change[/color]: %s%i%%/min [img=virtual-signal.signal-info]", math.floor(info.progress), info.progress_max, info.discharge_rate > 0 and "+" or "", info.discharge_rate * 6000) }
     local battery = frame.rabbasca_su_batt.rabbasca_su_battery_status
     for i, child in pairs(battery.children) do
         local rep_progress = info.progress_max - i

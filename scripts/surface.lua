@@ -100,9 +100,7 @@ end
 function M.replace_tiles(surface, to, safe_radius)
     storage.stabilizer.tiles = storage.stabilizer.tiles or { }
     storage.stabilizer.last_safe_radius = storage.stabilizer.last_safe_radius or { }
-    game.print("Recalcing tiles??")
     if not (storage.stabilizer.tiles[to] and storage.stabilizer.last_safe_radius[to] == safe_radius) then
-        game.print("Recalcing tile bounds")
         storage.stabilizer.last_safe_radius[to] = safe_radius
         storage.stabilizer.tiles[to] = { }
         for x = -96, 96 do
@@ -127,12 +125,16 @@ end
 
 function M.recall_outliers(stabilizer, safe_radius)
     local safe_zone = { left_top = { x = -safe_radius - 0.5, y = -safe_radius - 0.5 }, right_bottom = { x = safe_radius + 1.5, y = safe_radius + 1.5 } }
-    local to_inventory = storage.stabilizer.settings.recall and stabilizer.get_inventory(defines.inventory.crafter_trash)
+    local to_inventory = (storage.stabilizer.warping.recall and game.create_inventory(512)) or nil
     local saved = 0
     for _, e in pairs(stabilizer.surface.find_entities_filtered { force = stabilizer.force }) do
         if not box_inside(e.bounding_box, safe_zone) then
             if to_inventory ~= nil and e.mine { inventory = to_inventory, force = true } then saved = saved + 1 else e.die() end
         end
+    end
+    if to_inventory then
+        Rabbasca.add_to_warp_inventory(to_inventory)
+        to_inventory.destroy()
     end
     if saved > 0 then
         for _, player in pairs(game.connected_players) do

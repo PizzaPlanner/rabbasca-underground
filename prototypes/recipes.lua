@@ -105,6 +105,7 @@ data:extend {
         ingredients = { { type = "item", name = "rabbasca-warp-matrix", amount = 5 } },
         allow_productivity = false,
         results = { { type = "item", name = "rabbasca-destabilize-warpfield", amount = 1 } },
+        surface_conditions = { Rabbasca.only_underground(true) },
         crafting_machine_tint =
         {
             primary = { 0.51, 0.24, 1 }

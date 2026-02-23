@@ -66,13 +66,15 @@ script.on_event(defines.events.on_gui_switch_state_changed, function(event)
     underground.reboot_stabilizer(game.players[event.player_index], event.element.switch_state == "right")
     player.gui.relative.rabbasca_stabilizer_ui.destroy()
   elseif event.element.name == "rabbasca_su_manual_warp" and event.element.switch_state == "right" then
-    underground.initiate_warp()
+    underground.initiate_warp(player)
     player.gui.relative.rabbasca_stabilizer_ui.destroy()
   elseif event.element.name == "rabbasca_su_abandon" and event.element.switch_state == "right" then
     underground.abandon(player)
     -- player.gui.relative.rabbasca_stabilizer_ui.destroy()
   elseif event.element.name == "rabbasca_su_autopilot" then
     storage.stabilizer.settings.autopilot = event.element.switch_state == "right"
+  elseif event.element.name == "rabbasca_su_recall" then
+    storage.stabilizer.settings.recall = event.element.switch_state == "right"
   end
 end)
 

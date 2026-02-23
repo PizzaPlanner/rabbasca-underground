@@ -85,7 +85,7 @@ util.merge {
     icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
     icon_size = 1024,
     stack_size = 1000,
-    fuel_value = "300MJ",
+    fuel_value = "500MJ",
     fuel_category = "rabbasca-warp-anomaly",
     weight = 1 * kg,
     localised_description = { "item-description.rabbasca-warp-matrix" },
