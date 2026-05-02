@@ -38,21 +38,7 @@ data:extend{
       }
     }
 },
-{
-    type = "technology",
-    name = "rabbasca-warp-stabilizer",
-    icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
-    icon_size = 1024,
-    rabbasca_underground_temporary = true,
-    prerequisites = { "rabbasca-underground" },
-    effects = { },
-    research_trigger =
-    {
-        type = "craft-item",
-        item = "rabbasca-stabilize-warpfield",
-        count = 1
-    }
-},
+
 {
     type = "technology",
     name = "rabbasca-warp-technology-analysis-1",
@@ -63,13 +49,16 @@ data:extend{
         type = "unlock-recipe",
         recipe = "rabbasca-warp-tech-analyzer"
       },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-warp-cell"
+      },
     },
     ignore_tech_cost_multiplier = true,
     research_trigger =
     {
-        type = "craft-item",
-        item = "rabbasca-stabilize-warpfield",
-        count = 50
+        type = "mine-entity",
+        entity = "rabbasca-warp-anomaly",
     }
 },
 {
@@ -93,71 +82,8 @@ data:extend{
       }
     }
 },
-{
-    type = "technology",
-    name = "rabbasca-warp-floor-expansion",
-    icons = Rabbasca.icons({ proto = data.raw["technology"]["concrete"] }),
-    prerequisites = { "rabbasca-warp-stabilizer" },
-    rabbasca_underground_temporary = true,
-    effects = {
-      {
-        type = "nothing",
-        effect_description = { "rabbasca-extra.rabbasca-floor-expansion" }
-      }
-    },
-    ignore_tech_cost_multiplier = true,
-    max_level = 8,
-    unit = {
-      time = 10,
-      count_formula = "(10 + L ^ 4) * L^2",
-      ingredients = {
-        { "rabbasca-warp-matrix", 1 },
-      }
-    }
-},
-{
-    type = "technology",
-    name = "rabbasca-stabilizer-extractor",
-    icons = Rabbasca.icons({ proto = data.raw["technology"]["big-mining-drill"] }),
-    prerequisites = { "rabbasca-warp-stabilizer" },
-    rabbasca_underground_temporary = true,
-    effects = {
-      {
-        type = "nothing",
-        effect_description = { "rabbasca-extra.stabilizer-extractor-unlocked" }
-      }
-    },
-    ignore_tech_cost_multiplier = true,
-    unit = {
-      time = 10,
-      count = 100,
-      ingredients = {
-        { "rabbasca-warp-matrix", 1 },
-      }
-    }
-},
-{
-    type = "technology",
-    name = "rabbasca-anomaly-expansion",
-    icons = Rabbasca.icons({{ proto = data.raw["tool"]["rabbasca-warp-matrix"] }}),
-    prerequisites = { "rabbasca-warp-stabilizer", "rabbasca-anomaly-studies" },
-    rabbasca_underground_temporary = true,
-    effects = {
-      {
-        type = "nothing",
-        effect_description = { "rabbasca-extra.rabbasca-anomaly-expansion" }
-      }
-    },
-    ignore_tech_cost_multiplier = true,
-    max_level = "infinite",
-    unit = {
-      time = 10,
-      count_formula = "25 + L^2 * 10",
-      ingredients = {
-        { "rabbasca-warp-matrix", 1 },
-      }
-    }
-},
+
+
 {
     type = "technology",
     name = "rabbasca-total-recall",
@@ -214,6 +140,43 @@ data:extend{
 },
 {
     type = "technology",
+    name = "rabbasca-warp-anomaly-study",
+    icons = Rabbasca.icons({ proto = data.raw["tool"]["rabbasca-warp-matrix"] }),
+    prerequisites = { "rabbasca-warp-technology-analysis-1" },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-warp-cell-empty"
+      }
+    },
+    ignore_tech_cost_multiplier = true,
+    unit = {
+      time = 10,
+      count = 500,
+      ingredients = {
+        { "rabbasca-warp-matrix", 1 },
+      }
+    }
+},
+{
+    type = "technology",
+    name = "rabbasca-supercharged-module",
+    icons = Rabbasca.icons({proto = data.raw["technology"]["modules"]}),
+    prerequisites = { "rabbasca-warp-anomaly-study" },
+    effects = {
+
+    },
+    ignore_tech_cost_multiplier = true,
+    unit = {
+      time = 10,
+      count = 100,
+      ingredients = {
+        { "rabbasca-warp-trace", 1 },
+      }
+    }
+},
+{
+    type = "technology",
     name = "rabbasca-warp-technology-analysis-2",
     icons = Rabbasca.icons({ proto = data.raw["tool"]["rabbasca-spatial-anchor"] }),
     prerequisites = { "rabbasca-warp-technology-analysis-1" },
@@ -225,10 +188,11 @@ data:extend{
     },
     ignore_tech_cost_multiplier = true,
     unit = {
-      time = 10,
-      count = 500,
+      time = 5,
+      count = 100,
       ingredients = {
-        { "rabbasca-warp-matrix", 1 },
+        { "rabbasca-warp-matrix", 10 },
+        { "rabbasca-warp-trace",  1 },
       }
     }
 },

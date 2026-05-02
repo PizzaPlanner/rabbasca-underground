@@ -50,6 +50,40 @@ data:extend {
     },
     {
         type = "recipe",
+        name = "rabbasca-warp-cell",
+        enabled = true,
+        energy_required = 1,
+        result_is_always_fresh = true,
+        ingredients = { 
+            { type = "item", name = "rabbasca-warp-matrix", amount = 100 },
+            { type = "item", name = "rabbasca-warp-trace", amount = 25 }, 
+            { type = "item", name = "rabbasca-warp-cell-empty", amount = 1 } },
+        results = { 
+            { type = "item", name = "rabbasca-warp-cell", amount = 1 } },
+        allow_productivity = true,
+        auto_recycle = false,
+        crafting_machine_tint =
+        {
+            primary = { 0.85, 0.42, 1 }
+        },
+        category = "rabbasca-remote"
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-warp-cell-empty",
+        enabled = false,
+        energy_required = 60,
+        ingredients = { 
+            { type = "item", name = "rabbasca-spatial-anchor", amount = 5 },
+            { type = "item", name = "rabbasca-lithium-amide",  amount = 250 }, 
+            { type = "fluid", name = "holmium-solution", amount = 2000 } },
+        results = { 
+            { type = "item", name = "rabbasca-warp-cell-empty", amount = 1 } },
+        allow_productivity = true,
+        category = "metallurgy"
+    },
+    {
+        type = "recipe",
         name = "rabbasca-reboot-stabilizer",
         enabled = true,
         hidden = true,
@@ -69,26 +103,30 @@ data:extend {
         type = "recipe",
         name = "rabbasca-stabilizer-warp-sequence",
         enabled = true,
-        energy_required = 30,
+        energy_required = 10,
         result_is_always_fresh = true,
-        ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
+        -- ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
         results = { { type = "item", name = "rabbasca-stabilizer-warp-sequence", amount = 1 } },
         allow_productivity = false,
         crafting_machine_tint =
         {
             primary = { 0.85, 0.42, 1 }
         },
-        category = "rabbasca-warp-stabilizer"
+        category = "rabbasca-warp-stabilizer",
+        hide_from_signal_gui = false
     },
     {
         type = "recipe",
         name = "rabbasca-stabilize-warpfield",
         enabled = true,
-        energy_required = 5,
+        energy_required = 2,
         result_is_always_fresh = true,
-        ingredients = { }, -- { type = "item", name = "rabbasca-warp-matrix", amount = 50 } },
-        results = { { type = "item", name = "rabbasca-stabilize-warpfield", amount = 1 } },
-        allow_productivity = false,
+        ingredients = { { type = "item", name = "rabbasca-warp-matrix", amount = 5 } },
+        results = { 
+            { type = "item", name = "rabbasca-warp-trace", amount = 5 }
+        },
+        -- main_product = "rabbasca-stabilize-warpfield",
+        allow_productivity = true,
         crafting_machine_tint =
         {
             primary = { 0.5, 0.83, 1 }
@@ -99,10 +137,10 @@ data:extend {
         type = "recipe",
         name = "rabbasca-amplify-anomaly",
         enabled = false,
-        energy_required = 3,
+        energy_required = 2,
         result_is_always_fresh = true,
         reset_freshness_on_craft = true,
-        ingredients = { { type = "item", name = "rabbasca-warp-matrix", amount = 5 } },
+        ingredients = { { type = "item", name = "rabbasca-warp-trace", amount = 5 } },
         allow_productivity = false,
         results = { { type = "item", name = "rabbasca-destabilize-warpfield", amount = 1 } },
         surface_conditions = { Rabbasca.only_underground(true) },

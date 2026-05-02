@@ -7,7 +7,11 @@ local function post_warp_surface(surface)
     storage.stabilizer.warping = nil
     storage.stabilizer.entity.disabled_by_script = false
     storage.stabilizer.entity.custom_status = nil
-    storage.stabilizer.progress.repairs = 0
+    storage.stabilizer.anomalies.trace_inventory.clear()
+    if storage.stabilizer.finished_warps == 0 then
+        storage.stabilizer.anomalies.trace_inventory.insert({ name = "rabbasca-warp-trace", count = 82 })
+        storage.stabilizer.entity.get_inventory(defines.inventory.burnt_result).insert({name = "rabbasca-warp-cell-empty", count = 1})
+    end
 end
 
 function M.on_warp_underground(event)
@@ -94,47 +98,37 @@ function M.change_affinity()
 end
 
 function M.get_warp_cost()
-    return 1
-        + 3 * storage.stabilizer.anomalies.current / storage.stabilizer.anomalies.initial
-        + (storage.stabilizer.settings.recall and 0.25 or 0)
+    return 4
+        + 45 * (1 - M.get_repair_progress())
+        + (storage.stabilizer.settings.recall and 0.5 or 0)
 end
 
 function M.warp_to(surface, data)
     if storage.stabilizer.warping then return end
     data = data or { }
     data = {
-        cost = data.cost or M.get_warp_cost(),
         planet = data.planet or M.get_next_planet(),
         should_recall = data.should_recall or storage.stabilizer.settings.recall,
         fixed_followup = data.fixed_followup or nil
     }
-    if storage.stabilizer.charge.current < data.cost then
-        for _, player in pairs(game.connected_players) do
-            if player.surface_index == storage.stabilizer.surface then
-                player.create_local_flying_text { text = { "rabbasca-extra.warp-not-enough-charge" }, surface = storage.stabilizer.surface, position = storage.stabilizer.entity.position }
-            end
-        end
-        storage.stabilizer.next.blocked_until = game.tick + 180
-        return
-    end
+
     local config = storage.stabilizer.config
     if not (surface and config.planets[data.planet]) then log("error: stabilizer could not warp to "..data.planet) return end
 
-    storage.stabilizer.anomaly_progress = 0
-    storage.stabilizer.warping = { to = data.planet, warp_tick = game.tick + 90, finished_tick = game.tick + 180, cost = data.cost, recall = data.should_recall }
+    storage.stabilizer.warping = { to = data.planet, warp_tick = game.tick + 90, finished_tick = game.tick + 180, recall = data.should_recall }
     surface.ticks_per_day = 180 * (config.planet_count + 1.5)
     surface.freeze_daytime = false
     for p, _ in pairs(config.planets) do
         if p == data.planet or (data.fixed_followup and p ~= data.fixed_followup) then
             storage.stabilizer.next.weights[p] = 0
-        else    
+        else
             storage.stabilizer.next.weights[p] = ((storage.stabilizer.next.weights[p] or 0) + 1) * 2
         end
     end
     storage.stabilizer.next.seed = storage.underground_seed_rng(10000000)
-    storage.stabilizer.next.blocked_until = game.tick + 780 -- 10 second cooldown per warp
     storage.stabilizer.entity.disabled_by_script = true
     storage.stabilizer.entity.custom_status = { diode = defines.entity_status_diode.yellow, label = {"", "Warping"} }
+    storage.stabilizer.entity.set_recipe("rabbasca-stabilize-warpfield")
 end
 
 return M

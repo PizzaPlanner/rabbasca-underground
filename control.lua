@@ -3,9 +3,7 @@ local underground = require("scripts.underground")
 
 local function handle_script_events(event)
   local effect_id = event.effect_id
-  if effect_id == "rabbasca_warp_progress" then
-    underground.on_stabilization()
-  elseif effect_id == "rabbasca_warp_progress_warp" then
+  if effect_id == "rabbasca_warp_progress_warp" then
     underground.initiate_warp()
   elseif effect_id == "rabbasca_warp_unprogress" then
     local from = Rabbasca.get_spoiled_in(event)

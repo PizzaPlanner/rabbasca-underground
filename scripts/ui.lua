@@ -16,10 +16,8 @@ local function create_affinity_bar(player, numbers)
     if numbers and player.gui.top.rabbasca_ug_stats then
         if not player.gui.top.rabbasca_ug_stats.right then return end
         if not storage.stabilizer.anomalies then return end
-        player.gui.top.rabbasca_ug_stats.right.repairs.bar.value = storage.stabilizer.charge.current / storage.stabilizer.charge.max
-        player.gui.top.rabbasca_ug_stats.right.repairs.bar.tooltip = { "", storage.stabilizer.charge.current, "/", storage.stabilizer.charge.max }
-        player.gui.top.rabbasca_ug_stats.right.anomalies.bar.value = storage.stabilizer.anomalies.current / storage.stabilizer.anomalies.initial
-        player.gui.top.rabbasca_ug_stats.right.anomalies.bar.tooltip = { "", storage.stabilizer.anomalies.current, "/", storage.stabilizer.anomalies.initial }
+        player.gui.top.rabbasca_ug_stats.right.repairs.bar.value = warp.get_repair_progress()
+        player.gui.top.rabbasca_ug_stats.right.repairs.bar.tooltip = { "A more stable warpfield decreases the cost to warp to the next location and increases the chance of anomalies collapsing into resources in the next location" }
         return
     end
     if player.gui.top.rabbasca_ug_stats then
@@ -73,25 +71,6 @@ local function create_affinity_bar(player, numbers)
     bar2.style.horizontal_align = "center"
     bar2.style.horizontally_stretchable = true
     bar2.style.color = { 1, 1, 1 }
-
-    local anoms = right.add {
-        type = "flow",
-        direction = "horizontal",
-        name = "anomalies",
-    }
-    anoms.style.vertical_align = "center"
-    add_button(anoms, "entity/rabbasca-warp-anomaly", "transparent_slot", "icon", 16)
-    local bar = anoms.add {
-        type = "progressbar",
-        name = "bar",
-        value = 1,
-    }
-    bar.style.minimal_width = 64
-    bar.style.natural_width = 64
-    bar.style.horizontally_stretchable = true
-    bar.style.color = { 0.15, 0.4, 0.85 }
-    bar.style.horizontal_align = "center"
-    bar.style.font = "default-tiny-bold"
 end
 
 function M.set_stabilizer_ui(player)
@@ -101,8 +80,6 @@ function M.set_stabilizer_ui(player)
         return
     end
     local info = { 
-        progress = storage.stabilizer.charge.current,
-        progress_max = storage.stabilizer.charge.max,
         discharge_rate = -storage.stabilizer.charge.drain
     }
     if not frame then
@@ -256,49 +233,21 @@ function M.set_stabilizer_ui(player)
         }
         fuel_frame.add {
             type = "label",
+            name = "rabbasca_su_cost_fix"
+        }
+        fuel_frame.add {
+            type = "label",
+            name = "rabbasca_su_cost_warp"
+        }
+        fuel_frame.add {
+            type = "label",
             caption = { "", string.format("[font=default-bold]%i[/font] warps without incident", storage.stabilizer.finished_warps or 0) }
         }
-        frame.add {
-            type = "label",
-            style = "frame_title",
-            caption = { "", "[virtual-signal=signal-lightning] Battery" }
-        }
-        local batt_frame = frame.add {
-            type = "frame",
-            name = "rabbasca_su_batt",
-            style = "entity_frame",
-            direction = "vertical"
-        }
-        batt_frame.add {
+        fuel_frame.add {
             type = "label",
             -- style = "frame_title",
-            name = "rabbasca_su_battery_caption",
+            name = "rabbasca_su_battery_drain",
         }
-        local batt_status = batt_frame.add {
-            type = "table",
-            column_count = 2,
-            -- style = "subheader_frame",
-            -- direction = "vertical",
-            name = "rabbasca_su_battery_status",
-            -- caption = "[item=rabbasca-warp-cell] Fuel tank",
-            -- items = fuel_status,
-            -- ignored_by_interaction = true
-        }
-        batt_status.style.vertical_spacing = 0
-        for i = 1,info.progress_max do
-            local bar = batt_status.add {
-                type = "progressbar",
-                value = 0,
-                style = "production_progressbar"
-            }
-            bar.style.horizontally_stretchable = true
-            -- bar.style.vertically_stretchable   = true
-            bar.style.margin = 0
-            bar.style.color = { 0, 0.63, 1 }
-            -- bar.style.padding = 0
-            -- bar.style.minimal_height = 16
-            -- bar.style.natural_height = 16
-        end
     end
     local t = frame.rabbasca_su_content.rabbasca_su_table
     if t.rabbasca_su_switch_miner_reboot then
@@ -320,22 +269,11 @@ function M.set_stabilizer_ui(player)
         frame.rabbasca_su_content.rabbasca_su_safe.rabbasca_su_safe_zone_text.caption = tostring(storage.stabilizer.safe_zone_setting)
     end
 
-    frame.rabbasca_su_fuel.rabbasca_su_fuel_left.caption = { "", string.format("Anomalies left: %i", storage.stabilizer.anomalies.current) }
-    frame.rabbasca_su_fuel.rabbasca_su_repairs.caption =   { "", string.format("Stabilization:  %i (Warp costs %.2f [item=rabbasca-warp-cell])", storage.stabilizer.progress.repairs, warp.get_warp_cost()) }
-
-    frame.rabbasca_su_batt.rabbasca_su_battery_caption.caption = { "", string.format("[item=rabbasca-warp-cell] %i/%i, [color=yellow]Change[/color]: %s%i%%/min [img=virtual-signal.signal-info]", math.floor(info.progress), info.progress_max, info.discharge_rate > 0 and "+" or "", info.discharge_rate * 6000) }
-    local battery = frame.rabbasca_su_batt.rabbasca_su_battery_status
-    for i, child in pairs(battery.children) do
-        local rep_progress = info.progress_max - i
-        local is_current_bar = math.floor(info.progress) == rep_progress
-        local value = math.min(info.progress - rep_progress, 1)
-        child.caption = { "", is_current_bar and string.format("[%i%%]", (info.progress - rep_progress) * 100) or "" }
-        child.style.color = is_current_bar and { 1, 0.85, 0 } or { 0, 0.63, 1 }
-        child.value = value
-        if is_current_bar and storage.stabilizer.warping then
-            child.style.color = { 1, 0, 1 }
-        end
-    end
+    frame.rabbasca_su_fuel.rabbasca_su_fuel_left.caption = { "", string.format("[item=rabbasca-warp-matrix]Anomalies left: %i", storage.stabilizer.anomalies.current) }
+    frame.rabbasca_su_fuel.rabbasca_su_repairs.caption =   { "", string.format("Stabilization:  %i%%", warp.get_repair_progress() * 100) }
+    frame.rabbasca_su_fuel.rabbasca_su_cost_fix.caption =   { "", string.format("[recipe=rabbasca-stabilize-warpfield]: %.2f%%[item=rabbasca-warp-cell]/s", 1 * (1 + storage.stabilizer.entity.effects.consumption)) }
+    frame.rabbasca_su_fuel.rabbasca_su_cost_warp.caption =   { "", string.format("[recipe=rabbasca-stabilizer-warp-sequence]: %.2f%%[item=rabbasca-warp-cell]/s", warp.get_warp_cost() * (1 + storage.stabilizer.entity.effects.consumption)) }
+    frame.rabbasca_su_fuel.rabbasca_su_battery_drain.caption = { "", string.format("Current: %s%.2f%%[item=rabbasca-warp-cell]/s", info.discharge_rate > 0 and "+" or "", info.discharge_rate) }
 end
 
 function M.update_affinity_bar(player, numbers)

@@ -7,37 +7,73 @@ local function logistics_group_name()
     return tostring(settings.global["rabbasca-underground-logistics-group-name"].value)
 end
 
+local function update_fuel()
+    local recipe = storage.stabilizer.entity.get_recipe()
+    local is_same_recipe = recipe and recipe.name == storage.stabilizer.charge.last_recipe or false
+    storage.stabilizer.charge.last_recipe = recipe and recipe.name or nil
+    local fuel_remaining = storage.stabilizer.entity.burner.remaining_burning_fuel
+    local fuel_delta = (storage.stabilizer.charge.last_fuel or fuel_remaining) - fuel_remaining
+    if not is_same_recipe then return end
+        storage.stabilizer.charge.drain = 1
+            + (storage.stabilizer.anomaly_recycler and 0.1 or 0)
+            + (((storage.stabilizer.safe_zone_radius or 10) - 10) / 4 * 0.075)
+        if storage.stabilizer.charge.last_recipe == "rabbasca-stabilizer-warp-sequence" then
+            storage.stabilizer.charge.drain = storage.stabilizer.charge.drain + M.warp.get_warp_cost()
+        end
+
+    -- game.print("drain: "..storage.stabilizer.charge.drain.." fuel delta: "..fuel_delta.." last fuel: "..(storage.stabilizer.charge.last_recipe or "nil"))
+    -- - (storage.stabilizer.progress.charge > event.tick and 0.02 or 0)
+    -- storage.stabilizer.charge.current = math.max(0, storage.stabilizer.charge.current - storage.stabilizer.charge.drain / 60)
+    -- storage.stabilizer.charge.current = math.min(storage.stabilizer.charge.current, storage.stabilizer.charge.max)
+    
+    storage.stabilizer.entity.burner.remaining_burning_fuel = fuel_remaining - fuel_delta * (storage.stabilizer.charge.drain - 1)
+    storage.stabilizer.charge.last_fuel = storage.stabilizer.entity.burner.remaining_burning_fuel
+    
+    local fuel_inv = storage.stabilizer.entity.get_inventory(defines.inventory.fuel)
+    for i = 1, #fuel_inv do
+        local cell = fuel_inv[i]
+        if cell.valid_for_read then
+            cell.spoil_percent = 0
+        end
+    end
+end
+
+local function update_trash()
+    local trace_inv = storage.stabilizer.entity.get_inventory(defines.inventory.crafter_output)
+    for i = 1, #trace_inv do
+        local cell = trace_inv[i]
+        if cell.valid_for_read and cell.name == "rabbasca-warp-trace" then
+            local moved = storage.stabilizer.anomalies.trace_inventory.insert({name = "rabbasca-warp-trace", count = 1})
+            cell.count = cell.count - moved
+        end
+    end
+    for i = 1, #storage.stabilizer.anomalies.trace_inventory do
+        local cell = storage.stabilizer.anomalies.trace_inventory[i]
+        if cell.valid_for_read and cell.name == "rabbasca-warp-trace" then
+            cell.spoil_percent = 0
+        end
+    end
+end
+
 function M.on_tick_underground(event)
     if not storage.stabilizer then return end
-    
-    storage.stabilizer.charge.drain = 
-          0.00066666667
-        + (storage.stabilizer.anomaly_recycler and 0.01 or 0)
-        + (storage.stabilizer.warping and 0.3333 * storage.stabilizer.warping.cost or 0)
-        + (((storage.stabilizer.safe_zone_radius or 10) - 10) / 4 * 0.005)
-        - (storage.stabilizer.progress.charge > event.tick and 0.02 or 0)
-    storage.stabilizer.charge.current = math.max(0, storage.stabilizer.charge.current - storage.stabilizer.charge.drain / 60)
-    storage.stabilizer.charge.current = math.min(storage.stabilizer.charge.current, storage.stabilizer.charge.max)
+    if not storage.stabilizer.entity.valid then return end
 
-    if storage.stabilizer.settings.autopilot == true and storage.stabilizer.anomalies and storage.stabilizer.anomalies.current == 0 then
-        M.initiate_warp()
-    end
+    update_fuel()
+    update_trash()
 
-    if event.tick % 120 == 0 then
-        local surface = game.surfaces[storage.stabilizer.surface]
+    if event.tick % 60 == 0 then
         if storage.stabilizer.anomalies then
-            local fuel = 0
-            for _, e in pairs(surface.find_entities_filtered{ name = "rabbasca-warp-anomaly" }) do
-                fuel = fuel + e.amount
+            storage.stabilizer.anomalies.current = 0
+            for _, e in pairs(storage.stabilizer.anomalies.entities) do
+                if e.valid then
+                    storage.stabilizer.anomalies.current = storage.stabilizer.anomalies.current + e.amount
+                end
             end
-            storage.stabilizer.anomalies.current = fuel
             for _, player in pairs(game.connected_players) do
                 M.ui.update_affinity_bar(player, true)
             end
             M.update_logistic_section()
-        end
-        if storage.stabilizer.entity.get_signal({ name = "rabbasca-warp-inventory", type = "virtual" }, defines.wire_connector_id.circuit_green, defines.wire_connector_id.circuit_red) > 0 then
-            M.initiate_warp()
         end
     end
 
@@ -58,17 +94,17 @@ local function register_stabilizer(s)
         entity = s,
         destroyed_id = id,
         current_location = "rabbasca",
-        next = { weights = { }, seed = 0, blocked_until = 0 },
+        next = { weights = { }, seed = 0 },
         settings = {
             autopilot = true,
             recall = false
         },
+
+        anomalies = { initial = 0, current = 0, entities = { }, trace_inventory = s.get_inventory(defines.inventory.crafter_trash) },
         config = prototypes.mod_data["rabbasca-stabilizer-config"].data, -- accessing prototypes is expensive, so cache it here too
-        charge = { current = 17, max = 20 },
-        progress = { repairs = 0, charge = 0 }
+        charge = { drain = 0 },
     }
-    s.get_inventory(defines.inventory.fuel).insert({name = "rabbasca-warp-cell", amount = 37})
-    M.warp.warp_to(s.surface, { planet = "aquilo", cost = 0 })
+    M.warp.warp_to(s.surface, { planet = "aquilo" })
     game.forces.player.chart(s.surface, {{-48, -48}, {48, 48}})
     game.forces.player.print({ "rabbasca-extra.created-underground-stabilizer", s.gps_tag})
 end
@@ -78,9 +114,9 @@ function M.on_config_changed(handler)
     storage.stabilizer.config = prototypes.mod_data["rabbasca-stabilizer-config"].data -- re-cache in case it changed
     if storage.stabilizer.warping and storage.stabilizer.config.planets[storage.stabilizer.warping.to] == nil then
         storage.stabilizer.warping = nil
-        M.warp.warp_to(storage.stabilizer.entity.surface, { cost = 0 })
+        M.warp.warp_to(storage.stabilizer.entity.surface)
     elseif not storage.stabilizer.config.planets[storage.stabilizer.current_location] then
-        M.warp.warp_to(storage.stabilizer.entity.surface, { cost = 0 })
+        M.warp.warp_to(storage.stabilizer.entity.surface)
     end
 end
 
@@ -96,11 +132,11 @@ function M.update_logistic_section()
         l.filters = {
             {
                 value = { name = storage.stabilizer.current_location, type = "space-location", quality = "normal" },
-                min = storage.stabilizer.anomalies.current,
+                min = M.warp.get_repair_progress() * 100,
             },
             {
-                value = { name = "rabbasca-warp-cell", type = "item", quality = "normal" },
-                min = math.floor(storage.stabilizer.charge.current * 100)
+                value = { name = "rabbasca-warp-anomaly", type = "entity", quality = "normal" },
+                min = storage.stabilizer.anomalies.current
             }
         }
     else
@@ -129,14 +165,6 @@ function M.abandon(player)
             game.print({ "rabbasca-extra.stabilizer-abandoned", player.name })
         end
     end
-end
-
-function M.on_stabilization()
-    if not storage.stabilizer then return end
-    storage.stabilizer.progress = {
-        repairs = storage.stabilizer.progress.repairs + 1,
-        charge  = math.max(storage.stabilizer.progress.charge, game.tick) + 120
-    }
 end
 
 function M.on_destabilization(entity)
@@ -213,12 +241,12 @@ end
 
 function M.initiate_warp(player)
     if not storage.stabilizer then return end
-    if game.tick < storage.stabilizer.next.blocked_until then 
-        if player then
-            player.create_local_flying_text { text = { "rabbasca-extra.warp-on-cooldown" }, surface = storage.stabilizer.surface, position = storage.stabilizer.entity.position }
-        end
-        return
-    end
+    -- if game.tick < storage.stabilizer.next.blocked_until then 
+    --     if player then
+    --         player.create_local_flying_text { text = { "rabbasca-extra.warp-on-cooldown" }, surface = storage.stabilizer.surface, position = storage.stabilizer.entity.position }
+    --     end
+    --     return
+    -- end
     M.warp.warp_to(game.surfaces[storage.stabilizer.surface])
 end
 
@@ -229,14 +257,18 @@ if settings.global["rabbasca-debug-mode"] then
         if not surface then return end
         local to = command.parameter
         if to then
-            M.warp.warp_to(surface, { planet = to, cost = 0 })
+            M.warp.warp_to(surface, { planet = to })
         else
-            M.warp.warp_to(surface, { cost = 0 })
+            M.warp.warp_to(surface)
         end
     end)
 
     commands.add_command("rabbasca_ug_charge", nil, function(command)
         storage.stabilizer.charge.current = tonumber(command.parameter) or storage.stabilizer.charge.current
+    end)
+
+    commands.add_command("rabbasca_ug_bye", nil, function(command)
+        M.abandon(command.player_index and game.get_player(command.player_index))
     end)
 end
 

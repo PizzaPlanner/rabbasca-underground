@@ -1,9 +1,17 @@
 local M = { }
 
-function M.try_manifest(source, chance_mult, possible_anomalies)
+function M.get_repair_progress()
+    local progress = 1 - storage.stabilizer.anomalies.current / storage.stabilizer.anomalies.initial --(storage.stabilizer.anomalies.trace_inventory.get_item_count("rabbasca-warp-trace")) / (storage.stabilizer.anomalies.initial * 0.075)
+    return math.max(0, math.min(1, progress))
+end
+
+function M.try_manifest(source, chance_mult, possible_anomalies, existing_pois)
     if chance_mult <= 0 then return end
     for _, new in pairs(possible_anomalies) do
         local prob_total = new.probability * chance_mult
+        for _, player in pairs(game.players) do
+            player.create_local_flying_text { text = { "", string.format("Chance for manifestation: %.2f%%", prob_total * 100) }, surface = source.surface, position = source.position }
+        end
         if prob_total >= math.random() then
             local p = {
                 name = new.name,
@@ -51,11 +59,33 @@ function M.try_manifest(source, chance_mult, possible_anomalies)
                 for _, entry in pairs(entities) do
                     source.surface.create_entity(entry)
                 end
-            else
-                source.surface.set_tiles({{position = p.position, name = "red-desert-0"}})
-                source.surface.create_entity(p)
+            elseif new.type == "poi" and existing_pois[new.name] == nil then
+                local tiles = { }
+                local radius = 2
+                local cx = p.position.x
+                local cy = p.position.y
+                if not source.surface.get_tile(cx, cy).collides_with("harene") then
+                    for dx = -radius, radius do
+                        for dy = -radius, radius do
+                            local pos = { cx + dx, cy + dy }
+                            local existing = source.surface.get_tile(pos[1], pos[2])
+                            if not (existing.collides_with("out_of_map") or existing.collides_with("harene")) then
+                                local dist = math.sqrt(dx * dx + dy * dy)
+                                if dist <= radius then
+                                    table.insert(tiles, {position = pos, name = new.floor})
+                                end
+                            end
+                        end
+                    end
+                    source.surface.set_tiles(tiles)
+                    local e = source.surface.create_entity({ name = "wooden-chest", position = source.position, force = source.force })
+                    if e then 
+                        e.get_inventory(defines.inventory.chest).insert({ name = new.name })
+                    end
+                    existing_pois[new.name] = true
+                end
             end
-
+            return
         end
     end
 end
@@ -63,14 +93,16 @@ end
 function M.replace_entities(surface, config, planet)
     local autoplace = config[planet].autoplace_entities
     local anomalies = config[planet].anomaly_replace_entities
+    local progress  = M.get_repair_progress()
+    local pois      = { }
     for _, e in pairs(surface.find_entities_filtered{force = "neutral"}) do
         if e.name == "rabbasca-warp-anomaly" then
-            M.try_manifest(e, e.amount, anomalies)
+            M.try_manifest(e, e.amount * progress, anomalies, pois)
         end
         e.destroy{}
     end
     for _, data in pairs(storage.stabilizer.selfmade_anomalies or { }) do
-        M.try_manifest({ position = data.position, quality = "normal", surface = surface }, data.amount * 3, anomalies)
+        M.try_manifest({ position = data.position, quality = "normal", surface = surface }, data.amount * 3 * progress, anomalies, pois)
         if data.text then data.text.destroy() end
     end
     storage.stabilizer.selfmade_anomalies = { }
@@ -80,11 +112,13 @@ function M.replace_entities(surface, config, planet)
     surface.map_gen_settings = map_settings
     surface.regenerate_entity()
 
-    storage.stabilizer.anomalies = { initial = 0, current = 0 }
+    storage.stabilizer.anomalies.initial = 0
+    storage.stabilizer.anomalies.entities = { }
     local amount_mult = 1 + (game.forces.player.technologies["rabbasca-anomaly-expansion"].level - 1) * 0.1
     for _, e in pairs(surface.find_entities_filtered { name = "rabbasca-warp-anomaly" }) do
         e.amount = e.amount * amount_mult
         storage.stabilizer.anomalies.initial = storage.stabilizer.anomalies.initial + e.amount
+        table.insert(storage.stabilizer.anomalies.entities, e)
     end
 
     for _, e in pairs(surface.find_entities_filtered { type = { "offshore-pump", "mining-drill" } }) do

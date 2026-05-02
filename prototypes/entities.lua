@@ -11,15 +11,16 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     crafting_speed = 1,
     collision_box = {{-4.2, -4.2}, {4.2, 4.2}},
     selection_box = {{-4.5, -4.5}, {4.5, 4.5}},
-    energy_usage = "5GW",
+    energy_usage = "10MW",
     energy_source = {
       type = "burner",
-      fuel_inventory_size = 1,
-      burnt_inventory_size = 0,
+      fuel_inventory_size = 10,
+      burnt_inventory_size = 1,
       fuel_categories = { "rabbasca-warp-anomaly" },
+      initial_fuel = "rabbasca-warp-cell",
     },
-    fixed_recipe = "rabbasca-stabilize-warpfield",
-    module_slots = 0,
+    -- fixed_recipe = "rabbasca-stabilize-warpfield",
+    module_slots = 20,
     trash_inventory_size = 10,
     hidden = false,
     hidden_in_factoriopedia = false,
@@ -27,8 +28,8 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     order = "a[stabilizer]",
 }}
 stabilizer.effect_receiver = {
-  base_effect = { },
-  uses_module_effects = false,
+  base_effect = { consumption = 4 },
+  uses_module_effects = true,
   uses_beacon_effects = false,
   uses_surface_effects = false
 }
@@ -36,7 +37,7 @@ stabilizer.circuit_wire_max_distance = 120
 stabilizer.ignore_output_full = false
 stabilizer.minable = nil
 stabilizer.placeable_by = nil
-stabilizer.allowed_effects = { "speed", "productivity", "quality" }
+stabilizer.allowed_effects = { "speed", "consumption", "pollution" }
 stabilizer.flags = { "placeable-player", "player-creation" }
 -- stabilizer.energy_source = {
 --   type = "electric",
@@ -79,16 +80,17 @@ local lab = util.merge {
   data.raw["lab"]["lab"],
   {
     name = "rabbasca-warp-tech-analyzer",
-    energy_usage = "400MJ",
+    energy_usage = "97MW",
     placeable_by = { item = "rabbasca-warp-tech-analyzer", count = 1 }
   }
 }
-lab.inputs = { "rabbasca-warp-matrix", "rabbasca-coordinate-system", "rabbasca-spacetime-sensor", "rabbasca-spatial-anchor", "rabbasca-quantum-device" }
+lab.inputs = { "rabbasca-warp-matrix", "rabbasca-warp-trace", "rabbasca-coordinate-system", "rabbasca-spacetime-sensor", "rabbasca-spatial-anchor", "rabbasca-quantum-device" }
 lab.minable.result = "rabbasca-warp-tech-analyzer"
 lab.energy_source = {
   type = "burner",
-  fuel_categories = { "fusion" },
-  fuel_inventory_size = 1,
+  fuel_categories = { "rabbasca-warp-anomaly" },
+  fuel_inventory_size = 10,
+  burnt_inventory_size = 1,
 }
 
 local minelon  = util.merge {

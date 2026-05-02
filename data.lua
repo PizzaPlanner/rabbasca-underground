@@ -9,6 +9,7 @@ require("prototypes.surfaces")
 require("prototypes.recipes")
 require("prototypes.tiles")
 require("prototypes.technologies")
+require("prototypes.technologies-run")
 require("prototypes.tips-and-tricks")
 require("prototypes.warp-locations")
 

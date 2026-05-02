@@ -55,6 +55,30 @@ Rabbasca.make_trigger_item({
     { proto = data.raw["virtual-signal"]["signal-recycle"], tint = { 0.83, 1, 0.15} }
   })
 }, "rabbasca_warp_unprogress"),
+util.merge {
+  data.raw["tool"]["automation-science-pack"],
+  {
+    -- type = "item",
+    name = "rabbasca-warp-trace",
+    subgroup = "rabbasca-warp-stabilizer",
+    order = "a[warp-matrix]-x[residue]",
+    icon = "__rabbasca-assets__/graphics/recolor/icons/harene-gas.png",
+    icon_size = 64,
+    localised_description = { "item-description.rabbasca-warp-trace" },
+    spoil_ticks = 2 * second,
+    stack_size = 100000,
+    weight = 0,
+  },
+},
+{
+  type = "item",
+  name = "rabbasca-warp-cell-empty",
+  icons = Rabbasca.icons({{ proto = data.raw["item"]["fusion-power-cell"], tint = {0.0, 0.12, 0.12} }}),
+  icon_size = 64,
+  stack_size = 10,
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "a[warp-matrix]-c[warp-cell-empty]"
+},
 {
   type = "item",
   name = "rabbasca-lithium-amide",
@@ -70,13 +94,28 @@ Rabbasca.make_trigger_item({
   type = "item",
   name = "rabbasca-warp-cell",
   icons = Rabbasca.icons({{ proto = data.raw["item"]["fusion-power-cell"], tint = {0.8, 0.8, 1} }}),
-  -- fuel_value = "10GJ",
-  -- fuel_category = "rabbasca-warp-anomaly",
-  spoil_ticks = 5 * minute,
-  spoil_result = "rabbasca-warp-matrix",
+  fuel_value = "1GJ",
+  fuel_category = "rabbasca-warp-anomaly",
+  spoil_ticks = 2 * minute,
+  burnt_result = "rabbasca-warp-cell-empty",
   subgroup = "rabbasca-warp-stabilizer",
   order = "a[warp-matrix]-b[warp-cell]",
   stack_size = 1,
+  spoil_to_trigger_result = {
+      items_per_trigger = 1,
+      trigger = {
+        type = "direct",
+        action_delivery = {
+          type = "instant",
+          source_effects ={
+            {
+              type = "create-explosion",
+              entity_name = "small-demolisher-fissure",
+            }
+          }
+        }
+      }
+    }
 },
 util.merge {
   data.raw["tool"]["automation-science-pack"],
@@ -85,9 +124,9 @@ util.merge {
     icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
     icon_size = 1024,
     stack_size = 1000,
-    fuel_value = "500MJ",
-    fuel_category = "rabbasca-warp-anomaly",
-    weight = 1 * kg,
+    -- fuel_value = "500MJ",
+    -- fuel_category = "rabbasca-warp-anomaly",
+    weight = 0,
     localised_description = { "item-description.rabbasca-warp-matrix" },
     spoil_ticks = 20 * second,
     auto_recycle = false,
