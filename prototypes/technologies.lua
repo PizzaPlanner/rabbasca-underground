@@ -49,16 +49,13 @@ data:extend{
         type = "unlock-recipe",
         recipe = "rabbasca-warp-tech-analyzer"
       },
-      {
-        type = "unlock-recipe",
-        recipe = "rabbasca-warp-cell"
-      },
     },
     ignore_tech_cost_multiplier = true,
     research_trigger =
     {
-        type = "mine-entity",
-        entity = "rabbasca-warp-anomaly",
+        type = "craft-item",
+        item = "rabbasca-warp-cell",
+        count = 5
     }
 },
 {
@@ -140,29 +137,9 @@ data:extend{
 },
 {
     type = "technology",
-    name = "rabbasca-warp-anomaly-study",
-    icons = Rabbasca.icons({ proto = data.raw["tool"]["rabbasca-warp-matrix"] }),
-    prerequisites = { "rabbasca-warp-technology-analysis-1" },
-    effects = {
-      {
-        type = "unlock-recipe",
-        recipe = "rabbasca-warp-cell-empty"
-      }
-    },
-    ignore_tech_cost_multiplier = true,
-    unit = {
-      time = 10,
-      count = 500,
-      ingredients = {
-        { "rabbasca-warp-matrix", 1 },
-      }
-    }
-},
-{
-    type = "technology",
     name = "rabbasca-supercharged-module",
     icons = Rabbasca.icons({proto = data.raw["technology"]["modules"]}),
-    prerequisites = { "rabbasca-warp-anomaly-study" },
+    prerequisites = { "rabbasca-warp-technology-analysis-3" },
     effects = {
 
     },

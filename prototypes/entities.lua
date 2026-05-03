@@ -15,9 +15,10 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     energy_source = {
       type = "burner",
       fuel_inventory_size = 10,
-      burnt_inventory_size = 1,
+      burnt_inventory_size = 2,
       fuel_categories = { "rabbasca-warp-anomaly" },
-      initial_fuel = "rabbasca-warp-cell",
+      -- initial_fuel = "rabbasca-warp-cell",
+      -- initial_fuel_percent = 0.65
     },
     -- fixed_recipe = "rabbasca-stabilize-warpfield",
     module_slots = 20,
@@ -80,7 +81,7 @@ local lab = util.merge {
   data.raw["lab"]["lab"],
   {
     name = "rabbasca-warp-tech-analyzer",
-    energy_usage = "97MW",
+    energy_usage = "15MW",
     placeable_by = { item = "rabbasca-warp-tech-analyzer", count = 1 }
   }
 }
@@ -90,7 +91,7 @@ lab.energy_source = {
   type = "burner",
   fuel_categories = { "rabbasca-warp-anomaly" },
   fuel_inventory_size = 10,
-  burnt_inventory_size = 1,
+  burnt_inventory_size = 2,
 }
 
 local minelon  = util.merge {

@@ -8,9 +8,12 @@ local function post_warp_surface(surface)
     storage.stabilizer.entity.disabled_by_script = false
     storage.stabilizer.entity.custom_status = nil
     storage.stabilizer.anomalies.trace_inventory.clear()
+
     if storage.stabilizer.finished_warps == 0 then
-        storage.stabilizer.anomalies.trace_inventory.insert({ name = "rabbasca-warp-trace", count = 82 })
-        storage.stabilizer.entity.get_inventory(defines.inventory.burnt_result).insert({name = "rabbasca-warp-cell-empty", count = 1})
+        storage.stabilizer.entity.burner.remaining_burning_fuel = 0
+        storage.stabilizer.entity.set_recipe(nil)
+    else
+        storage.stabilizer.entity.set_recipe("rabbasca-stabilize-warpfield")
     end
 end
 
@@ -97,13 +100,15 @@ function M.change_affinity()
     end
 end
 
-function M.get_warp_cost()
-    return 4
-        + 45 * (1 - M.get_repair_progress())
-        + (storage.stabilizer.settings.recall and 0.5 or 0)
+function M.get_fuel_time_modifier()
+    return (1 + (storage.stabilizer.entity.effects.consumption or 0)) / (storage.stabilizer.entity.crafting_speed)
 end
 
-function M.warp_to(surface, data)
+function M.get_warp_cost()
+    return (1 + 18 * (1 - M.get_repair_progress() * M.get_repair_progress())) / M.get_fuel_time_modifier()
+end
+
+function M.warp_to(data)
     if storage.stabilizer.warping then return end
     data = data or { }
     data = {
@@ -113,6 +118,7 @@ function M.warp_to(surface, data)
     }
 
     local config = storage.stabilizer.config
+    local surface = game.surfaces[storage.stabilizer.surface]
     if not (surface and config.planets[data.planet]) then log("error: stabilizer could not warp to "..data.planet) return end
 
     storage.stabilizer.warping = { to = data.planet, warp_tick = game.tick + 90, finished_tick = game.tick + 180, recall = data.should_recall }
@@ -128,7 +134,7 @@ function M.warp_to(surface, data)
     storage.stabilizer.next.seed = storage.underground_seed_rng(10000000)
     storage.stabilizer.entity.disabled_by_script = true
     storage.stabilizer.entity.custom_status = { diode = defines.entity_status_diode.yellow, label = {"", "Warping"} }
-    storage.stabilizer.entity.set_recipe("rabbasca-stabilize-warpfield")
+    storage.stabilizer.entity.set_recipe(nil)
 end
 
 return M

@@ -21,6 +21,10 @@ data:extend{
   type = "fuel-category",
   name = "rabbasca-warp-anomaly",
 },
+{
+  type = "module-category",
+  name = "rabbasca-stabilizer-module",
+},
 Rabbasca.make_trigger_item({
   name = "rabbasca-locate-stabilizer",
   subgroup = "rabbasca-warp-stabilizer",
@@ -30,7 +34,7 @@ Rabbasca.make_trigger_item({
 }, "rabbasca_on_send_pylon_underground"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-reboot-stabilizer",
-  subgroup = "rabbasca-warp-stabilizer",
+  subgroup = "rabbasca-warp-stabilizer-functions",
   order = "z[locate-underground-reboot]",
   icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
   icon_size = 640,
@@ -38,23 +42,39 @@ Rabbasca.make_trigger_item({
 Rabbasca.make_trigger_item({
   name = "rabbasca-stabilize-warpfield",
   subgroup = "rabbasca-warp-stabilizer",
-  order = "z[stabilize]",
+  order = "a",
   icons = Rabbasca.icons({ proto = data.raw["virtual-signal"]["signal-recycle"], tint = { 0.83, 1, 0.15} })
 }, "rabbasca_warp_progress"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-stabilizer-warp-sequence",
-  subgroup = "rabbasca-warp-stabilizer",
-  order = "z[stabilize]-b",
+  subgroup = "rabbasca-warp-stabilizer-functions",
+  order = "a",
   icons = Rabbasca.icons({ proto = data.raw["virtual-signal"]["rabbasca-warp-inventory"], tint = { 0.83, 1, 0.15} })
 }, "rabbasca_warp_progress_warp"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-destabilize-warpfield",
-  subgroup = "rabbasca-warp-stabilizer",
+  subgroup = "rabbasca-warp-stabilizer-functions",
   order = "z[destabilize]",
   icons = Rabbasca.icons({
     { proto = data.raw["virtual-signal"]["signal-recycle"], tint = { 0.83, 1, 0.15} }
   })
 }, "rabbasca_warp_unprogress"),
+Rabbasca.make_trigger_item({
+  name = "rabbasca-stabilizer-toggle-extractor",
+  subgroup = "rabbasca-warp-stabilizer-functions",
+  order = "e",
+  icons = Rabbasca.icons({
+    { proto = data.raw["item"]["engine-unit"] }
+  })
+}, "rabbasca_on_reboot_miner"),
+Rabbasca.make_trigger_item({
+  name = "rabbasca-abandon-stabilizer",
+  subgroup = "rabbasca-warp-stabilizer-functions",
+  order = "zz",
+  icons = Rabbasca.icons({
+    { proto = data.raw["virtual-signal"]["signal-explosion"] }
+  })
+}, "rabbasca_on_abandon"),
 util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
@@ -71,13 +91,45 @@ util.merge {
   },
 },
 {
+  type = "module",
+  name = "rabbasca-stabilizer-reboot-module",
+  icon = "__rabbasca-assets__/graphics/recolor/icons/lithium-amide.png",
+  icon_size = 128,
+  stack_size = 1,
+  spoil_ticks = 5 * minute,
+  category = "efficiency",
+  tier = 10,
+  effect = { consumption = -1, speed = -0.1 }
+},
+{
+  type = "item",
+  name = "rabbasca-warpfield-excitement-rod",
+  icons = Rabbasca.icons({{ proto = data.raw["item"]["iron-stick"], tint = {0.0, 0.12, 0.12} }}),
+  icon_size = 64,
+  stack_size = 50,
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "a[warp-matrix]-d[stick]"
+},
+{
+  type = "item",
+  name = "rabbasca-warp-cell-empty-recharging",
+  flags = {},
+  icons = Rabbasca.icons({{ proto = data.raw["item"]["fusion-power-cell"], tint = {0.0, 0.12, 0.12} }}),
+  icon_size = 64,
+  stack_size = 50,
+  spoil_ticks = 10 * second,
+  spoil_result = "rabbasca-warp-cell-empty",
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "a[warp-matrix]-c[warp-cell-empty-0]"
+},
+{
   type = "item",
   name = "rabbasca-warp-cell-empty",
   icons = Rabbasca.icons({{ proto = data.raw["item"]["fusion-power-cell"], tint = {0.0, 0.12, 0.12} }}),
   icon_size = 64,
-  stack_size = 10,
+  stack_size = 50,
   subgroup = "rabbasca-warp-stabilizer",
-  order = "a[warp-matrix]-c[warp-cell-empty]"
+  order = "a[warp-matrix]-c[warp-cell-empty-1]"
 },
 {
   type = "item",

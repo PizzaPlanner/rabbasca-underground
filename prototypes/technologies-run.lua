@@ -6,12 +6,24 @@ data:extend({
     icon_size = 1024,
     rabbasca_underground_temporary = true,
     prerequisites = { "rabbasca-underground" },
-    effects = { },
+    effects = { 
+      {
+        type ="unlock-recipe",
+        recipe = "rabbasca-stabilize-warpfield"
+      },
+      {
+        type ="unlock-recipe",
+        recipe = "rabbasca-warp-cell"
+      },
+      {
+        type ="unlock-recipe",
+        recipe = "rabbasca-abandon-stabilizer"
+      },
+    },
     research_trigger =
     {
-        type = "craft-item",
-        item = "rabbasca-stabilizer-warp-sequence",
-        count = 1
+      type = "scripted",
+      trigger_description = { "rabbasca-extra.trigger-locate-underground" }
     }
 },
 {
@@ -60,14 +72,39 @@ data:extend({
 },
 {
     type = "technology",
+    name = "rabbasca-stabilizer-warp-sequence",
+    icons = Rabbasca.icons({
+      { proto = data.raw["planet"]["rabbasca"], scale = 0.5, shift = {-32, -32} }, 
+      { proto = data.raw["planet"]["aquilo"],   scale = 0.5, shift = {32, -32} },
+      { proto = data.raw["planet"]["vulcanus"], scale = 0.5, shift = {32, 32} },
+      { proto = data.raw["planet"]["fulgora"],  scale = 0.5, shift = {-32, 32} } }),
+    prerequisites = { "rabbasca-warp-stabilizer" },
+    rabbasca_underground_temporary = true,
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-stabilizer-warp-sequence",
+      }
+    },
+    ignore_tech_cost_multiplier = true,
+    unit = {
+      time = 4,
+      count = 50,
+      ingredients = {
+        { "rabbasca-warp-trace", 1 },
+      }
+    }
+},
+{
+    type = "technology",
     name = "rabbasca-stabilizer-extractor",
     icons = Rabbasca.icons({ proto = data.raw["technology"]["big-mining-drill"] }),
     prerequisites = { "rabbasca-warp-stabilizer" },
     rabbasca_underground_temporary = true,
     effects = {
       {
-        type = "nothing",
-        effect_description = { "rabbasca-extra.stabilizer-extractor-unlocked" }
+        type = "unlock-recipe",
+        recipe = "rabbasca-stabilizer-toggle-extractor"
       }
     },
     ignore_tech_cost_multiplier = true,

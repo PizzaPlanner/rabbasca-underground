@@ -59,7 +59,8 @@ function M.try_manifest(source, chance_mult, possible_anomalies, existing_pois)
                 for _, entry in pairs(entities) do
                     source.surface.create_entity(entry)
                 end
-            elseif new.type == "poi" and existing_pois[new.name] == nil then
+                return
+            elseif new.type == "poi" and existing_pois and existing_pois[new.name] == nil then
                 local tiles = { }
                 local radius = 2
                 local cx = p.position.x
@@ -83,9 +84,9 @@ function M.try_manifest(source, chance_mult, possible_anomalies, existing_pois)
                         e.get_inventory(defines.inventory.chest).insert({ name = new.name })
                     end
                     existing_pois[new.name] = true
+                    return
                 end
             end
-            return
         end
     end
 end
@@ -102,7 +103,7 @@ function M.replace_entities(surface, config, planet)
         e.destroy{}
     end
     for _, data in pairs(storage.stabilizer.selfmade_anomalies or { }) do
-        M.try_manifest({ position = data.position, quality = "normal", surface = surface }, data.amount * 3 * progress, anomalies, pois)
+        M.try_manifest({ position = data.position, quality = "normal", surface = surface }, data.amount * 3 * progress, anomalies)
         if data.text then data.text.destroy() end
     end
     storage.stabilizer.selfmade_anomalies = { }

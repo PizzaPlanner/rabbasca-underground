@@ -3,38 +3,109 @@ local M = {
     warp = require("scripts.warp")
 }
 
+local ENERGY_PER_CELL = 1000000000
+
 local function logistics_group_name()
     return tostring(settings.global["rabbasca-underground-logistics-group-name"].value)
+end
+
+local function craft_without_fuel(fuel_remaining, e, speed_mod)
+    local recipe = e.get_recipe()
+    if fuel_remaining > 0 or (#recipe.ingredients > 0 and not e.is_crafting()) then return end
+    -- e.crafting_progress = math.max(0, math.min(1, e.crafting_progress + (1/60/recipe.energy) * (speed_mod or 1) * e.crafting_speed))
+    e.energy = 10000000
+end
+
+local function apply_upkeep(fuel)
+    local new_fuel = fuel - storage.stabilizer.charge.upkeep / 3600 * ENERGY_PER_CELL
+    if new_fuel < 0 then
+        local fuel_inv = storage.stabilizer.entity.get_inventory(defines.inventory.fuel)
+        for i = 1, #fuel_inv do
+            local cell = fuel_inv[i]
+            if cell.valid_for_read then
+                storage.stabilizer.entity.burner.currently_burning = cell
+                cell.clear()
+                return new_fuel + ENERGY_PER_CELL
+            end
+        end
+    end
+    return math.max(0, new_fuel)
 end
 
 local function update_fuel()
     local recipe = storage.stabilizer.entity.get_recipe()
     local is_same_recipe = recipe and recipe.name == storage.stabilizer.charge.last_recipe or false
-    storage.stabilizer.charge.last_recipe = recipe and recipe.name or nil
     local fuel_remaining = storage.stabilizer.entity.burner.remaining_burning_fuel
     local fuel_delta = (storage.stabilizer.charge.last_fuel or fuel_remaining) - fuel_remaining
-    if not is_same_recipe then return end
-        storage.stabilizer.charge.drain = 1
-            + (storage.stabilizer.anomaly_recycler and 0.1 or 0)
-            + (((storage.stabilizer.safe_zone_radius or 10) - 10) / 4 * 0.075)
-        if storage.stabilizer.charge.last_recipe == "rabbasca-stabilizer-warp-sequence" then
-            storage.stabilizer.charge.drain = storage.stabilizer.charge.drain + M.warp.get_warp_cost()
-        end
-
-    -- game.print("drain: "..storage.stabilizer.charge.drain.." fuel delta: "..fuel_delta.." last fuel: "..(storage.stabilizer.charge.last_recipe or "nil"))
-    -- - (storage.stabilizer.progress.charge > event.tick and 0.02 or 0)
-    -- storage.stabilizer.charge.current = math.max(0, storage.stabilizer.charge.current - storage.stabilizer.charge.drain / 60)
-    -- storage.stabilizer.charge.current = math.min(storage.stabilizer.charge.current, storage.stabilizer.charge.max)
+    storage.stabilizer.charge.last_recipe = recipe and recipe.name or nil
+    storage.stabilizer.charge.upkeep = 
+          (((storage.stabilizer.safe_zone_radius or 10) - 10) * storage.stabilizer.settings.safe_zone_upkeep_per_radius)
+        + (storage.stabilizer.anomaly_recycler and 0.05 or 0)
+    fuel_remaining = apply_upkeep(fuel_remaining)
+    if not (is_same_recipe and fuel_delta >= 0) then
+        storage.stabilizer.charge.last_fuel = nil
+        storage.stabilizer.entity.burner.remaining_burning_fuel = fuel_remaining
+        return
+    end
+    local settings = storage.stabilizer.config.recipe_settings[storage.stabilizer.charge.last_recipe]
     
-    storage.stabilizer.entity.burner.remaining_burning_fuel = fuel_remaining - fuel_delta * (storage.stabilizer.charge.drain - 1)
+    storage.stabilizer.charge.drain = 0
+    if storage.stabilizer.charge.last_recipe == "rabbasca-stabilize-warpfield" then
+        -- nothing
+    elseif storage.stabilizer.charge.last_recipe == "rabbasca-stabilizer-warp-sequence" then
+        storage.stabilizer.charge.drain = M.warp.get_warp_cost()
+    elseif storage.stabilizer.charge.last_recipe == "rabbasca-abandon-stabilizer" then
+        for _, player in pairs(storage.stabilizer.entity.force.players) do
+            player.add_custom_alert(storage.stabilizer.entity, { type = "entity", name = "rabbasca-warp-stabilizer" }, { "rabbasca-extra.alert-abandon" }, true)
+        end
+    elseif storage.stabilizer.charge.last_recipe == "rabbasca-warp-cell" then
+        if storage.stabilizer.settings.autofuel then
+            local output_inv = storage.stabilizer.entity.get_inventory(defines.inventory.crafter_output)
+            local removed = output_inv.remove({name = "rabbasca-warp-cell", count = 1})
+            if removed > 0 then
+                storage.stabilizer.entity.get_inventory(defines.inventory.fuel).insert({name = "rabbasca-warp-cell", count = removed})
+                storage.stabilizer.entity.set_recipe("rabbasca-stabilize-warpfield")
+            elseif storage.stabilizer.entity.crafting_progress <= 0 then
+                local burnt = storage.stabilizer.entity.get_inventory(defines.inventory.burnt_result)
+                local trash = storage.stabilizer.anomalies.trace_inventory
+                if burnt.get_item_count("rabbasca-warp-cell-empty") > 0 and trash.get_item_count("rabbasca-warp-trace") >= 50 then
+                    burnt.remove({ name = "rabbasca-warp-cell-empty", count = 1 })
+                    trash.remove({ name = "rabbasca-warp-trace", count = 50 })
+                    storage.stabilizer.entity.crafting_progress = 0.01
+                end
+            end
+        end
+    end
+
+    if not (settings and settings.can_craft_for_free) then
+        storage.stabilizer.entity.burner.remaining_burning_fuel = fuel_remaining - fuel_delta * storage.stabilizer.charge.drain
+    else
+        storage.stabilizer.entity.burner.remaining_burning_fuel = fuel_remaining + fuel_delta
+        storage.stabilizer.charge.drain = 0
+        craft_without_fuel(fuel_remaining, storage.stabilizer.entity, settings.freecraft_time_multiplier)
+    end
     storage.stabilizer.charge.last_fuel = storage.stabilizer.entity.burner.remaining_burning_fuel
     
     local fuel_inv = storage.stabilizer.entity.get_inventory(defines.inventory.fuel)
+    local has_cells = 0
     for i = 1, #fuel_inv do
         local cell = fuel_inv[i]
         if cell.valid_for_read then
             cell.spoil_percent = 0
+            has_cells = has_cells + 1
         end
+    end
+
+    if storage.stabilizer.settings.autofuel 
+    and fuel_remaining <= 0 and has_cells == 0 
+    and not (settings and settings.can_craft_for_free) then
+        storage.stabilizer.entity.set_recipe("rabbasca-warp-cell")
+        storage.stabilizer.entity.crafting_progress = 0
+    end
+    storage.stabilizer.charge.cells_stored = has_cells + storage.stabilizer.entity.burner.remaining_burning_fuel / ENERGY_PER_CELL
+    storage.stabilizer.charge.empty_since  = storage.stabilizer.charge.cells_stored <= 0 and (storage.stabilizer.charge.empty_since + 1) or 0
+    if storage.stabilizer.charge.empty_since > storage.stabilizer.settings.miner_hibernation_timeout and storage.stabilizer.anomaly_recycler then
+        M.reboot_mining_unit()
     end
 end
 
@@ -70,12 +141,16 @@ function M.on_tick_underground(event)
                     storage.stabilizer.anomalies.current = storage.stabilizer.anomalies.current + e.amount
                 end
             end
-            for _, player in pairs(game.connected_players) do
-                M.ui.update_affinity_bar(player, true)
-            end
             M.update_logistic_section()
         end
+        if storage.stabilizer.entity.get_signal({ name = "rabbasca-warp-sequence", type = "item" }, defines.wire_connector_id.circuit_green, defines.wire_connector_id.circuit_red) > 0 then
+            M.initiate_warp()
+        end
     end
+
+    -- if storage.stabilizer.settings.autopilot == true and M.warp.get_repair_progress() >= 1 then
+    --     M.initiate_warp()
+    -- end
 
     if event.tick % 5 == 0 and storage.stabilizer.warping then
         M.warp.on_warp_underground(event)
@@ -84,6 +159,12 @@ function M.on_tick_underground(event)
     for _, player in pairs(game.connected_players) do
         M.ui.set_stabilizer_ui(player)
     end
+end
+
+local function toggle_reboot_recipe()
+    if not storage.stabilizer then return end
+    local force = storage.stabilizer.entity.force
+    force.recipes["rabbasca-reboot-stabilizer"].enabled = not force.technologies["rabbasca-warp-stabilizer"].researched
 end
 
 local function register_stabilizer(s)
@@ -97,16 +178,21 @@ local function register_stabilizer(s)
         next = { weights = { }, seed = 0 },
         settings = {
             autopilot = true,
-            recall = false
+            recall = false,
+            autofuel = true,
+            miner_hibernation_timeout = 2 * 3600,
+            safe_zone_upkeep_per_radius = 0.0125
         },
 
         anomalies = { initial = 0, current = 0, entities = { }, trace_inventory = s.get_inventory(defines.inventory.crafter_trash) },
         config = prototypes.mod_data["rabbasca-stabilizer-config"].data, -- accessing prototypes is expensive, so cache it here too
-        charge = { drain = 0 },
+        charge = { drain = 0, upkeep = 0, cells_stored = 0, empty_since = math.random(484, 865) * 3600 * 24 * 365 },
+        is_booted = false
     }
-    M.warp.warp_to(s.surface, { planet = "aquilo" })
+    M.warp.warp_to({ planet = "aquilo" })
     game.forces.player.chart(s.surface, {{-48, -48}, {48, 48}})
     game.forces.player.print({ "rabbasca-extra.created-underground-stabilizer", s.gps_tag})
+    toggle_reboot_recipe()
 end
 
 function M.on_config_changed(handler)
@@ -114,10 +200,11 @@ function M.on_config_changed(handler)
     storage.stabilizer.config = prototypes.mod_data["rabbasca-stabilizer-config"].data -- re-cache in case it changed
     if storage.stabilizer.warping and storage.stabilizer.config.planets[storage.stabilizer.warping.to] == nil then
         storage.stabilizer.warping = nil
-        M.warp.warp_to(storage.stabilizer.entity.surface)
+        M.warp.warp_to()
     elseif not storage.stabilizer.config.planets[storage.stabilizer.current_location] then
-        M.warp.warp_to(storage.stabilizer.entity.surface)
+        M.warp.warp_to()
     end
+    toggle_reboot_recipe()
 end
 
 function M.update_logistic_section()
@@ -155,6 +242,10 @@ function M.on_stabilizer_died(id)
         end
         storage.stabilizer = nil
         M.update_logistic_section()
+
+        for _, player in pairs(game.connected_players) do
+            M.ui.clear_stabilizer_ui(player)
+        end
     end
 end
 
@@ -180,28 +271,52 @@ function M.on_destabilization(entity)
     my_anomaly.text.text = { "rabbasca-extra.selfmade-anomaly", my_anomaly.amount }
 end
 
-function M.reboot_stabilizer(player, value)
+function M.reboot_stabilizer()
     local s = storage.stabilizer and storage.stabilizer.entity
     if not (s and s.valid) then return end
-    if (not value) and storage.stabilizer.anomaly_recycler then
+    if s.force.technologies["rabbasca-warp-stabilizer"].researched then return end
+    local inv = s.get_inventory(defines.inventory.crafter_modules)
+    local to_insert = 4
+    for i = 1,#inv do
+        if to_insert > 0 and not inv[i].valid_for_read then
+            if inv[i].set_stack({name = "rabbasca-stabilizer-reboot-module", count = 1, spoil_percent = to_insert / 5 }) then
+                to_insert = to_insert - 1
+            end
+        end
+    end
+    s.set_recipe("rabbasca-stabilize-warpfield")
+    -- storage.stabilizer.anomalies.trace_inventory.insert({ name = "rabbasca-warp-trace", count = 293 + game.forces.player.technologies["rabbasca-anomaly-expansion"].level - 1 })
+    s.get_inventory(defines.inventory.fuel).insert({name = "rabbasca-warp-cell", count = 2})
+    for _, player in pairs(game.connected_players) do
+        M.ui.clear_stabilizer_ui(player)
+    end
+    s.force.technologies["rabbasca-warp-stabilizer"].researched = true
+    toggle_reboot_recipe()
+end
+
+function M.reboot_mining_unit()
+    local s = storage.stabilizer and storage.stabilizer.entity
+    if not (s and s.valid) then return end
+    if storage.stabilizer.anomaly_recycler then
         storage.stabilizer.anomaly_recycler.destroy{}
         storage.stabilizer.anomaly_recycler = nil
-    elseif value and not storage.stabilizer.anomaly_recycler and storage.stabilizer.charge.current >= 5 then
+    else
         storage.stabilizer.anomaly_recycler = s.surface.create_entity {
             name = "rabbasca-stabilizer-consumer",
             position = s.position,
             force = s.force
         }
-        storage.stabilizer.charge.current = storage.stabilizer.charge.current - 5
-        player.force.technologies["rabbasca-warp-stabilizer"].researched = true
-        s.force = player.force
     end
+    s.set_recipe("rabbasca-stabilize-warpfield")
 end
 
 function M.on_locate_progress(vault)
     local surface = game.planets["rabbasca-underground"].surface
     if not surface then
-        if math.random() > 0.2 then return end
+        if math.random() > 0.2 then 
+            if vault then vault.get_inventory(defines.inventory.crafter_input).insert({name = "rabbasca-warp-pylon", count = 1}) end
+            return
+        end
         surface = game.planets["rabbasca-underground"].create_surface()
     end
     local offset = {0, 10}
@@ -239,15 +354,9 @@ function M.init_underground(surface)
     register_stabilizer(stab)
 end
 
-function M.initiate_warp(player)
-    if not storage.stabilizer then return end
-    -- if game.tick < storage.stabilizer.next.blocked_until then 
-    --     if player then
-    --         player.create_local_flying_text { text = { "rabbasca-extra.warp-on-cooldown" }, surface = storage.stabilizer.surface, position = storage.stabilizer.entity.position }
-    --     end
-    --     return
-    -- end
-    M.warp.warp_to(game.surfaces[storage.stabilizer.surface])
+function M.initiate_warp()
+    if not (storage.stabilizer and storage.stabilizer.entity) then return end
+    storage.stabilizer.entity.set_recipe("rabbasca-stabilizer-warp-sequence")
 end
 
 if settings.global["rabbasca-debug-mode"] then
@@ -257,9 +366,9 @@ if settings.global["rabbasca-debug-mode"] then
         if not surface then return end
         local to = command.parameter
         if to then
-            M.warp.warp_to(surface, { planet = to })
+            M.warp.warp_to({ planet = to })
         else
-            M.warp.warp_to(surface)
+            M.warp.warp_to()
         end
     end)
 

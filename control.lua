@@ -4,7 +4,7 @@ local underground = require("scripts.underground")
 local function handle_script_events(event)
   local effect_id = event.effect_id
   if effect_id == "rabbasca_warp_progress_warp" then
-    underground.initiate_warp()
+    underground.warp.warp_to()
   elseif effect_id == "rabbasca_warp_unprogress" then
     local from = Rabbasca.get_spoiled_in(event)
     if from then
@@ -12,6 +12,10 @@ local function handle_script_events(event)
     end
   elseif effect_id == "rabbasca_on_reboot_underground" then
     underground.reboot_stabilizer()
+  elseif effect_id == "rabbasca_on_reboot_miner" then
+    underground.reboot_mining_unit()
+  elseif effect_id == "rabbasca_on_abandon" then
+    underground.abandon()
   elseif effect_id == "rabbasca_on_send_pylon_underground" then
     local from = Rabbasca.get_spoiled_in(event)
     underground.on_locate_progress(from)
@@ -24,11 +28,6 @@ script.on_event(defines.events.on_object_destroyed, function(event)
   if event.type == defines.target_type.entity then
     underground.on_stabilizer_died(event.registration_number)
   end
-end)
-
-script.on_event(defines.events.on_player_changed_surface, function(event)
-    local player = game.players[event.player_index]
-    underground.ui.update_affinity_bar(player)
 end)
 
 script.on_event(defines.events.on_surface_created, function(event)
@@ -61,16 +60,24 @@ script.on_event(defines.events.on_gui_switch_state_changed, function(event)
   local player = game.players[event.player_index]
   if not player then return end
   if event.element.name == "rabbasca_su_switch_miner_reboot" then
-    underground.reboot_stabilizer(game.players[event.player_index], event.element.switch_state == "right")
+    underground.reboot_mining_unit(game.players[event.player_index], event.element.switch_state == "right")
     player.gui.relative.rabbasca_stabilizer_ui.destroy()
   elseif event.element.name == "rabbasca_su_manual_warp" and event.element.switch_state == "right" then
-    underground.initiate_warp(player)
+    if storage.stabilizer.entity.get_recipe().name == "rabbasca-stabilizer-warp-sequence" then
+      storage.stabilizer.entity.set_recipe("rabbasca-stabilize-warpfield")
+    else
+      underground.initiate_warp()
+    end
     player.gui.relative.rabbasca_stabilizer_ui.destroy()
   elseif event.element.name == "rabbasca_su_abandon" and event.element.switch_state == "right" then
     underground.abandon(player)
     -- player.gui.relative.rabbasca_stabilizer_ui.destroy()
+  elseif event.element.name == "rabbasca_su_switch_reboot" then
+    storage.stabilizer.settings.rebooting = event.element.switch_state == "right"
   elseif event.element.name == "rabbasca_su_autopilot" then
     storage.stabilizer.settings.autopilot = event.element.switch_state == "right"
+  elseif event.element.name == "rabbasca_su_autofuel" then
+    storage.stabilizer.settings.autofuel = event.element.switch_state == "right"
   elseif event.element.name == "rabbasca_su_recall" then
     storage.stabilizer.settings.recall = event.element.switch_state == "right"
   end
