@@ -15,7 +15,7 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     energy_source = {
       type = "burner",
       fuel_inventory_size = 10,
-      burnt_inventory_size = 2,
+      burnt_inventory_size = 10,
       fuel_categories = { "rabbasca-warp-anomaly" },
       -- initial_fuel = "rabbasca-warp-cell",
       -- initial_fuel_percent = 0.65
@@ -77,6 +77,36 @@ stabilizer.graphics_set = {
   },
 }
 
+local relicary = {
+  name = "rabbasca-relicary",
+  icons = Rabbasca.icons({ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }),
+  type = "furnace",
+  max_health = 100,
+  production_health_effect = {
+    producing = -8 / second,
+    not_producing = 0
+  },
+  flags = { "placeable-neutral", "not-repairable", "not-deconstructable" },
+  collision_box = {{-0.9, -0.9},{0.9, 0.9}},
+  selection_box = {{-1, -1},{1, 1}},
+  enable_logistic_control_behavior = false,
+  result_inventory_size = 2,
+  source_inventory_size = 1,
+  crafting_speed = 1,
+  energy_usage = "5MW",
+  energy_source = {
+    type = "burner",
+    burner_usage = "food",
+    effectivity = 1,
+    fuel_categories = { "carotene" },
+    fuel_inventory_size = 1
+  },
+  module_slots = 0,
+  crafting_categories = { "rabbasca-relics" },
+  -- cant_insert_at_source_message_key = "inventory-restriction.not-a-vault-key",
+  graphics_set = table.deepcopy(data.raw["assembling-machine"]["rabbasca-vault-console"].graphics_set)
+}
+
 local lab = util.merge {
   data.raw["lab"]["lab"],
   {
@@ -122,7 +152,7 @@ minelon.custom_tooltip_fields = nil
 local passive_miner = util.merge {
   data.raw["electric-energy-interface"]["rabbasca-energy-source"],
   {
-    name = "rabbasca-stabilizer-consumer",
+    name = "rabbasca-anomaly-extractor",
     type = "mining-drill",
     factoriopedia_alternative = "rabbasca-warp-stabilizer",
     resource_searching_radius = 100,
@@ -157,6 +187,7 @@ uplink_2.surface_conditions = { { property = "gravity", min = 0.1 } }
 data:extend {
   stabilizer,
   lab,
+  relicary,
   minelon,
   passive_miner,
   uplink_2,

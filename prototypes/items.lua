@@ -60,13 +60,13 @@ Rabbasca.make_trigger_item({
   })
 }, "rabbasca_warp_unprogress"),
 Rabbasca.make_trigger_item({
-  name = "rabbasca-stabilizer-toggle-extractor",
+  name = "rabbasca-stabilizer-toggle-component",
   subgroup = "rabbasca-warp-stabilizer-functions",
   order = "e",
   icons = Rabbasca.icons({
     { proto = data.raw["item"]["engine-unit"] }
   })
-}, "rabbasca_on_reboot_miner"),
+}, "rabbasca_on_toggle_component"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-abandon-stabilizer",
   subgroup = "rabbasca-warp-stabilizer-functions",
@@ -75,6 +75,14 @@ Rabbasca.make_trigger_item({
     { proto = data.raw["virtual-signal"]["signal-explosion"] }
   })
 }, "rabbasca_on_abandon"),
+Rabbasca.make_trigger_item({
+  name = "rabbasca-stabilizer-repair-component",
+  subgroup = "rabbasca-warp-stabilizer-functions",
+  order = "zz",
+  icons = Rabbasca.icons({
+    { proto = data.raw["virtual-signal"]["signal-radioactivity"] }
+  })
+}, "rabbasca_on_repair_component"),
 util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
@@ -82,11 +90,26 @@ util.merge {
     name = "rabbasca-warp-trace",
     subgroup = "rabbasca-warp-stabilizer",
     order = "a[warp-matrix]-x[residue]",
-    icon = "__rabbasca-assets__/graphics/recolor/icons/harene-gas.png",
-    icon_size = 64,
+    icon = "__rabbasca-assets__/graphics/by-openai/warp-trace.png",
+    icon_size = 256,
     localised_description = { "item-description.rabbasca-warp-trace" },
     spoil_ticks = 2 * second,
-    stack_size = 100000,
+    spoil_to_trigger_result = {
+      items_per_trigger = 1,
+      trigger = {
+        type = "direct",
+        action_delivery = {
+          type = "instant",
+          source_effects ={
+            {
+              type = "script",
+              effect_id = "rabbasca_on_trace_spoiled",
+            }
+          }
+        }
+      }
+    },
+    stack_size = 1000,
     weight = 0,
   },
 },
@@ -104,23 +127,37 @@ util.merge {
 {
   type = "item",
   name = "rabbasca-warpfield-excitement-rod",
-  icons = Rabbasca.icons({{ proto = data.raw["item"]["iron-stick"], tint = {0.0, 0.12, 0.12} }}),
+  icons = Rabbasca.icons({
+    { icon = "__rabbasca-assets__/graphics/by-openai/warp-trace.png", icon_size = 256 },
+    { icon = "__rabbasca-assets__/graphics/recolor/icons/excitement-rod.png" },
+  }),
   icon_size = 64,
   stack_size = 50,
   subgroup = "rabbasca-warp-stabilizer",
-  order = "a[warp-matrix]-d[stick]"
+  order = "c[parts]-b[stick]",
+  weight = 20 * kg,
 },
 {
   type = "item",
-  name = "rabbasca-warp-cell-empty-recharging",
-  flags = {},
-  icons = Rabbasca.icons({{ proto = data.raw["item"]["fusion-power-cell"], tint = {0.0, 0.12, 0.12} }}),
-  icon_size = 64,
+  name = "rabbasca-warpfield-engine",
+  icon = data.raw["item"]["electric-engine-unit"].icon,
   stack_size = 50,
-  spoil_ticks = 10 * second,
-  spoil_result = "rabbasca-warp-cell-empty",
   subgroup = "rabbasca-warp-stabilizer",
-  order = "a[warp-matrix]-c[warp-cell-empty-0]"
+  order = "c[parts]-d[engine]",
+},
+{
+  type = "item-with-tags",
+  name = "rabbasca-warp-cell-recharging",
+  icon = "__rabbasca-assets__/graphics/recolor/icons/warp-cell-empty.png",
+  icon_size = 64,
+  stack_size = 1,
+  localised_description = { "", { "item-description.rabbasca-warp-cell-recharging-tags", "0" }, { "item-description.rabbasca-warp-cell-recharging" } },
+  flags = { "not-stackable" },
+  spoil_ticks = 30 * second,
+  spoil_result = "rabbasca-warp-cell-recharging",
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "a[warp-matrix]-c[warp-cell-empty-0]",
+  weight = 250 * kg,
 },
 {
   type = "item",
@@ -129,7 +166,8 @@ util.merge {
   icon_size = 64,
   stack_size = 50,
   subgroup = "rabbasca-warp-stabilizer",
-  order = "a[warp-matrix]-c[warp-cell-empty-1]"
+  order = "a[warp-matrix]-c[warp-cell-empty-1]",
+  weight = 250 * kg,
 },
 {
   type = "item",
@@ -145,29 +183,18 @@ util.merge {
 {
   type = "item",
   name = "rabbasca-warp-cell",
-  icons = Rabbasca.icons({{ proto = data.raw["item"]["fusion-power-cell"], tint = {0.8, 0.8, 1} }}),
+  icon = "__rabbasca-assets__/graphics/recolor/icons/warp-cell.png",
+  icon_size = 64,
   fuel_value = "1GJ",
   fuel_category = "rabbasca-warp-anomaly",
+  stack_size = 1,
+  flags = { "not-stackable" },
   spoil_ticks = 2 * minute,
-  burnt_result = "rabbasca-warp-cell-empty",
+  spoil_result = "rabbasca-warp-cell-recharging",
+  burnt_result = "rabbasca-warp-cell-recharging",
   subgroup = "rabbasca-warp-stabilizer",
   order = "a[warp-matrix]-b[warp-cell]",
-  stack_size = 1,
-  spoil_to_trigger_result = {
-      items_per_trigger = 1,
-      trigger = {
-        type = "direct",
-        action_delivery = {
-          type = "instant",
-          source_effects ={
-            {
-              type = "create-explosion",
-              entity_name = "small-demolisher-fissure",
-            }
-          }
-        }
-      }
-    }
+  weight = 250 * kg,
 },
 util.merge {
   data.raw["tool"]["automation-science-pack"],

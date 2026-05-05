@@ -12,8 +12,13 @@ local function handle_script_events(event)
     end
   elseif effect_id == "rabbasca_on_reboot_underground" then
     underground.reboot_stabilizer()
-  elseif effect_id == "rabbasca_on_reboot_miner" then
-    underground.reboot_mining_unit()
+  elseif effect_id == "rabbasca_on_repair_component" then
+    underground.repair_part()
+  elseif effect_id == "rabbasca_on_toggle_component" then
+    underground.toggle_component()
+  elseif effect_id == "rabbasca_on_trace_spoiled" then
+    local target = Rabbasca.get_spoiled_in(event)
+    underground.attempt_cell_recharge(target, true)
   elseif effect_id == "rabbasca_on_abandon" then
     underground.abandon()
   elseif effect_id == "rabbasca_on_send_pylon_underground" then
@@ -30,12 +35,6 @@ script.on_event(defines.events.on_object_destroyed, function(event)
   end
 end)
 
-script.on_event(defines.events.on_surface_created, function(event)
-  if (game.planets["rabbasca-underground"] and game.planets["rabbasca-underground"].surface and event.surface_index == game.planets["rabbasca-underground"].surface.index) then
-    underground.init_underground(game.surfaces[event.surface_index])
-  end
-end)
-
 script.on_event(defines.events.on_gui_opened, function(event)
     if event.gui_type ~= defines.gui_type.entity then return end
     if not event.entity or not event.entity.valid then return end
@@ -49,20 +48,21 @@ script.on_event(defines.events.on_gui_opened, function(event)
 end)
 
 script.on_event(defines.events.on_gui_click, function(event) 
-  if event.element.name == "rabbasca_su_manual_warp" then
-    underground.initiate_warp()
-  elseif event.element.name == "rabbasca_ug_current_planet" and storage.stabilizer then
-    game.players[event.player_index].opened = storage.stabilizer.entity
+  if event.element.name == "rabbasca_su_btn_reboot_main" then
+    storage.stabilizer.entity.set_recipe("rabbasca-reboot-stabilizer")
+  elseif event.element.name == "rabbasca_su_btn_repair_warpdrive" and storage.stabilizer then
+    storage.stabilizer.entity.set_recipe("rabbasca-repair-warpdrive")
+  elseif event.element.name == "rabbasca_su_btn_repair_extractor" and storage.stabilizer then
+    storage.stabilizer.entity.set_recipe("rabbasca-repair-extractor")
+  elseif event.element.name == "rabbasca_su_btn_repair_relichunter" and storage.stabilizer then
+    storage.stabilizer.entity.set_recipe("rabbasca-repair-relichunter")
   end
 end)
 
 script.on_event(defines.events.on_gui_switch_state_changed, function(event)
   local player = game.players[event.player_index]
   if not player then return end
-  if event.element.name == "rabbasca_su_switch_miner_reboot" then
-    underground.reboot_mining_unit(game.players[event.player_index], event.element.switch_state == "right")
-    player.gui.relative.rabbasca_stabilizer_ui.destroy()
-  elseif event.element.name == "rabbasca_su_manual_warp" and event.element.switch_state == "right" then
+  if event.element.name == "rabbasca_su_manual_warp" and event.element.switch_state == "right" then
     if storage.stabilizer.entity.get_recipe().name == "rabbasca-stabilizer-warp-sequence" then
       storage.stabilizer.entity.set_recipe("rabbasca-stabilize-warpfield")
     else

@@ -4,6 +4,10 @@ data:extend {
         name = "rabbasca-warp-stabilizer",
     },
     {
+        type = "recipe-category",
+        name = "rabbasca-relics",
+    },
+    {
         type = "item-subgroup",
         name = "rabbasca-warp-stabilizer",
         group = data.raw["item-group"]["rabbasca-extensions"] and "rabbasca-extensions" or "intermediate-products",
@@ -72,41 +76,29 @@ data:extend {
             primary = { 0.85, 0.42, 1 }
         },
         stabilizer_config = { can_craft_for_free = true, freecraft_time_multiplier = 2 },
-        category = "rabbasca-remote",
-        order = "b",
-        additional_categories = { "rabbasca-warp-stabilizer" }
+        category = nil,
     },
     {
         type = "recipe",
-        name = "rabbasca-warp-cell-recharging",
+        name = "rabbasca-warpfield-engine",
         enabled = false,
-        energy_required = 8,
-        result_is_always_fresh = true,
+        energy_required = 14,
         ingredients = { 
-            { type = "item", name = "rabbasca-warp-cell-empty", amount = 1 }, 
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 8 } },
-        results = { 
-            { type = "item", name = "rabbasca-warp-cell-recharging", amount = 1 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1, probability = 0.95 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1, probability = 0.95 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1, probability = 0.95 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1, probability = 0.95 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1, probability = 0.95 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1, probability = 0.95 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1, probability = 0.95 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1, probability = 0.95 },
+            { type = "item", name = "engine-unit", amount = 1 }, 
+            { type = "item", name = "electronic-circuit", amount = 10 }, 
+            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 12 },
+            { type = "item", name = "rabbasca-warp-matrix", amount = 25 },
         },
-        main_product = "rabbasca-warp-cell-recharging",
-        allow_productivity = false,
+        results = { 
+            { type = "item", name = "rabbasca-warpfield-engine", amount = 1 },
+        },
+        allow_productivity = true,
         auto_recycle = false,
         crafting_machine_tint =
         {
             primary = { 0.85, 0.42, 1 }
         },
-        stabilizer_config = { can_craft_for_free = true, freecraft_time_multiplier = 2 },
-        category = "rabbasca-remote",
-        order = "b",
-        additional_categories = { "rabbasca-warp-stabilizer" }
+        category = "metallurgy",
     },
     {
         type = "recipe",
@@ -115,9 +107,9 @@ data:extend {
         energy_required = 8,
         result_is_always_fresh = true,
         ingredients = { 
-            { type = "item", name = "rabbasca-warp-matrix", amount = 50 },
-            { type = "item", name = "lithium-amide", amount = 50 },
-            { type = "fluid", name = "fluorine", amount = 200 } },
+            { type = "item", name = "rabbasca-warp-trace", amount = 10 },
+            { type = "item", name = "rabbasca-lithium-amide", amount = 25 },
+            { type = "fluid", name = "fluorine", amount = 100 } },
         results = { { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1 } },
         auto_recycle = false,
         crafting_machine_tint =
@@ -132,9 +124,75 @@ data:extend {
         name = "rabbasca-reboot-stabilizer",
         enabled = true,
         energy_required = 20,
+        hidden = true,
         hidden_in_factoriopedia = true,
         ingredients = { },
         results = { { type = "item", name = "rabbasca-reboot-stabilizer", amount = 1 } },
+        category = "rabbasca-warp-stabilizer",
+        order = "0",
+        allow_productivity = false,
+        stabilizer_config = { can_craft_for_free = true },
+        result_is_always_fresh = true,
+        auto_recycle = false,
+        crafting_machine_tint = {
+            primary = { 0.95, 0.83, 0.14 }
+        }
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-repair-warpdrive",
+        enabled = true,
+        energy_required = 20,
+        hidden = true,
+        hidden_in_factoriopedia = true,
+        ingredients = {
+            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 5 },
+        },
+        results = { { type = "item", name = "rabbasca-stabilizer-repair-component", amount = 1 } },
+        category = "rabbasca-warp-stabilizer",
+        order = "0",
+        allow_productivity = false,
+        stabilizer_config = { can_craft_for_free = true },
+        result_is_always_fresh = true,
+        auto_recycle = false,
+        crafting_machine_tint = {
+            primary = { 0.95, 0.83, 0.14 }
+        }
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-repair-extractor",
+        enabled = true,
+        energy_required = 20,
+        hidden = true,
+        hidden_in_factoriopedia = true,
+        ingredients = {
+            { type = "item", name = "rabbasca-warpfield-engine", amount = 5 },
+            { type = "item", name = "rabbasca-spatial-anchor", amount = 2 },
+        },
+        results = { { type = "item", name = "rabbasca-stabilizer-repair-component", amount = 1 } },
+        category = "rabbasca-warp-stabilizer",
+        order = "0",
+        allow_productivity = false,
+        stabilizer_config = { can_craft_for_free = true },
+        result_is_always_fresh = true,
+        auto_recycle = false,
+        crafting_machine_tint = {
+            primary = { 0.95, 0.83, 0.14 }
+        }
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-repair-relichunter",
+        enabled = true,
+        energy_required = 20,
+        hidden = true,
+        hidden_in_factoriopedia = true,
+        ingredients = {
+            { type = "item", name = "beta-carotene-barrel", amount = 1 },
+            { type = "item", name = "rabbasca-quantum-device", amount = 7 },
+        },
+        results = { { type = "item", name = "rabbasca-stabilizer-repair-component", amount = 1 } },
         category = "rabbasca-warp-stabilizer",
         order = "0",
         allow_productivity = false,
@@ -171,7 +229,27 @@ data:extend {
         energy_required = 30,
         result_is_always_fresh = true,
         -- ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
-        results = { { type = "item", name = "rabbasca-stabilizer-toggle-extractor", amount = 1 } },
+        results = { { type = "item", name = "rabbasca-stabilizer-toggle-component", amount = 1 } },
+        allow_productivity = false,
+        stabilizer_config = { }, -- cache energy_required
+        crafting_machine_tint =
+        {
+            primary = { 0.25, 0.85, 0.05 }
+        },
+        category = "rabbasca-warp-stabilizer",
+        order = "c",
+        hide_from_signal_gui = false
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-stabilizer-toggle-relichunter",
+        icon = table.deepcopy(data.raw["virtual-signal"]["signal-map-marker"].icon),
+        enabled = false,
+        hidden_in_factoriopedia = true,
+        energy_required = 30,
+        result_is_always_fresh = true,
+        -- ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
+        results = { { type = "item", name = "rabbasca-stabilizer-toggle-component", amount = 1 } },
         allow_productivity = false,
         stabilizer_config = { }, -- cache energy_required
         crafting_machine_tint =
@@ -187,7 +265,7 @@ data:extend {
         name = "rabbasca-stabilizer-warp-sequence",
         enabled = false,
         hidden_in_factoriopedia = true,
-        energy_required = 10,
+        energy_required = 20,
         result_is_always_fresh = true,
         -- ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
         results = { { type = "item", name = "rabbasca-stabilizer-warp-sequence", amount = 1 } },
@@ -208,6 +286,7 @@ data:extend {
         hidden_in_factoriopedia = true,
         energy_required = 2,
         result_is_always_fresh = true,
+        preserve_products_in_machine_output = true,
         ingredients = { { type = "item", name = "rabbasca-warp-matrix", amount = 50 } },
         results = { 
             { type = "item", name = "rabbasca-warp-trace", amount = 10 }
@@ -256,27 +335,13 @@ data:extend {
     },
     {
         type = "recipe",
-        name = "rabbasca-spatial-anchor",
-        enabled = false,
-        energy_required = 5,
-        ingredients = {
-            { type = "fluid",  name = "holmium-solution", amount = 20 },
-            { type = "item",  name = "low-density-structure",  amount = 5 },
-            { type = "item",  name = "stone-brick",  amount = 20 },
-        },
-        results = { { type = "item", name = "rabbasca-spatial-anchor", amount = 1 } },
-        category = "complex-machinery",
-        surface_conditions = { Rabbasca.only_underground(true) },
-    },
-    {
-        type = "recipe",
         name = "rabbasca-quantum-device",
         enabled = false,
         energy_required = 7,
         ingredients = {
             { type = "item", name = "rabbasca-warp-matrix", amount = 10 },
             { type = "item", name = "tungsten-plate", amount = 5 },
-            { type = "item", name = "fusion-power-cell", amount = 1 },
+            { type = "fluid", name = "fluoroketone-hot", amount = 80 },
             { type = "fluid", name = "harenic-lava", amount = 300 },
         },
         results = {
@@ -321,10 +386,11 @@ data:extend {
         type = "recipe",
         name = "rabbasca-warp-tech-analyzer",
         enabled = false,
-        energy_required = 2,
+        energy_required = 10,
         ingredients = {
             { type = "item", name = "lab", amount = 1 },
-            { type = "item", name = "pipe",  amount = 10 },
+            { type = "item", name = "rabbasca-warpfield-engine",  amount = 1 },
+            { type = "item", name = "rabbasca-spatial-anchor",  amount = 1 },
         },
         results = { { type = "item", name = "rabbasca-warp-tech-analyzer", amount = 1 } },
         category = "crafting"
@@ -374,3 +440,34 @@ Rabbasca.create_vault_recipe("rabbasca-locate-stabilizer", {
   energy_required = 120,
   allow_productivity = false,
 })
+
+data:extend {
+    {
+        type = "recipe",
+        name = "rabbasca-spatial-anchor",
+        enabled = true,
+        -- hidden_in_factoriopedia = true,
+        energy_required = 2,
+        ingredients = {
+            { type = "item", name = "rabbasca-quantum-device",   amount = 1 },
+        },
+        results = { { type = "item", name = "rabbasca-spatial-anchor", amount = 1 } },
+        category = "rabbasca-relics"
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-warp-cell-recharging",
+        enabled = true,
+        -- hidden_in_factoriopedia = true,
+        energy_required = 10,
+        ingredients = {
+            { type = "item", name = "rabbasca-warp-cell",   amount = 1 },
+        },
+        results = { 
+            { type = "item", name = "rabbasca-warp-cell-recharging", amount = 1 },
+            { type = "item", name = "rabbasca-warp-cell-recharging", amount = 1, probability = 0.25 } 
+        },
+        main_product = "rabbasca-warp-cell-recharging",
+        category = "rabbasca-relics"
+    },
+}

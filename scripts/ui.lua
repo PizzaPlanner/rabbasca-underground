@@ -74,6 +74,13 @@ function M.set_stabilizer_ui(player)
         bar2.style.horizontally_stretchable = true
         bar2.style.color = { 1, 1, 1 }
 
+        if storage.stabilizer.entity.force.technologies["rabbasca-stabilizer-relichunter"].researched then
+            local bar = frame.add {
+                type = "label",
+                name = "relichunter_progress",
+            }
+        end
+
         local subframe = frame.add {
             type = "frame",
             name = "rabbasca_su_content",
@@ -83,25 +90,72 @@ function M.set_stabilizer_ui(player)
         local f1 = subframe.add { type = "table", name = "rabbasca_su_table", column_count = 2 }
 
         -- Part Status
-        f1.add {
-            type = "label",
-            caption = { "", "[entity=rabbasca-warp-stabilizer]" }
-        }
-        f1.add {
-            type = "label",
-            name = "rabbasca_su_status_self",
-            caption = { "", storage.stabilizer.entity.force.technologies["rabbasca-warp-stabilizer"].researched and "[color=green]ONLINE[/color]" or "[color=red]OFFLINE[/color]" }
-        }
+        local is_booted = storage.stabilizer.entity.force.technologies["rabbasca-warp-stabilizer"].researched
+        f1.add { type = "label", caption = { "", "[entity=rabbasca-warp-stabilizer]" } }
+        if is_booted then
+            f1.add {
+                type = "label",
+                caption = { "", "[color=green]ONLINE[/color]" }
+            }
+        else
+            local f2 = f1.add { type = "flow" }
+            f2.add {
+                type = "label",
+                caption = { "", "[color=red]OFFLINE[/color]" }
+            }
+            add_button(f2, "virtual-signal/signal-anticlockwise-circle-arrow", "side_menu_button", "rabbasca_su_btn_reboot_main", 20)
+        end
 
-        f1.add {
-            type = "label",
-            caption = { "", "[entity=rabbasca-stabilizer-consumer]" }
-        }
-        f1.add {
-            type = "label",
-            name = "rabbasca_su_status_extractor",
-            caption = { "", "???" }
-        }
+        f1.add { type = "label", caption = { "", "[item=rabbasca-stabilizer-warp-sequence]" } }
+        if storage.stabilizer.entity.force.technologies["rabbasca-stabilizer-warpdrive"].researched then
+            f1.add {
+                type = "label",
+                caption = { "", "[color=green]ONLINE[/color]" }
+            }
+        else
+            local f2 = f1.add { type = "flow" }
+            f2.add {
+                type = "label",
+                caption = { "", "[color=red]OFFLINE[/color]" }
+            }
+            if is_booted then
+                add_button(f2, "virtual-signal/signal-anticlockwise-circle-arrow", "side_menu_button", "rabbasca_su_btn_repair_warpdrive", 20)
+            end
+        end
+
+        f1.add { type = "label", caption = { "", "[entity=rabbasca-anomaly-extractor]" } }
+        if storage.stabilizer.entity.force.technologies["rabbasca-stabilizer-extractor"].researched then
+            f1.add {
+                type = "label",
+                name = "rabbasca_su_status_extractor",
+            }
+        else
+            local f2 = f1.add { type = "flow" }
+            f2.add {
+                type = "label",
+                caption = { "", "[color=red]OFFLINE[/color]" }
+            }
+            if is_booted then
+                add_button(f2, "virtual-signal/signal-anticlockwise-circle-arrow", "side_menu_button", "rabbasca_su_btn_repair_extractor", 20)
+            end
+        end
+
+        f1.add { type = "label", caption = { "", "[virtual-signal=signal-map-marker]" } }
+        if storage.stabilizer.entity.force.technologies["rabbasca-stabilizer-relichunter"].researched then
+            f1.add {
+                type = "label",
+                name = "rabbasca_su_status_relichunter",
+            }
+        else
+            local f2 = f1.add { type = "flow" }
+            f2.add {
+                type = "label",
+                caption = { "", "[color=red]OFFLINE[/color]" }
+            }
+            if is_booted then
+                add_button(f2, "virtual-signal/signal-anticlockwise-circle-arrow", "side_menu_button", "rabbasca_su_btn_repair_relichunter", 20)
+            end
+        end
 
         f1.add { type = "line" } f1.add { type = "line" }
 
@@ -191,6 +245,8 @@ function M.set_stabilizer_ui(player)
         b.show_percent_for_small_numbers = true
         b = add_button(f1, "recipe/rabbasca-stabilizer-toggle-extractor", "slot_button", "toggle_extractor", 36)
         b.show_percent_for_small_numbers = true
+        b = add_button(f1, "recipe/rabbasca-stabilizer-toggle-relichunter", "slot_button", "toggle_relichunter", 36)
+        b.show_percent_for_small_numbers = true
 
         local subframe = frame.add {
             type = "frame",
@@ -217,7 +273,12 @@ function M.set_stabilizer_ui(player)
     end
     local t = frame.rabbasca_su_content.rabbasca_su_table
     local empty_time = storage.stabilizer.charge.empty_since
-    t.rabbasca_su_status_extractor.caption = storage.stabilizer.anomaly_recycler and ((empty_time or 0) > 0 and string.format("[color=yellow]Hibernate in %is[/color]", (storage.stabilizer.settings.miner_hibernation_timeout - empty_time)/60) or "[color=green]ONLINE[/color]") or "[color=red]OFFLINE[/color]"
+    if t.rabbasca_su_status_extractor then
+        t.rabbasca_su_status_extractor.caption = storage.stabilizer.parts.anomaly_extractor and ((empty_time or 0) > 0 and string.format("[color=yellow]Hibernate in %is[/color]", (storage.stabilizer.settings.miner_hibernation_timeout - empty_time)/60) or "[color=green]ONLINE[/color]") or "[color=yellow]SLEEP[/color]"
+    end
+    if t.rabbasca_su_status_relichunter then
+        t.rabbasca_su_status_relichunter.caption = storage.stabilizer.parts.relichunter and ((empty_time or 0) > 0 and string.format("[color=yellow]Hibernate in %is[/color]", (storage.stabilizer.settings.miner_hibernation_timeout - empty_time)/60) or "[color=green]ONLINE[/color]") or "[color=yellow]SLEEP[/color]"
+    end
     t.rabbasca_su_autopilot.switch_state = storage.stabilizer.settings.autopilot and "right" or "left"
     t.rabbasca_su_autofuel.switch_state = storage.stabilizer.settings.autofuel   and "right" or "left"
 
@@ -236,6 +297,7 @@ function M.set_stabilizer_ui(player)
         frame.rabbasca_su_fuelcosts.tank.caption = { "rabbasca-extra.panel-tank", string.format("%.2f", storage.stabilizer.charge.cells_stored) }
         update_cost_button(frame.rabbasca_su_fuelcosts.table.stabilize, "rabbasca-stabilize-warpfield")
         update_cost_button(frame.rabbasca_su_fuelcosts.table.warp, "rabbasca-stabilizer-warp-sequence", warp.get_warp_cost())
+        update_cost_button(frame.rabbasca_su_fuelcosts.table.toggle_relichunter, "rabbasca-stabilizer-toggle-relichunter")
         update_cost_button(frame.rabbasca_su_fuelcosts.table.toggle_extractor, "rabbasca-stabilizer-toggle-extractor")
     end
 
@@ -243,24 +305,15 @@ function M.set_stabilizer_ui(player)
         frame.rabbasca_su_progress.bar.value = warp.get_repair_progress()
         frame.rabbasca_su_progress.bar.caption = { "rabbasca-extra.panel-progress", string.format("%.1f", warp.get_repair_progress() * 100), storage.stabilizer.anomalies.current }
     end
+    if frame.relichunter_progress then
+        frame.relichunter_progress.caption = { "", string.format("Relichunter: %i%% Chance", warp.get_relic_chance() * 100) }
+    end
 
     -- frame.rabbasca_su_fuel.rabbasca_su_fuel_left.caption = { "", string.format("[item=rabbasca-warp-matrix]Anomalies left: %i", storage.stabilizer.anomalies.current) }
     -- frame.rabbasca_su_fuel.rabbasca_su_repairs.caption =   { "", string.format("Stabilization:  %i%%", warp.get_repair_progress() * 100) }
     -- frame.rabbasca_su_fuel.rabbasca_su_cost_fix.caption =   { "", string.format("[recipe=rabbasca-stabilize-warpfield]: %.2f%%[item=rabbasca-warp-cell]/s", 1 * warp.get_fuel_time_modifier()) }
     -- frame.rabbasca_su_fuel.rabbasca_su_cost_warp.caption =   { "", string.format("[recipe=rabbasca-stabilizer-warp-sequence]: %.2f%%[item=rabbasca-warp-cell]/s", warp.get_warp_cost() * warp.get_fuel_time_modifier()) }
     -- frame.rabbasca_su_fuel.rabbasca_su_battery_drain.caption = { "", string.format("Current: %s%.2f%%[item=rabbasca-warp-cell]/s", info.discharge_rate > 0 and "+" or "", info.discharge_rate) }
-end
-
-function M.update_affinity_bar(player, numbers)
-    local is_on_rabbasca = player.surface and player.surface.name == "rabbasca-underground"
-    local ui = player.gui.top.rabbasca_ug_stats
-    if ui and not is_on_rabbasca then
-        ui.destroy()
-        local ui_legacy = player.gui.top.rabbasca_affinity
-        if ui_legacy then ui_legacy.destroy() end
-    elseif is_on_rabbasca then
-        create_affinity_bar(player, numbers)
-    end
 end
 
 return M

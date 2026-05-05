@@ -5,7 +5,7 @@ data:extend{
     icons = Rabbasca.icons({
       { icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png", icon_size = 640 },
     }),
-    prerequisites = { "interplanetary-construction-2", "rabbasca-ears-technology-2", "fusion-reactor", "harene-synthesis" },
+    prerequisites = { "interplanetary-construction-2", "rabbasca-ears-technology-2", "circuit-network", "harene-synthesis" },
     essential = true,
     effects = {
       {
@@ -47,15 +47,15 @@ data:extend{
     effects = {
       {
         type = "unlock-recipe",
-        recipe = "rabbasca-warp-tech-analyzer"
+        recipe = "rabbasca-warpfield-excitement-rod"
       },
     },
     ignore_tech_cost_multiplier = true,
     research_trigger =
     {
         type = "craft-item",
-        item = "rabbasca-warp-cell",
-        count = 5
+        item = "rabbasca-warp-trace",
+        count = 200
     }
 },
 {
@@ -112,7 +112,7 @@ data:extend{
       {
         type = "unlock-recipe",
         recipe = "rabbasca-lithium-amide-fission"
-      }
+      },
     },
     research_trigger = {
       type = "mine-entity",
@@ -154,21 +154,38 @@ data:extend{
 },
 {
     type = "technology",
+    name = "rabbasca-warp-technology-analysis-a",
+    icons = Rabbasca.icons({ proto = data.raw["tool"]["rabbasca-spatial-anchor"] }),
+    prerequisites = { "rabbasca-warp-technology-analysis-3" },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-warp-tech-analyzer"
+      },
+    },
+    ignore_tech_cost_multiplier = true,
+    research_trigger =
+    {
+        type = "craft-item",
+        item = "rabbasca-spatial-anchor",
+        count = 5
+    }
+},
+{
+    type = "technology",
     name = "rabbasca-warp-technology-analysis-2",
     icons = Rabbasca.icons({ proto = data.raw["tool"]["rabbasca-spatial-anchor"] }),
-    prerequisites = { "rabbasca-warp-technology-analysis-1" },
+    prerequisites = { "rabbasca-warp-technology-analysis-a" },
     effects = {
       {
         type = "unlock-recipe",
         recipe = "rabbasca-spatial-anchor"
-      }
+      },
     },
-    ignore_tech_cost_multiplier = true,
     unit = {
       time = 5,
       count = 100,
       ingredients = {
-        { "rabbasca-warp-matrix", 10 },
         { "rabbasca-warp-trace",  1 },
       }
     }
@@ -177,22 +194,23 @@ data:extend{
     type = "technology",
     name = "rabbasca-warp-technology-analysis-3",
     icons = Rabbasca.icons({ proto = data.raw["tool"]["rabbasca-quantum-device"] }),
-    prerequisites = { "rabbasca-warp-technology-analysis-2" },
+    prerequisites = { "rabbasca-warp-technology-analysis-1" },
     effects = {
       {
         type = "unlock-recipe",
         recipe = "rabbasca-quantum-device"
-      }
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-warpfield-engine"
+      },
     },
     ignore_tech_cost_multiplier = true,
-    unit = {
-      time = 10,
-      count = 500,
-      ingredients = {
-        { "rabbasca-warp-matrix", 1 },
-        { "rabbasca-spatial-anchor", 1 },
-        { "rabbasca-spacetime-sensor", 1 },
-      }
+    research_trigger =
+    {
+        type = "craft-item",
+        item = "rabbasca-stabilizer-warp-sequence",
+        count = 3
     }
 },
 {

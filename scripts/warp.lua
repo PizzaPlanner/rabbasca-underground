@@ -12,6 +12,16 @@ local function post_warp_surface(surface)
     if storage.stabilizer.finished_warps == 0 then
         storage.stabilizer.entity.burner.remaining_burning_fuel = 0
         storage.stabilizer.entity.set_recipe(nil)
+        for i = 0, 20 do
+            local pos = surface.find_non_colliding_position("item-on-ground", {math.random(-7, 7), math.random(-7, 7)}, 4, 1)
+            surface.spill_item_stack{stack = {name = "coal", count = 1}, position = pos}
+            pos = surface.find_non_colliding_position("item-on-ground", {math.random(-7, 7), math.random(-7, 7)}, 4, 1)
+            surface.spill_item_stack{stack = {name = "ice", count = 2}, position = pos}
+        end
+        for i = 0, 8 do
+            local pos = surface.find_non_colliding_position("item-on-ground", {math.random(-7, 7), math.random(-7, 7)}, 4, 1)
+            surface.spill_item_stack{stack = {name = "coal", count = 1}, position = pos}
+        end
     else
         storage.stabilizer.entity.set_recipe("rabbasca-stabilize-warpfield")
     end
@@ -105,23 +115,42 @@ function M.get_fuel_time_modifier()
 end
 
 function M.get_warp_cost()
-    return (1 + 18 * (1 - M.get_repair_progress() * M.get_repair_progress())) / M.get_fuel_time_modifier()
+    local weighted_progress = (1 - M.get_repair_progress() * M.get_repair_progress())
+    local mod_relics = storage.stabilizer.parts.relichunter and 1 or 0
+    return (0.25 + mod_relics * 0.15 + (5 + mod_relics * 10) * weighted_progress) / M.get_fuel_time_modifier()
+end
+
+function M.get_relic_chance()
+    return storage.stabilizer.parts.relichunter and M.get_repair_progress() * storage.stabilizer.parts.relichunter.pity or 0
+end
+
+function M.hunt_relicary(data)
+    if not storage.stabilizer.parts.relichunter then return end
+    if math.random() < M.get_relic_chance() and not data.guaranteed_manifestations then
+        data.guaranteed_manifestations = { { type = "poi", name = "rabbasca-relicary", floor = "rabbasca-underground-rubble" } }
+        storage.stabilizer.parts.relichunter = { pity = 0.05 }
+    else
+        storage.stabilizer.parts.relichunter = { pity = (storage.stabilizer.parts.relichunter.pity or 0) + 0.25 * M.get_repair_progress() }
+    end
 end
 
 function M.warp_to(data)
     if storage.stabilizer.warping then return end
     data = data or { }
+    M.hunt_relicary(data)
     data = {
         planet = data.planet or M.get_next_planet(),
         should_recall = data.should_recall or storage.stabilizer.settings.recall,
-        fixed_followup = data.fixed_followup or nil
+        fixed_followup = data.fixed_followup or nil,
+        guaranteed_manifestations = data.guaranteed_manifestations or { },
     }
 
     local config = storage.stabilizer.config
     local surface = game.surfaces[storage.stabilizer.surface]
     if not (surface and config.planets[data.planet]) then log("error: stabilizer could not warp to "..data.planet) return end
 
-    storage.stabilizer.warping = { to = data.planet, warp_tick = game.tick + 90, finished_tick = game.tick + 180, recall = data.should_recall }
+    storage.stabilizer.warping = { to = data.planet, warp_tick = game.tick + 90, finished_tick = game.tick + 180,
+                                   recall = data.should_recall, manifestations = data.guaranteed_manifestations }
     surface.ticks_per_day = 180 * (config.planet_count + 1.5)
     surface.freeze_daytime = false
     for p, _ in pairs(config.planets) do
@@ -134,7 +163,6 @@ function M.warp_to(data)
     storage.stabilizer.next.seed = storage.underground_seed_rng(10000000)
     storage.stabilizer.entity.disabled_by_script = true
     storage.stabilizer.entity.custom_status = { diode = defines.entity_status_diode.yellow, label = {"", "Warping"} }
-    storage.stabilizer.entity.set_recipe(nil)
 end
 
 return M

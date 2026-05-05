@@ -72,12 +72,12 @@ data:extend({
 },
 {
     type = "technology",
-    name = "rabbasca-stabilizer-warp-sequence",
+    name = "rabbasca-stabilizer-warpdrive",
     icons = Rabbasca.icons({
-      { proto = data.raw["planet"]["rabbasca"], scale = 0.5, shift = {-32, -32} }, 
-      { proto = data.raw["planet"]["aquilo"],   scale = 0.5, shift = {32, -32} },
-      { proto = data.raw["planet"]["vulcanus"], scale = 0.5, shift = {32, 32} },
-      { proto = data.raw["planet"]["fulgora"],  scale = 0.5, shift = {-32, 32} } }),
+      { proto = data.raw["planet"]["rabbasca"], scale = 0.5, shift = {-8, -8} }, 
+      { proto = data.raw["planet"]["aquilo"],   scale = 0.5, shift = {8, -8} },
+      { proto = data.raw["planet"]["vulcanus"], scale = 0.5, shift = {8, 8} },
+      { proto = data.raw["planet"]["fulgora"],  scale = 0.5, shift = {-8, 8} } }),
     prerequisites = { "rabbasca-warp-stabilizer" },
     rabbasca_underground_temporary = true,
     effects = {
@@ -87,19 +87,17 @@ data:extend({
       }
     },
     ignore_tech_cost_multiplier = true,
-    unit = {
-      time = 4,
-      count = 50,
-      ingredients = {
-        { "rabbasca-warp-trace", 1 },
-      }
+    research_trigger =
+    {
+        type = "scripted",
+        trigger_description = { "rabbasca-extra.trigger-repair-warpdrive" }
     }
 },
 {
     type = "technology",
     name = "rabbasca-stabilizer-extractor",
     icons = Rabbasca.icons({ proto = data.raw["technology"]["big-mining-drill"] }),
-    prerequisites = { "rabbasca-warp-stabilizer" },
+    prerequisites = { "rabbasca-stabilizer-warpdrive" },
     rabbasca_underground_temporary = true,
     effects = {
       {
@@ -108,12 +106,29 @@ data:extend({
       }
     },
     ignore_tech_cost_multiplier = true,
-    unit = {
-      time = 10,
-      count = 100,
-      ingredients = {
-        { "rabbasca-warp-matrix", 1 },
+    research_trigger =
+    {
+        type = "scripted",
+        trigger_description = { "rabbasca-extra.trigger-repair-extractor" }
+    }
+},
+{
+    type = "technology",
+    name = "rabbasca-stabilizer-relichunter",
+    icons = Rabbasca.icons({ proto = data.raw["technology"]["big-mining-drill"] }),
+    prerequisites = { "rabbasca-stabilizer-warpdrive" },
+    rabbasca_underground_temporary = true,
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-stabilizer-toggle-relichunter"
       }
+    },
+    ignore_tech_cost_multiplier = true,
+    research_trigger =
+    {
+        type = "scripted",
+        trigger_description = { "rabbasca-extra.trigger-repair-relichunter" }
     }
 },
 })
