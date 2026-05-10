@@ -1,7 +1,7 @@
 local M = { }
 
 function M.get_repair_progress()
-    local progress = 1 - storage.stabilizer.anomalies.current / storage.stabilizer.anomalies.initial --(storage.stabilizer.anomalies.trace_inventory.get_item_count("rabbasca-warp-trace")) / (storage.stabilizer.anomalies.initial * 0.075)
+    local progress = 1 - storage.stabilizer.anomalies.current / storage.stabilizer.anomalies.initial
     return math.max(0, math.min(1, progress))
 end
 
@@ -10,7 +10,7 @@ function M.force_manifest(data, blocked_pois)
         local total_amount = data.amount
         local entities = { }
         local tiles = { }
-        if total_amount >= 1 then
+        if total_amount >= 8 then
             if data.floor then
                 local radius = 3
                 local cx = data.position.x
@@ -69,11 +69,23 @@ function M.force_manifest(data, blocked_pois)
             end
             data.surface.set_tiles(tiles)
             local e = data.surface.create_entity({ name = data.name, position = data.position, force = data.force })
+            if e == nil then return false end
+
             blocked_pois[data.name] = true
-            for _, player in pairs(storage.stabilizer.entity.force.connected_players) do
-                player.add_custom_alert(e, { type = "virtual", name = "signal-map-marker" }, { "rabbasca-extra.alert-found-relicary" }, true)
+            
+            if e.name == "rabbasca-relicary" then
+                e.get_inventory(defines.inventory.burnt_result).insert({ name = "rabbasca-relicary-key-locked", count = 1})
+                storage.stabilizer.left_on_warp = storage.stabilizer.left_on_warp or { }
+                table.insert(storage.stabilizer.left_on_warp, e)
+                for _, access in pairs(data.surface.find_entities_filtered { name = "rabbasca-relicary-remote" }) do
+                    access.proxy_target_entity = e
+                end
+                for _, player in pairs(storage.stabilizer.entity.force.connected_players) do
+                    player.add_custom_alert(e, { type = "virtual", name = "signal-map-marker" }, { "rabbasca-extra.alert-found-relicary" }, true)
+                end
             end
-            return e ~= nil
+
+            return true
         end
     end
     return false
@@ -117,7 +129,7 @@ function M.replace_entities(surface, config, planet)
     for _, guaranteed in pairs(storage.stabilizer.warping.manifestations) do
         local success = 0
         while success < 50 do
-            local min = storage.stabilizer.safe_zone_radius or 10
+            local min = 10
             guaranteed.position = guaranteed.position or { x = math.random(min, min + 64), y = math.random(min, min + 64) }
             guaranteed.surface  = surface
             guaranteed.quality  = guaranteed.quality or "normal"
@@ -143,7 +155,7 @@ function M.replace_entities(surface, config, planet)
 
     storage.stabilizer.anomalies.initial = 0
     storage.stabilizer.anomalies.entities = { }
-    local amount_mult = 1 + (game.forces.player.technologies["rabbasca-anomaly-expansion"].level - 1) * 0.1
+    local amount_mult = 1 -- + (game.forces.player.technologies["rabbasca-anomaly-expansion"].level - 1) * 0.1
     for _, e in pairs(surface.find_entities_filtered { name = "rabbasca-warp-anomaly" }) do
         e.amount = e.amount * amount_mult
         storage.stabilizer.anomalies.initial = storage.stabilizer.anomalies.initial + e.amount
@@ -160,50 +172,137 @@ function M.replace_entities(surface, config, planet)
 end
 
 -- before: 8 * 233MS ../?? // after: 9 * 133MS ../566 // 17 * 125MS ../120 OR 5*26MS ../73 after reload
-function M.replace_tiles(surface, to, safe_radius)
-    storage.stabilizer.tiles = storage.stabilizer.tiles or { }
-    storage.stabilizer.last_safe_radius = storage.stabilizer.last_safe_radius or { }
-    if not (storage.stabilizer.tiles[to] and storage.stabilizer.last_safe_radius[to] == safe_radius) then
-        storage.stabilizer.last_safe_radius[to] = safe_radius
-        storage.stabilizer.tiles[to] = { }
-        for x = -96, 96 do
-        for y = -96, 96 do
-            if x*x + y*y <= 96 * 96 then
-                local is_safe = math.max(math.abs(x), math.abs(y)) <= safe_radius
-                table.insert(storage.stabilizer.tiles[to], { name = is_safe and "rabbasca-underground-rubble-powered" or to, position = { x = x, y = y } })
+function M.replace_tiles(surface, to_tile, safe_radius)
+    local planet = storage.stabilizer.warping.to
+    surface.set_tiles(storage.stabilizer.tiledata.tiles[planet], true)
+end
+
+function M.is_box_safe(b)
+    for x = b.left_top.x, b.right_bottom.x do
+    for y = b.left_top.y, b.right_bottom.y do
+        if not storage.stabilizer.tiledata.safe_tiles[math.floor(x) + math.floor(y) * 1000] then 
+            return false
+        end
+    end
+    end
+    return true
+end
+
+function M.leave_unsafe(stabilizer)
+    local surface = stabilizer.surface
+    for _, e in pairs(surface.find_entities_filtered { force = stabilizer.force }) do
+        if e.valid and not M.is_box_safe(e.bounding_box) then
+            e.die()
+        end
+    end    
+end
+
+function M.is_tile_safe(pos)
+    return storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000] == true
+end
+
+function M.add_safe_tile(pos, reason)
+    if not storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000] then
+        storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000] = { }
+    end
+    storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000][reason] = true
+end
+
+function M.remove_safe_tile(pos, reason)
+    if not storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000] then return end
+    storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 100][reason] = nil
+    if not M.is_tile_safe(pos) then storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000] = nil end
+end
+
+function M.recalc_tiles()
+    storage.stabilizer.tiledata = storage.stabilizer.tiledata or {
+        entities = { },
+        tiles = { },
+        safe_tiles = { },
+    }
+    local safe_tiles = { }
+    -- floor pylons
+    for _, e in pairs(storage.stabilizer.tiledata.entities) do
+        if e.on == true then
+            for x = -6, 5 do
+                for y = -6, 5 do
+                    local pos = {x = x + e.position.x, y = y + e.position.y } 
+                    safe_tiles[pos.x + pos.y * 1000] = true
+                end
             end
         end
+    end
+    storage.stabilizer.tiledata.safe_tiles = safe_tiles
+    storage.stabilizer.tiledata.tiles = { }
+
+    for planet, _ in pairs(storage.stabilizer.config.planets) do
+        storage.stabilizer.tiledata.tiles[planet] = { }
+    end
+
+    for x = -96, 96 do
+    for y = -96, 96 do
+        if x*x + y*y <= 96 * 96 then
+            local pos = { x = x, y = y }
+            local is_safe = safe_tiles[pos.x + pos.y * 1000] == true
+            for planet, pdata in pairs(storage.stabilizer.config.planets) do
+                table.insert(storage.stabilizer.tiledata.tiles[planet], { name = is_safe and "rabbasca-underground-rubble-powered" or pdata.water, position = { x = x, y = y } })
+            end
         end
     end
-    surface.set_tiles(storage.stabilizer.tiles[to], true)
+    end
 end
 
-local function box_inside(a, b)
-    return
-        a.left_top.x   > b.left_top.x   and
-        a.left_top.y   > b.left_top.y   and
-        a.right_bottom.x < b.right_bottom.x and
-        a.right_bottom.y < b.right_bottom.y
+local function swap_floor(e, on)
+    local to   = on and "rabbasca-underground-rubble-powered" or "rabbasca-underground-rubble"
+    local tiles = { }
+    for x = -6, 5 do
+        for y = -6, 5 do
+            local pos = {x = x + e.position.x, y = y + e.position.y } 
+            table.insert(tiles, { name = to, position = pos })
+        end
+    end
+    e.surface.set_tiles(tiles)
 end
 
-function M.recall_outliers(stabilizer, safe_radius)
-    local safe_zone = { left_top = { x = -safe_radius - 0.5, y = -safe_radius - 0.5 }, right_bottom = { x = safe_radius + 1.5, y = safe_radius + 1.5 } }
-    local to_inventory = (storage.stabilizer.warping.recall and game.create_inventory(512)) or nil
-    local saved = 0
-    for _, e in pairs(stabilizer.surface.find_entities_filtered { force = stabilizer.force }) do
-        if e.valid and not box_inside(e.bounding_box, safe_zone) then
-            if to_inventory ~= nil and e.mine { inventory = to_inventory, force = true } then saved = saved + 1 else e.die() end
+function M.update_floorthings()
+    for _, e in pairs(storage.stabilizer.tiledata.entities) do
+        if not e.entity.valid then return end
+        local new_on = e.entity.health > 10
+        if new_on ~= e.on then
+            if e.on == nil then
+                e.entity.health = 5 -- cant set this as placement trigger response for some reason
+            end
+            storage.stabilizer.tiledata.dirty = true
+            e.on = new_on
+            
+            swap_floor(e.entity, new_on)
         end
+        e.entity.health = math.max(1, e.entity.health)
     end
-    if to_inventory then
-        Rabbasca.add_to_warp_inventory(to_inventory)
-        to_inventory.destroy()
+    if storage.stabilizer.tiledata.dirty then
+        storage.stabilizer.tiledata.dirty = nil
+        M.recalc_tiles()
     end
-    if saved > 0 then
-        for _, player in pairs(game.connected_players) do
-            player.create_local_flying_text{ text = { "rabbasca-extra.recall-saved-entities", saved }, position = stabilizer.position, surface = stabilizer.surface, time_to_live = 120 }
-        end
-    end
+end
+
+function M.register_floorthing(e)
+    local id, _, _ = script.register_on_object_destroyed(e)
+    if storage.stabilizer.tiledata.entities[id] then return end
+
+    storage.stabilizer.tiledata.entities[id] = {
+        entity = e,
+        position = e.position,
+        on = nil
+    }
+    table.insert(storage.stabilizer.fuel.consumers, e)
+    e.set_recipe("rabbasca-floor-stability-work")
+end
+
+function M.on_floorthing_died(id)
+    if not (storage.stabilizer and storage.stabilizer.tiledata) then return end
+    if not storage.stabilizer.tiledata.entities[id] then return end
+    storage.stabilizer.tiledata.entities[id] = nil
+    storage.stabilizer.tiledata.dirty = true
 end
 
 return M

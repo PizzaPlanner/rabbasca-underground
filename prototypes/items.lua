@@ -83,13 +83,32 @@ Rabbasca.make_trigger_item({
     { proto = data.raw["virtual-signal"]["signal-radioactivity"] }
   })
 }, "rabbasca_on_repair_component"),
+Rabbasca.make_trigger_item({
+  name = "rabbasca-floor-stability-upkeep",
+  subgroup = "rabbasca-warp-stabilizer-functions",
+  order = "zz",
+  icons = Rabbasca.icons({
+    { proto = data.raw["virtual-signal"]["signal-radioactivity"] }
+  })
+}, "rabbasca_on_floor_stability"),
+util.merge {
+  data.raw["tool"]["automation-science-pack"],
+  {
+    name = "rabbasca-twisted-knowledge",
+    icons = Rabbasca.icons({
+      { proto = data.raw["blueprint-book"]["blueprint-book"] }
+    }),
+    auto_recycle = false,
+    stack_size = 200,
+  },
+},
 util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
     -- type = "item",
     name = "rabbasca-warp-trace",
     subgroup = "rabbasca-warp-stabilizer",
-    order = "a[warp-matrix]-x[residue]",
+    order = "a[warp-anomaly]-x[residue]",
     icon = "__rabbasca-assets__/graphics/by-openai/warp-trace.png",
     icon_size = 256,
     localised_description = { "item-description.rabbasca-warp-trace" },
@@ -125,6 +144,53 @@ util.merge {
   effect = { consumption = -1, speed = -0.1 }
 },
 {
+  type = "fuel-category",
+  name = "rabbasca-relicary",
+  fuel_value_type = {
+    "rabbasca-extra.rabbasca-relicary-fuel-category"
+  },
+},
+{
+  type = "item",
+  name = "rabbasca-powerspike",
+  icons = Rabbasca.icons({
+    {proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"]},
+    {proto = data.raw["virtual-signal"]["signal-unlock"], scale = 0.5}
+  }),
+  stack_size = 10,
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "r[relics]-c[upgrade]",
+  weight = 250 * kg,
+},
+{
+  type = "item",
+  name = "rabbasca-relicary-key",
+  icons = Rabbasca.icons({
+    { icon = "__rabbasca-assets__/graphics/recolor/icons/excitement-rod.png" },
+    { icon = data.raw["virtual-signal"]["signal-unlock"].icon, scale = 0.3, shift = { 8, 8 } },
+  }),
+  icon_size = 64,
+  stack_size = 50,
+  fuel_value = "100J",
+  fuel_category = "rabbasca-relicary",
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "r[relics]-a[key-unlocked]",
+  weight = 1 * kg,
+},
+{
+  type = "item",
+  name = "rabbasca-relicary-key-locked",
+  icons = Rabbasca.icons({
+    { icon = "__rabbasca-assets__/graphics/recolor/icons/excitement-rod.png" },
+    { icon = data.raw["virtual-signal"]["signal-lock"].icon, scale = 0.3, shift = { 8, 8 } },
+  }),
+  icon_size = 64,
+  stack_size = 50,
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "r[relics]-a[key-locked]",
+  weight = 1 * kg,
+},
+{
   type = "item",
   name = "rabbasca-warpfield-excitement-rod",
   icons = Rabbasca.icons({
@@ -156,17 +222,7 @@ util.merge {
   spoil_ticks = 30 * second,
   spoil_result = "rabbasca-warp-cell-recharging",
   subgroup = "rabbasca-warp-stabilizer",
-  order = "a[warp-matrix]-c[warp-cell-empty-0]",
-  weight = 250 * kg,
-},
-{
-  type = "item",
-  name = "rabbasca-warp-cell-empty",
-  icons = Rabbasca.icons({{ proto = data.raw["item"]["fusion-power-cell"], tint = {0.0, 0.12, 0.12} }}),
-  icon_size = 64,
-  stack_size = 50,
-  subgroup = "rabbasca-warp-stabilizer",
-  order = "a[warp-matrix]-c[warp-cell-empty-1]",
+  order = "a[warp-anomaly]-c[warp-cell-empty]",
   weight = 250 * kg,
 },
 {
@@ -193,24 +249,24 @@ util.merge {
   spoil_result = "rabbasca-warp-cell-recharging",
   burnt_result = "rabbasca-warp-cell-recharging",
   subgroup = "rabbasca-warp-stabilizer",
-  order = "a[warp-matrix]-b[warp-cell]",
+  order = "a[warp-anomaly]-b[warp-cell]",
   weight = 250 * kg,
 },
 util.merge {
   data.raw["tool"]["automation-science-pack"],
   {
-    name = "rabbasca-warp-matrix",
+    name = "rabbasca-warp-anomaly",
     icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
     icon_size = 1024,
     stack_size = 1000,
     -- fuel_value = "500MJ",
     -- fuel_category = "rabbasca-warp-anomaly",
     weight = 0,
-    localised_description = { "item-description.rabbasca-warp-matrix" },
+    localised_description = { "item-description.rabbasca-warp-anomaly" },
     spoil_ticks = 20 * second,
     auto_recycle = false,
     subgroup = "rabbasca-warp-stabilizer",
-    order = "a[warp-matrix]",
+    order = "a[warp-anomaly]",
   },
 },
 util.merge {
@@ -276,6 +332,16 @@ util.merge {
 },
 {
   type = "item",
+  name = "rabbasca-relicary-remote",
+  icons = Rabbasca.icons({ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }),
+  place_result = "rabbasca-relicary-remote",
+  stack_size = 4,
+  weight = 200 * kg,
+  subgroup = data.raw["item"]["rabbasca-warp-pylon"].subgroup,
+  order = "a[placeable]-x[relicary-remote]",
+},
+{
+  type = "item",
   name = "rabbasca-collector-pylon",
   icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-2.png",
   icon_size = 64,
@@ -287,13 +353,14 @@ util.merge {
 },
 {
   type = "item",
-  name = "rabbasca-warp-uplink-2",
-  icons = { { icon = "__rabbasca-assets__/graphics/by-hurricane/research-center-icon.png", icon_size = 64, tint = { 0.7, 0.5, 1 } } },
-  stack_size = 10,
-  place_result = "rabbasca-warp-uplink-2",
-  weight = 100 * kg,
-  subgroup = "rabbasca-remote-warping",
-  order = "a[placeable]-b[input-2]",
+  name = "rabbasca-stability-pylon",
+  icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-2.png",
+  icon_size = 64,
+  place_result = "rabbasca-stability-pylon",
+  stack_size = 5,
+  weight = 2000 * kg,
+  subgroup = data.raw["item"]["rabbasca-warp-pylon"].subgroup,
+  order = data.raw["item"]["rabbasca-warp-pylon"].order.."-r[rabbasca-underground]",
 },
 -- {
 --     type = "ammo",

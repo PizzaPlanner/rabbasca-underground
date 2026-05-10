@@ -1,3 +1,14 @@
+local bonus_cell_icons = Rabbasca.icons({
+  { proto = data.raw["item-with-tags"]["rabbasca-warp-cell-recharging"], icon_size = 64 },
+  { proto = data.raw["virtual-signal"]["signal-1"], icon_size = 64, scale = 0.3, shift = { 8, 8 } },
+})
+local function bonus_icon(proto)
+  return Rabbasca.icons({
+  { proto = proto, icon_size = 64 },
+  { proto = data.raw["virtual-signal"]["signal-1"], icon_size = 64, scale = 0.3, shift = { 8, 8 } },
+})
+end
+
 data:extend({
 {
     type = "technology",
@@ -13,10 +24,6 @@ data:extend({
       },
       {
         type ="unlock-recipe",
-        recipe = "rabbasca-warp-cell"
-      },
-      {
-        type ="unlock-recipe",
         recipe = "rabbasca-abandon-stabilizer"
       },
     },
@@ -26,31 +33,31 @@ data:extend({
       trigger_description = { "rabbasca-extra.trigger-locate-underground" }
     }
 },
+-- {
+--     type = "technology",
+--     name = "rabbasca-anomaly-expansion",
+--     icons = Rabbasca.icons({{ proto = data.raw["tool"]["rabbasca-warp-anomaly"] }}),
+--     prerequisites = { "rabbasca-warp-stabilizer", "rabbasca-anomaly-studies" },
+--     rabbasca_underground_temporary = true,
+--     effects = {
+--       {
+--         type = "nothing",
+--         effect_description = { "rabbasca-extra.rabbasca-anomaly-expansion" }
+--       }
+--     },
+--     ignore_tech_cost_multiplier = true,
+--     max_level = "infinite",
+--     unit = {
+--       time = 10,
+--       count_formula = "25 + L^2 * 10",
+--       ingredients = {
+--         { "rabbasca-warp-anomaly", 1 },
+--       }
+--     }
+-- },
 {
     type = "technology",
-    name = "rabbasca-anomaly-expansion",
-    icons = Rabbasca.icons({{ proto = data.raw["tool"]["rabbasca-warp-matrix"] }}),
-    prerequisites = { "rabbasca-warp-stabilizer", "rabbasca-anomaly-studies" },
-    rabbasca_underground_temporary = true,
-    effects = {
-      {
-        type = "nothing",
-        effect_description = { "rabbasca-extra.rabbasca-anomaly-expansion" }
-      }
-    },
-    ignore_tech_cost_multiplier = true,
-    max_level = "infinite",
-    unit = {
-      time = 10,
-      count_formula = "25 + L^2 * 10",
-      ingredients = {
-        { "rabbasca-warp-matrix", 1 },
-      }
-    }
-},
-{
-    type = "technology",
-    name = "rabbasca-warp-floor-expansion",
+    name = "rabbasca-warp-floor-expansion-5",
     icons = Rabbasca.icons({ proto = data.raw["technology"]["concrete"] }),
     prerequisites = { "rabbasca-warp-stabilizer" },
     rabbasca_underground_temporary = true,
@@ -61,12 +68,13 @@ data:extend({
       }
     },
     ignore_tech_cost_multiplier = true,
-    max_level = 8,
+    level = 5,
+    max_level = 36,
     unit = {
       time = 10,
       count_formula = "(10 + L ^ 4) * L^2",
       ingredients = {
-        { "rabbasca-warp-matrix", 1 },
+        { "rabbasca-warp-anomaly", 1 },
       }
     }
 },
@@ -84,6 +92,11 @@ data:extend({
       {
         type = "unlock-recipe",
         recipe = "rabbasca-stabilizer-warp-sequence",
+      },
+      {
+        type = "nothing",
+        icons = bonus_cell_icons,
+        effect_description = { "rabbasca-extra.unlock-bonus-warpcell" }
       }
     },
     ignore_tech_cost_multiplier = true,
@@ -97,38 +110,22 @@ data:extend({
     type = "technology",
     name = "rabbasca-stabilizer-extractor",
     icons = Rabbasca.icons({ proto = data.raw["technology"]["big-mining-drill"] }),
-    prerequisites = { "rabbasca-stabilizer-warpdrive" },
+    prerequisites = { "rabbasca-warp-stabilizer" },
     rabbasca_underground_temporary = true,
     effects = {
       {
-        type = "unlock-recipe",
-        recipe = "rabbasca-stabilizer-toggle-extractor"
+        type = "nothing",
+        icons = bonus_icon(data.raw["mining-drill"]["rabbasca-collector-pylon"]),
+        effect_description = { "rabbasca-extra.unlock-bonus-warpcell" }
       }
     },
+    level = 2,
+    max_level = 24,
     ignore_tech_cost_multiplier = true,
     research_trigger =
     {
         type = "scripted",
         trigger_description = { "rabbasca-extra.trigger-repair-extractor" }
-    }
-},
-{
-    type = "technology",
-    name = "rabbasca-stabilizer-relichunter",
-    icons = Rabbasca.icons({ proto = data.raw["technology"]["big-mining-drill"] }),
-    prerequisites = { "rabbasca-stabilizer-warpdrive" },
-    rabbasca_underground_temporary = true,
-    effects = {
-      {
-        type = "unlock-recipe",
-        recipe = "rabbasca-stabilizer-toggle-relichunter"
-      }
-    },
-    ignore_tech_cost_multiplier = true,
-    research_trigger =
-    {
-        type = "scripted",
-        trigger_description = { "rabbasca-extra.trigger-repair-relichunter" }
     }
 },
 })

@@ -9,7 +9,7 @@ local st_anomaly = util.merge {
   table.deepcopy(data.raw["resource"]["calcite"]),
   {
     name = "rabbasca-warp-anomaly",
-    icons = Rabbasca.icons({proto = data.raw["tool"]["rabbasca-warp-matrix"]}),
+    icons = Rabbasca.icons({proto = data.raw["tool"]["rabbasca-warp-anomaly"]}),
     minimum = 10,
     normal = 20,
     infinite = false,
@@ -29,7 +29,7 @@ st_anomaly.stateless_visualisation = {
     count = 1,
     render_layer = "object",
     animation = {
-      priority = "extra-high",
+      -- priority = "extra-high",
       filename = "__rabbasca-assets__/graphics/entities/anomaly.png",
       line_length = 5,
       width = 412,
@@ -63,7 +63,7 @@ st_anomaly.factoriopedia_simulation = {
 
 st_anomaly.minable.mining_time = 1
 st_anomaly.category = "rabbasca-warp-anomaly"
-st_anomaly.minable.results = {{ type = "item", name = "rabbasca-warp-matrix", amount = 1 }}
+st_anomaly.minable.results = {{ type = "item", name = "rabbasca-warp-anomaly", amount = 1 }}
 st_anomaly.collision_mask = { layers = { out_of_map = true, harene = true, object = true } }
 st_anomaly.autoplace = {
   probability_expression = "rabbasca_underground_anomaly_chance",

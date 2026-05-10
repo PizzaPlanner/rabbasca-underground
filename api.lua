@@ -10,7 +10,7 @@ local function create_affinity_tech(planet)
     }),
     enabled = false,
     rabbasca_underground_temporary = true,
-    prerequisites = { "rabbasca-warp-stabilizer" },
+    prerequisites = { "rabbasca-stabilizer-warpdrive" },
     effects = { },
     localised_name = { "technology-name.rabbasca-warp-anchoring", planet },
     localised_description = { "technology-description.rabbasca-warp-anchoring", planet },

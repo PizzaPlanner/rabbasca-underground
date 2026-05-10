@@ -62,7 +62,7 @@ data:extend {
         {
           color1 = {0.7, 0.7, 0.7},
           color2 = {0.4, 0.4,  0.4},
-          tick_factor = 0.0005,
+          tick_factor = 0.000005,
         }
       }
     },
