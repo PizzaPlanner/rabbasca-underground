@@ -1,14 +1,9 @@
 local M = { }
 
 local warp = require("scripts.warp")
+local fuel = require("scripts.fuel")
 
 local ENERGY_PER_CELL = 1000000000
-
-local function update_cost_button(button, recipe, cost_base)
-    local n = 0.01 * (1 + (cost_base or 0)) * warp.get_fuel_time_modifier() * storage.stabilizer.config.recipe_settings[recipe].energy_required
-    button.number = n
-    button.style = n <= storage.stabilizer.charge.cells_stored and "inventory_slot" or "red_inventory_slot"
-end
 
 local function add_button(parent, sprite, style, name, size)
     local btn = parent.add{
@@ -27,7 +22,8 @@ function M.clear_stabilizer_ui(player)
 end
 
 local function add_fuel_row(t, e)
-    add_button(t, "entity/"..e.name, "inventory_slot", nil, 32)
+    local b = add_button(t, "entity/"..e.name, "inventory_slot", nil, 32)
+    b.show_percent_for_small_numbers = true
     local bar = t.add {
         type = "progressbar",
         value = e.burner.remaining_burning_fuel / ENERGY_PER_CELL
@@ -41,7 +37,7 @@ end
 
 function M.set_fuel_remote_ui(player)
     local frame = player.gui.relative.rabbasca_fuel_remote
-    if (not storage.stabilizer) or player.opened ~= storage.stabilizer.fuel.recharger then
+    if (not player.opened) or player.opened.name ~= "rabbasca-fuel-remote" then
         if frame then frame.destroy() end
         return
     end
@@ -57,33 +53,22 @@ function M.set_fuel_remote_ui(player)
             }
         }
         frame.add { 
-            type = "drop-down", 
-            name = "rabbasca_su_fuel_strategy",
-            items = {
-                {"", "Manual"},
-                {"", "[item=rabbasca-warp-cell-recharging] = 0"},
-                {"", "[item=rabbasca-warp-cell-recharging] > 0, [item=rabbasca-warp-trace] = 0"},
-                {"", "[item=rabbasca-warp-cell] > 0"},
-                {"", "[item=rabbasca-warp-cell] = 0"},
-            }
-        }
-        frame.add { 
             type = "switch", 
-            name = "rabbasca_su_fuel_retarget_switch",
+            name = "rabbasca_su_fuel_signal_switch",
             switch_state = "left",
             allow_none_state = false,
-            left_label_caption = { "", "First" },
-            right_label_caption = { "", "Cycle" },
-            caption = { "", "Seek [item=rabbasca-warp-cell-recharging]" }, 
+            left_label_caption = { "", "Manual" },
+            right_label_caption = { "", "Circuit Network" },
         }
-        local t = frame.add{ 
+        local t = frame.add { type = "scroll-pane", name = "scroll" }.add{ 
             type = "table", 
-            name = "targets",
+            name = "rabbasca_su_fuel_targets",
             column_count = 4
         }
+        frame.scroll.style.maximal_height = 600
         for _, e in pairs(storage.stabilizer.fuel.consumers) do
-            if e.valid then
-                add_fuel_row(t, e)
+            if e.entity.valid then
+                add_fuel_row(t, e.entity)
             end
         end
         local cam = frame.add{ name = "cam0", style = "entity_frame", type = "frame" }.add {
@@ -97,35 +82,39 @@ function M.set_fuel_remote_ui(player)
         cam.style.horizontally_stretchable = true
         cam.style.vertically_stretchable   = true
     end
-    local strategy = storage.stabilizer.fuel.selection_strategy
-    local is_fuel_inv = storage.stabilizer.fuel.recharger.proxy_target_inventory == defines.inventory.fuel
-    frame.rabbasca_su_fuel_retarget_switch.switch_state = strategy.cycle and "right" or "left"
-    frame.rabbasca_su_fuel_strategy.selected_index = strategy.filter
-    local current = storage.stabilizer.fuel.current
-    local has_rows = #frame.targets.children / 4
+    local selector = storage.stabilizer.fuel.selector
+    frame.rabbasca_su_fuel_signal_switch.switch_state = selector.read_from_network and "right" or "left"
+    local current = selector.unfiltered_index
+    local fueltable = frame.scroll.rabbasca_su_fuel_targets
+    local has_rows = #fueltable.children / 4
     local i = 0
-    for _, e in pairs(storage.stabilizer.fuel.consumers) do
-        if e.valid then
+    local index_by_type = { }
+    for _, c in pairs(storage.stabilizer.fuel.consumers) do
+        if c.entity.valid then
+            local e = c.entity
             i = i + 1
             local id = i * 4 - 3
             if i > has_rows then
-                add_fuel_row(frame.targets, e)
+                add_fuel_row(fueltable, e)
             end
-            frame.targets.children[id    ].sprite = "entity/"..e.name
-            frame.targets.children[id + 1].value  = e.burner.remaining_burning_fuel / ENERGY_PER_CELL
-            frame.targets.children[id + 2].number = e.get_inventory(defines.inventory.fuel).get_item_count("rabbasca-warp-cell")
-            frame.targets.children[id + 2].style  = i == current and is_fuel_inv and "yellow_inventory_slot" or "inventory_slot"
-            frame.targets.children[id + 3].number = e.get_inventory(defines.inventory.burnt_result).get_item_count("rabbasca-warp-cell-recharging")
-            frame.targets.children[id + 3].style  = i == current and (not is_fuel_inv) and "yellow_inventory_slot" or "inventory_slot"
-            frame.targets.children[id + 2].style.size = 32
-            frame.targets.children[id + 3].style.size = 32
+            local inv = e.get_inventory(defines.inventory.burnt_result)
+            index_by_type[e.name] = (index_by_type[e.name] or 0) + 1
+            fueltable.children[id    ].sprite = "entity/"..e.name
+            fueltable.children[id    ].tags   = { name = e.name, index = index_by_type[e.name], full = true }
+            fueltable.children[id    ].style  = i == current and "yellow_inventory_slot" or "inventory_slot"
+            fueltable.children[id    ].number = e.burner.remaining_burning_fuel / fuel.ENERGY_PER_CELL_MINI
+            fueltable.children[id + 1].value  = e.burner.remaining_burning_fuel / fuel.ENERGY_PER_CELL_MINI
+            fueltable.children[id + 2].number = inv.get_item_count("rabbasca-warp-cell")
+            fueltable.children[id + 3].number = inv.get_item_count("rabbasca-warp-cell-recharging")
+            fueltable.children[id + 2].style.size = 32
+            fueltable.children[id + 3].style.size = 32
         end
     end
-    for j = 4 * (i + 1), #frame.targets.children do
-        frame.targets.children[j].destroy()
+    for j = 4 * (i + 1), #fueltable.children do
+        fueltable.children[j].destroy()
     end
     if frame.cam0 then
-        local pos = storage.stabilizer.fuel.consumers[current] and storage.stabilizer.fuel.consumers[current].valid and storage.stabilizer.fuel.consumers[current].position or {0, 0}
+        local pos = storage.stabilizer.fuel.consumers[current] and storage.stabilizer.fuel.consumers[current].entity.valid and storage.stabilizer.fuel.consumers[current].entity.position or {0, 0}
         frame.cam0.target_cam.position = pos
     end
 end
@@ -209,6 +198,28 @@ function M.set_stabilizer_ui(player)
         bar2.style.horizontally_stretchable = true
         bar2.style.color = { 1, 1, 1 }
 
+        if storage.stabilizer.fuel.load then
+            local f1 = frame.add {
+                type = "frame",
+                name = "rabbasca_su_drain",
+                style = "entity_frame",
+                direction = "horizontal"
+            }
+            add_button(f1, "item/rabbasca-warp-cell", "transparent_slot", "icon", 24)
+            local bar2 = f1.add {
+                type = "progressbar",
+                name = "bar",
+                value = 0,
+                style = "production_progressbar",
+                caption = "0/0 MW",
+            }
+            bar2.style.minimal_width = 64
+            bar2.style.natural_width = 64
+            bar2.style.horizontal_align = "center"
+            bar2.style.horizontally_stretchable = true
+            bar2.style.color = { 1, 1, 1 }
+        end
+
         local subframe = frame.add {
             type = "frame",
             name = "rabbasca_su_content",
@@ -290,40 +301,28 @@ function M.set_stabilizer_ui(player)
         end
     end
     local t = frame.rabbasca_su_content.rabbasca_su_table
-    local empty_time = storage.stabilizer.charge.empty_since
-    if t.rabbasca_su_status_extractor then
-        t.rabbasca_su_status_extractor.caption = storage.stabilizer.parts.anomaly_extractor and ((empty_time or 0) > 0 and string.format("[color=yellow]Hibernate in %is[/color]", (storage.stabilizer.settings.miner_hibernation_timeout - empty_time)/60) or "[color=green]ONLINE[/color]") or "[color=yellow]SLEEP[/color]"
-    end
-    if t.rabbasca_su_status_relichunter then
-        t.rabbasca_su_status_relichunter.caption = storage.stabilizer.parts.relichunter and ((empty_time or 0) > 0 and string.format("[color=yellow]Hibernate in %is[/color]", (storage.stabilizer.settings.miner_hibernation_timeout - empty_time)/60) or "[color=green]ONLINE[/color]") or "[color=yellow]SLEEP[/color]"
-    end
     t.rabbasca_su_autopilot.switch_state = storage.stabilizer.settings.autopilot and "right" or "left"
 
     if frame.rabbasca_su_content.miners then
         frame.rabbasca_su_content.miners.rabbasca_su_miners_target.slider_value = storage.stabilizer.miners.active_target
-        frame.rabbasca_su_content.miners.energy_saved.caption = "[item=rabbasca-warp-cell]"..string.format("%.1f%% | %i/%i", (storage.stabilizer.miners.saved_fuel or 0) *100 / ENERGY_PER_CELL, #storage.stabilizer.miners.entities, storage.stabilizer.miners.active_target)
-    end
-
-    if frame.rabbasca_su_fuelcosts then
-        frame.rabbasca_su_fuelcosts.upkeep.caption = { "rabbasca-extra.panel-upkeep", storage.stabilizer.charge.upkeep }
-        frame.rabbasca_su_fuelcosts.tank.caption = { "rabbasca-extra.panel-tank", string.format("%.2f", storage.stabilizer.charge.cells_stored) }
-        update_cost_button(frame.rabbasca_su_fuelcosts.table.stabilize, "rabbasca-stabilize-warpfield")
-        update_cost_button(frame.rabbasca_su_fuelcosts.table.warp, "rabbasca-stabilizer-warp-sequence", warp.get_warp_cost())
-        update_cost_button(frame.rabbasca_su_fuelcosts.table.toggle_relichunter, "rabbasca-stabilizer-toggle-relichunter")
-        update_cost_button(frame.rabbasca_su_fuelcosts.table.toggle_extractor, "rabbasca-stabilizer-toggle-extractor")
+        frame.rabbasca_su_content.miners.energy_saved.caption = string.format("%i/%i", #storage.stabilizer.miners.entities, storage.stabilizer.miners.active_target)
     end
 
     if frame.rabbasca_su_progress then
         frame.rabbasca_su_progress.bar.value = warp.get_repair_progress()
         frame.rabbasca_su_progress.bar.caption = { "rabbasca-extra.panel-progress", string.format("%.1f", warp.get_repair_progress() * 100), storage.stabilizer.anomalies.current }
     end
-    if frame.relichunter_progress then
-        frame.relichunter_progress.caption = { "", string.format("Relichunter: %i%% Chance", warp.get_relic_chance() * 100) }
+    if frame.rabbasca_su_drain then
+        local load = storage.stabilizer.fuel.load
+        local val = load.available / load.demand
+        frame.rabbasca_su_drain.bar.value = val
+        frame.rabbasca_su_drain.bar.style.color = (val >= 1 and { 0, 1, 0 }) or (val > 0.5 and { 1, 0.8, 0 }) or { 1, 0.2, 0 }
+        frame.rabbasca_su_drain.bar.caption = { "", string.format("%.1f MW / %.1f MW", load.available / 1000000 * 60, load.demand / 1000000 * 60) }
     end
 
     -- frame.rabbasca_su_fuel.rabbasca_su_fuel_left.caption = { "", string.format("[item=rabbasca-warp-anomaly]Anomalies left: %i", storage.stabilizer.anomalies.current) }
     -- frame.rabbasca_su_fuel.rabbasca_su_repairs.caption =   { "", string.format("Stabilization:  %i%%", warp.get_repair_progress() * 100) }
-    -- frame.rabbasca_su_fuel.rabbasca_su_cost_fix.caption =   { "", string.format("[recipe=rabbasca-stabilize-warpfield]: %.2f%%[item=rabbasca-warp-cell]/s", 1 * warp.get_fuel_time_modifier()) }
+    -- frame.rabbasca_su_fuel.rabbasca_su_cost_fix.caption =   { "", string.format("[recipe=rabbasca-warp-trace]: %.2f%%[item=rabbasca-warp-cell]/s", 1 * warp.get_fuel_time_modifier()) }
     -- frame.rabbasca_su_fuel.rabbasca_su_cost_warp.caption =   { "", string.format("[recipe=rabbasca-stabilizer-warp-sequence]: %.2f%%[item=rabbasca-warp-cell]/s", warp.get_warp_cost() * warp.get_fuel_time_modifier()) }
     -- frame.rabbasca_su_fuel.rabbasca_su_battery_drain.caption = { "", string.format("Current: %s%.2f%%[item=rabbasca-warp-cell]/s", info.discharge_rate > 0 and "+" or "", info.discharge_rate) }
 end

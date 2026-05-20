@@ -11,9 +11,16 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     crafting_speed = 1,
     collision_box = {{-3.7, -3.7}, {3.7, 3.7}},
     selection_box = {{-4, -4}, {4, 4}},
-    energy_usage = "10MW",
-    energy_source = { type = "void" },
-    -- fixed_recipe = "rabbasca-stabilize-warpfield",
+    energy_usage = "1MW",
+    energy_source = {
+      type = "burner",
+      fuel_inventory_size  = 0,
+      burnt_inventory_size = 50,
+      initial_fuel = "rabbasca-warp-cell-internal-big",
+      initial_fuel_percent = 0.001,
+      fuel_categories = { "rabbasca-warp-anomaly" },
+    },
+    -- fixed_recipe = "rabbasca-warp-trace",
     module_slots = 20,
     trash_inventory_size = 10,
     hidden = false,
@@ -83,17 +90,21 @@ local relichunter = {
   icon = "__rabbasca-assets__/graphics/by-hurricane/research-center-icon.png",
   icon_size = 64,
   type = "assembling-machine",
-  flags = { "placeable-player" },
+  flags = { "placeable-player", "player-creation" },
   collision_box = {{-1.8, -1.8},{1.8, 1.8}},
   selection_box = {{-2, -2},{2, 2}},
   crafting_speed = 1,
   module_slots = 0,
+  placeable_by = { item = "rabbasca-relichunter", count = 1 },
+  minable = { result = "rabbasca-relichunter", count = 1, mining_time = 1 },
   crafting_categories = { "rabbasca-relichunter" },
   energy_usage = "2MW",
   energy_source = {
     type = "burner",
-    fuel_inventory_size = 1,
-    burnt_inventory_size = 10,
+    fuel_inventory_size  = 0,
+    burnt_inventory_size = 0,
+    initial_fuel = "rabbasca-warp-cell-internal",
+    initial_fuel_percent = 0.001,
     fuel_categories = { "rabbasca-warp-anomaly" },
   },
   fixed_recipe = "rabbasca-hunt-relicaries",
@@ -101,6 +112,18 @@ local relichunter = {
   hidden_in_factoriopedia = false,
   subgroup = "rabbasca-warp-stabilizer",
   order = "a[stabilizer]-c[relichunter]",
+  created_effect = {
+    type = "direct",
+    action_delivery = {
+      type = "instant",
+      source_effects = {
+        {
+          type = "script",
+          effect_id = "rabbasca_register_fuel_consumer",
+        },
+      }
+    },
+  },
   graphics_set = {
     animation = { layers = {
           util.merge { rh_spritedata, { filename = "__rabbasca-assets__/graphics/by-hurricane/research-center-animation.png" } },
@@ -226,8 +249,7 @@ local minelon = util.merge {
     resource_categories = { "rabbasca-warp-anomaly" },
     vector_to_place_result = { 0, 0 },
     uses_force_mining_productivity_bonus = false,
-    quality_affects_mining_radius = true,
-    minable = { result = "rabbasca-collector-pylon" },
+    quality_affects_mining_radius = false,
     graphics_set = { 
       idle_animation = { layers = { { filename = "__rabbasca-assets__/graphics/by-hurricane/conduit-animation-2.png", }, { } } },
       working_visualisations = {{ animation = { tint = { 0.75, 0.2, 0.42 } } }}
@@ -237,45 +259,23 @@ local minelon = util.merge {
 minelon.energy_usage = "7MW"
 minelon.energy_source = {
   type = "burner",
-  fuel_inventory_size = 1,
-  burnt_inventory_size = 10,
+  fuel_inventory_size = 0,
+  burnt_inventory_size = 0,
+  initial_fuel = "rabbasca-warp-cell-internal",
+  initial_fuel_percent = 0.001,
   fuel_categories = { "rabbasca-warp-anomaly" },
 }
-minelon.placeable_by = { item = "rabbasca-collector-pylon", count = 1 }
-minelon.allowed_effects = {"speed", "productivity", "quality"}
+minelon.placeable_by = nil -- { item = "rabbasca-collector-pylon", count = 1 }
+minelon.minable = nil
+minelon.allowed_effects = { "speed", "productivity" }
 minelon.flags = { "placeable-player", "player-creation", "no-automated-item-insertion" }
 minelon.custom_tooltip_fields = nil
 minelon.collision_box = {{-1.2, -1.2},{1.2, 1.2}}
 minelon.selection_box = {{-1.5, -1.5},{1.5, 1.5}}
 minelon.collision_mask = {
-    layers = { object = true, is_object = true }
+    layers = { is_object = true }
 }
 minelon.tile_buildability_rules = nil
-
-local passive_miner = util.merge {
-  data.raw["electric-energy-interface"]["rabbasca-energy-source"],
-  {
-    name = "rabbasca-anomaly-extractor",
-    type = "mining-drill",
-    factoriopedia_alternative = "rabbasca-warp-stabilizer",
-    resource_searching_radius = 100,
-    shuffle_resources_to_mine = true,
-    mining_speed = 10,
-    resource_categories = { "rabbasca-warp-anomaly" },
-    vector_to_place_result = { 0, 0 },
-    uses_force_mining_productivity_bonus = false,
-    quality_affects_mining_radius = false,
-    energy_source = { type = "void", },
-    energy_usage = Rabbasca.surface_megawatts() * 50 .. "MW",
-    show_alert_icon = false
-  }
-}
-passive_miner.icon = nil
-passive_miner.icons = Rabbasca.icons({
-  { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"] },
-  { proto = data.raw["item"]["engine-unit"], scale = 0.4, shift = { 8, 8 } },
-})
-passive_miner.allowed_effects = { }
 
 local floorion = util.merge {
   data.raw["assembling-machine"]["rabbasca-warp-pylon"],
@@ -295,15 +295,18 @@ local floorion = util.merge {
     energy_usage = "5MW",
     energy_source = {
       type = "burner",
-      fuel_inventory_size = 1,
-      burnt_inventory_size = 10,
+      fuel_inventory_size  = 0,
+      burnt_inventory_size = 1,
+      initial_fuel = "rabbasca-warp-cell-internal",
+      initial_fuel_percent = 0.001,
       fuel_categories = { "rabbasca-warp-anomaly" },
     },
     radius_visualisation_specification = {
       sprite = data.raw["utility-sprites"]["default"].construction_radius_visualization,
       distance = 6,
     },
-    show_recipe_icon = false
+    show_recipe_icon = false,
+    trash_inventory_size = 2,
   }
 }
 floorion.tile_buildability_rules = {{ 
@@ -324,14 +327,79 @@ floorion.created_effect = {
   action_delivery = {
     type = "instant",
     source_effects = {
-      type = "script",
-      effect_id = "rabbasca_register_floorthing",
-    },
+      {
+        type = "script",
+        effect_id = "rabbasca_register_floorthing",
+      },
+      {
+        type = "script",
+        effect_id = "rabbasca_register_fuel_consumer",
+      },
+    }
   }
 }
 
+local ufo = util.merge {
+  data.raw["spider-vehicle"]["spidertron"],
+  {
+    name = "rabbasca-ufo",
+    movement_energy_consumption = "12MW",
+    has_belt_immunity = true,
+    inventory_size = 20,
+    trash_inventory_size = 20,
+    allow_remote_driving = true,
+    torso_rotation_speed = 0.05,
+    torso_bob_speed = 0.07,
+    radar_range = 3,
+    height = 2,
+    allow_passengers = true,
+    energy_source = {
+      type = "burner",
+      fuel_inventory_size  = 0,
+      burnt_inventory_size = 1,
+      initial_fuel = "rabbasca-warp-cell-internal",
+      initial_fuel_percent = 0.001,
+      fuel_categories = { "rabbasca-warp-anomaly" },
+    },
+  }
+}
+ufo.guns = { 
+  "teslagun",
+  "teslagun",
+  "teslagun",
+}
+ufo.collision_mask = {
+  layers = { out_of_map = true },
+  collides_with_tiles_only = true
+}
+ufo.created_effect = {
+  type = "direct",
+  action_delivery = {
+    type = "instant",
+    source_effects = {
+      {
+        type = "script",
+        effect_id = "rabbasca_register_fuel_consumer",
+      },
+    }
+  },
+}
+ufo.spider_engine.legs = { leg = "rabbasca-ufo-leg", mount_position = {0, 0}, ground_position = {0, 0}, walking_group = 1 }
+local ufo_leg = util.merge {
+  data.raw["spider-leg"]["spidertron-leg-1"],
+  {
+    name = "rabbasca-ufo-leg",
+    initial_movement_speed = 1.5,
+    movement_acceleration = 3,
+    target_position_randomisation_distance = 0,
+  }
+}
+ufo_leg.collision_mask = table.deepcopy(ufo.collision_mask)
+ufo_leg.graphics_set = nil
+
 data:extend {
   stabilizer,
+  ufo, ufo_leg,
   fuel_access,
   miner_remote,
   lab,
@@ -340,20 +408,4 @@ data:extend {
   relichunter,
   minelon,
   floorion,
-  passive_miner,
-  util.merge {
-    data.raw["electric-energy-interface"]["rabbasca-energy-source"],
-    {
-      name = "rabbasca-platform-energy-source",
-      icons = Rabbasca.icons({{ proto = data.raw["fluid"]["harene"]}}),
-      energy_production = Rabbasca.surface_megawatts() * 0.1 .. "MW",
-      energy_source = { 
-        type = "electric", 
-        usage_priority = "primary-output", 
-        buffer_capacity = (Rabbasca.surface_megawatts() * 0.1 / 6) .. "MJ", 
-        output_flow_limit = Rabbasca.surface_megawatts() * 0.1 .. "MW",
-        render_no_power_icon = false
-      },
-    }
-  }
 }

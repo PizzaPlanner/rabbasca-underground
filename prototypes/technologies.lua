@@ -153,6 +153,10 @@ data:extend{
         type = "unlock-recipe",
         recipe = "rabbasca-warpfield-engine"
       },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-relichunter"
+      },
     },
     ignore_tech_cost_multiplier = true,
     research_trigger =

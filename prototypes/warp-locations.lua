@@ -6,8 +6,6 @@ Rabbasca.Stabilizer.add_location{
         { type = "resource", name = "haronite", probability = 0.0063, richness = 165, floor = "volcanic-folds-warm" },
     },
     lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-rabbasca.png",
-    min_stay = 60,
-    max_stay = 75,
 }
 Rabbasca.Stabilizer.add_location{
     planet = "vulcanus",
@@ -16,8 +14,6 @@ Rabbasca.Stabilizer.add_location{
         { type = "resource", name = "tungsten-ore", probability = 0.0011, richness = 290, floor = "volcanic-cracks-hot" }, 
     },
     lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-vulcanus.png",
-    min_stay = 50,
-    max_stay = 60,
 }
 Rabbasca.Stabilizer.add_location{
     planet = "gleba",
@@ -26,8 +22,6 @@ Rabbasca.Stabilizer.add_location{
     anomaly_replace_entities = { 
         { type = "resource", name = "rabbasca-yumako-mashup", probability = 0.0015, richness = 582, floor = "lowland-brown-blubber" }, 
     },
-    min_stay = 50,
-    max_stay = 70,
 }
 Rabbasca.Stabilizer.add_location{
     planet = "fulgora",
@@ -36,8 +30,6 @@ Rabbasca.Stabilizer.add_location{
         { type = "resource", name = "rabbasca-holmium-ore", probability = 0.06, richness = 21, floor = "fulgoran-rock" }, 
     },
     lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-fulgora.png",
-    min_stay = 40,
-    max_stay = 60,
 }
 
 Rabbasca.Stabilizer.add_location{
@@ -48,8 +40,6 @@ Rabbasca.Stabilizer.add_location{
         { type = "resource", name = "rabbasca-lithium-amide", probability = 0.008, richness = 200, floor = "volcanic-smooth-stone" }, 
     },
     lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-aquilo.png",
-    min_stay = 30,
-    max_stay = 55,
 }
 
 data:extend{

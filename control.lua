@@ -17,6 +17,11 @@ local function handle_script_events(event)
     underground.repair_part()
   elseif effect_id == "rabbasca_on_toggle_component" then
     underground.toggle_component()
+  elseif effect_id == "rabbasca_on_summon_ufo" then
+    local from = Rabbasca.get_spoiled_in(event)
+    if from then
+      underground.summon_fleet(from.surface, from.position)
+    end
   elseif effect_id == "rabbasca_warp_progress_warp" then
     underground.warp.warp_to()
   elseif effect_id == "rabbasca_on_abandon" then
@@ -24,19 +29,27 @@ local function handle_script_events(event)
   elseif effect_id == "rabbasca_on_send_pylon_underground" then
     local from = Rabbasca.get_spoiled_in(event)
     underground.on_locate_progress(from)
+  elseif effect_id == "rabbasca_register_fuel_consumer" then
+    if event.source_entity then underground.fuel.register_consumer(event.source_entity) end
   elseif effect_id == "rabbasca_register_floorthing" then
-    if event.source_entity then
-      event.source_entity.set_recipe("rabbasca-floor-stability-work")
-      underground.warp.register_floorthing(event.source_entity)
-    end
+    if event.source_entity then underground.warp.register_floorthing(event.source_entity) end
   end
 end
 
 script.on_event(defines.events.on_script_trigger_effect, handle_script_events)
 
+script.on_event(defines.events.on_marked_for_deconstruction, function(event)
+  underground.fuel.rescue_cell(event.entity)
+end, {
+  { filter = "name", name = "rabbasca-stability-pylon" }, 
+  { filter = "name", name = "rabbasca-relichunter" }, 
+  { filter = "name", name = "rabbasca-collector-pylon" }
+})
+
 script.on_event(defines.events.on_object_destroyed, function(event)
   if event.type == defines.target_type.entity then
     underground.on_stabilizer_died(event.registration_number)
+    underground.fuel.on_consumer_died(event.registration_number)
     underground.warp.on_floorthing_died(event.registration_number)
   end
 end)
@@ -75,7 +88,6 @@ script.on_event(defines.events.on_gui_selection_state_changed, function(event)
 end)
 
 script.on_event(defines.events.on_gui_click, function(event) 
-  if not event.mod_name == "rabbasca-underground" then return end
   if event.element.name == "rabbasca_su_btn_reboot_main" then
     storage.stabilizer.entity.set_recipe("rabbasca-reboot-stabilizer")
     game.auto_save("rabbasca-first-stabilizer-reboot")
@@ -85,6 +97,11 @@ script.on_event(defines.events.on_gui_click, function(event)
     storage.stabilizer.entity.set_recipe("rabbasca-repair-extractor")
   elseif event.element.name == "rabbasca_su_btn_repair_relichunter" and storage.stabilizer then
     storage.stabilizer.entity.set_recipe("rabbasca-repair-relichunter")
+  elseif event.element.parent and event.element.parent.name == "rabbasca_su_fuel_targets" then
+    local tags = event.element.tags
+    if tags then
+      underground.fuel.set_target(tags)
+    end
   elseif event.element.name == "rabbasca_relicary_reconnect" then
     local chest = game.players[event.player_index].opened
     if chest then
@@ -101,14 +118,11 @@ script.on_event(defines.events.on_gui_switch_state_changed, function(event)
 
   if event.element.name == "rabbasca_su_autopilot" then
     storage.stabilizer.settings.autopilot = event.element.switch_state == "right"
-  elseif event.element.name == "rabbasca_su_autofuel" then
-    storage.stabilizer.settings.autofuel = event.element.switch_state == "right"
-  elseif event.element.name == "rabbasca_su_recall" then
-    storage.stabilizer.settings.recall = event.element.switch_state == "right"
-  elseif event.element.name == "rabbasca_su_fuel_inventory_switch" then
-    storage.stabilizer.fuel.recharger.proxy_target_inventory = event.element.switch_state == "right" and defines.inventory.burnt_result or defines.inventory.fuel
-  elseif event.element.name == "rabbasca_su_fuel_retarget_switch" then
-      storage.stabilizer.fuel.selection_strategy.cycle = event.element.switch_state == "right"
+  elseif event.element.name == "rabbasca_su_fuel_signal_switch" then
+      storage.stabilizer.fuel.selector.read_from_network = event.element.switch_state == "right"
+      storage.assign_remote = storage.assign_remote or { }
+      storage.assign_remote[event.player_index] = { chest = player.opened }
+      player.opened = nil
   end
 end)
 

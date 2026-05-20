@@ -40,12 +40,6 @@ Rabbasca.make_trigger_item({
   icon_size = 640,
 }, "rabbasca_on_reboot_underground"),
 Rabbasca.make_trigger_item({
-  name = "rabbasca-stabilize-warpfield",
-  subgroup = "rabbasca-warp-stabilizer",
-  order = "a",
-  icons = Rabbasca.icons({ proto = data.raw["virtual-signal"]["signal-recycle"], tint = { 0.83, 1, 0.15} })
-}, "rabbasca_warp_progress"),
-Rabbasca.make_trigger_item({
   name = "rabbasca-stabilizer-warp-sequence",
   subgroup = "rabbasca-warp-stabilizer-functions",
   order = "a",
@@ -75,6 +69,16 @@ Rabbasca.make_trigger_item({
     { proto = data.raw["virtual-signal"]["signal-explosion"] }
   })
 }, "rabbasca_on_abandon"),
+Rabbasca.make_trigger_item({
+  name = "rabbasca-summon-ufo",
+  subgroup = "rabbasca-warp-stabilizer-functions",
+  order = "zz",
+  hidden = false,
+  icons = Rabbasca.icons({
+    { proto = data.raw["spider-vehicle"]["rabbasca-ufo"] },
+    { proto = data.raw["virtual-signal"]["rabbasca-warp-inventory"], scale = 0.3, shift = {8,8} },
+  })
+}, "rabbasca_on_summon_ufo"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-stabilizer-repair-component",
   subgroup = "rabbasca-warp-stabilizer-functions",
@@ -128,7 +132,7 @@ util.merge {
         }
       }
     },
-    stack_size = 1000,
+    stack_size = 250,
     weight = 0,
   },
 },
@@ -241,11 +245,11 @@ util.merge {
   name = "rabbasca-warp-cell",
   icon = "__rabbasca-assets__/graphics/recolor/icons/warp-cell.png",
   icon_size = 64,
-  fuel_value = "1GJ",
+  fuel_value = "10MJ",
   fuel_category = "rabbasca-warp-anomaly",
   stack_size = 1,
   flags = { "not-stackable" },
-  spoil_ticks = 2 * minute,
+  spoil_ticks = 5 * minute,
   spoil_result = "rabbasca-warp-cell-recharging",
   burnt_result = "rabbasca-warp-cell-recharging",
   subgroup = "rabbasca-warp-stabilizer",
@@ -342,6 +346,17 @@ util.merge {
 },
 {
   type = "item",
+  name = "rabbasca-relichunter",
+  icon = "__rabbasca-assets__/graphics/by-hurricane/research-center-icon.png",
+  icon_size = 64,
+  place_result = "rabbasca-relichunter",
+  stack_size = 50,
+  weight = 1000 * kg,
+  subgroup = data.raw["item"]["rabbasca-warp-pylon"].subgroup,
+  order = data.raw["item"]["rabbasca-warp-pylon"].order.."-r[relichunter]",
+},
+{
+  type = "item",
   name = "rabbasca-collector-pylon",
   icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-2.png",
   icon_size = 64,
@@ -379,4 +394,26 @@ util.merge {
 --     spoil_ticks = 10 * second,
 --     spoil_result = "self-replicating-firearm-magazine"
 -- },
+}
+
+local internal_cell = util.merge { 
+    data.raw["item"]["rabbasca-warp-cell"],
+    {
+      name = "rabbasca-warp-cell-internal",
+      hidden = true,
+      fuel_value = "50MJ",
+      spoil_ticks = 0
+    }
+  }
+  internal_cell.spoil_result = nil
+  internal_cell.burnt_result = nil
+data:extend {
+  internal_cell,
+  util.merge { 
+    internal_cell,
+    {
+      name = "rabbasca-warp-cell-internal-big",
+      fuel_value = "200MJ",
+    }
+  } 
 }

@@ -10,18 +10,8 @@ local function post_warp_surface(surface)
     storage.stabilizer.entity.force.chart(surface, {{-72, -72}, {72, 72}})
     if storage.stabilizer.finished_warps == 0 then
         storage.stabilizer.entity.set_recipe(nil)
-        for i = 0, 20 do
-            local pos = surface.find_non_colliding_position("item-on-ground", {math.random(-7, 7), math.random(-7, 7)}, 4, 1)
-            surface.spill_item_stack{stack = {name = "coal", count = 1}, position = pos}
-            pos = surface.find_non_colliding_position("item-on-ground", {math.random(-7, 7), math.random(-7, 7)}, 4, 1)
-            surface.spill_item_stack{stack = {name = "ice", count = 2}, position = pos}
-        end
-        for i = 0, 8 do
-            local pos = surface.find_non_colliding_position("item-on-ground", {math.random(-7, 7), math.random(-7, 7)}, 4, 1)
-            surface.spill_item_stack{stack = {name = "coal", count = 1}, position = pos}
-        end
     else
-        storage.stabilizer.entity.set_recipe("rabbasca-stabilize-warpfield")
+        storage.stabilizer.entity.set_recipe("rabbasca-warp-trace")
     end
 end
 
@@ -48,13 +38,14 @@ function M.on_warp_underground(event)
             if e and e.valid then e.force = "neutral" end
         end
         storage.stabilizer.left_on_warp = { }
-        if not storage.stabilizer.tiledata.tiles[data.to] then
+        if not storage.stabilizer.flooring.tiles[data.to] then
             M.recalc_tiles()
         end
         if storage.stabilizer.finished_warps then
             M.leave_unsafe(storage.stabilizer.entity)
         end
-        M.replace_tiles(surface, config.planets[data.to].water)
+        if not storage.stabilizer.entity.valid then return end
+        M.replace_tiles(surface)
         M.replace_entities(surface, config.planets, data.to)
         surface.regenerate_decorative()
         M.change_affinity(last_location)
@@ -130,21 +121,21 @@ end
 
 function M.get_warp_cost()
     local weighted_progress = (1 - M.get_repair_progress() * M.get_repair_progress())
-    local mod_relics = storage.stabilizer.parts.relichunter and 1 or 0
+    local mod_relics = storage.stabilizer.relics and 1 or 0
     return (0.5 + mod_relics * 0.7 + (12 + mod_relics * 17) * weighted_progress) / M.get_fuel_time_modifier()
 end
 
 function M.get_relic_chance()
-    return storage.stabilizer.parts.relichunter and storage.stabilizer.parts.relichunter.pity or 0
+    return storage.stabilizer.relics and storage.stabilizer.relics.pity or 0
 end
 
 function M.hunt_relicary(data)
-    if not storage.stabilizer.parts.relichunter then return end
+    if not storage.stabilizer.relics then return end
     if math.random() < M.get_relic_chance() and not data.guaranteed_manifestations then
         data.guaranteed_manifestations = { { type = "poi", name = "rabbasca-relicary", floor = "rabbasca-underground-rubble", force = storage.stabilizer.entity.force } }
-        storage.stabilizer.parts.relichunter = { pity = 0.05 }
+        storage.stabilizer.relics = { pity = 0.05 }
     else
-        storage.stabilizer.parts.relichunter = { pity = (storage.stabilizer.parts.relichunter.pity or 0) + 0.25 * M.get_repair_progress() }
+        storage.stabilizer.relics = { pity = (storage.stabilizer.relics.pity or 0) + 0.25 * M.get_repair_progress() }
     end
 end
 

@@ -18,19 +18,20 @@ data:extend({
     rabbasca_underground_temporary = true,
     prerequisites = { "rabbasca-underground" },
     effects = { 
-      {
-        type ="unlock-recipe",
-        recipe = "rabbasca-stabilize-warpfield"
-      },
-      {
-        type ="unlock-recipe",
-        recipe = "rabbasca-abandon-stabilizer"
-      },
+      -- {
+      --   type ="unlock-recipe",
+      --   recipe = "rabbasca-warp-trace"
+      -- },
+      -- {
+      --   type ="unlock-recipe",
+      --   recipe = "rabbasca-abandon-stabilizer"
+      -- },
     },
     research_trigger =
     {
-      type = "scripted",
-      trigger_description = { "rabbasca-extra.trigger-locate-underground" }
+      type = "mine-entity",
+      entity = "rabbasca-warp-anomaly",
+      -- trigger_description = { "rabbasca-extra.trigger-locate-underground" }
     }
 },
 -- {

@@ -172,15 +172,21 @@ function M.replace_entities(surface, config, planet)
 end
 
 -- before: 8 * 233MS ../?? // after: 9 * 133MS ../566 // 17 * 125MS ../120 OR 5*26MS ../73 after reload
-function M.replace_tiles(surface, to_tile, safe_radius)
+function M.replace_tiles(surface)
     local planet = storage.stabilizer.warping.to
-    surface.set_tiles(storage.stabilizer.tiledata.tiles[planet], true)
+    surface.set_tiles(storage.stabilizer.flooring.tiles[planet], true)
+    local flooring_left = { }
+    for _, t in pairs(surface.find_tiles_filtered({name = "rabbasca-underground-rubble"})) do
+        table.insert(flooring_left, { name = "rabbasca-underground-out-of-map", position = t.position })
+    end
+    surface.set_tiles(flooring_left, true)
+
 end
 
 function M.is_box_safe(b)
     for x = b.left_top.x, b.right_bottom.x do
     for y = b.left_top.y, b.right_bottom.y do
-        if not storage.stabilizer.tiledata.safe_tiles[math.floor(x) + math.floor(y) * 1000] then 
+        if not storage.stabilizer.flooring.safe_tiles[math.floor(x) + math.floor(y) * 1000] then 
             return false
         end
     end
@@ -198,31 +204,31 @@ function M.leave_unsafe(stabilizer)
 end
 
 function M.is_tile_safe(pos)
-    return storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000] == true
+    return storage.stabilizer.flooring.safe_tiles[pos.x + pos.y * 1000] == true
 end
 
 function M.add_safe_tile(pos, reason)
-    if not storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000] then
-        storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000] = { }
+    if not storage.stabilizer.flooring.safe_tiles[pos.x + pos.y * 1000] then
+        storage.stabilizer.flooring.safe_tiles[pos.x + pos.y * 1000] = { }
     end
-    storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000][reason] = true
+    storage.stabilizer.flooring.safe_tiles[pos.x + pos.y * 1000][reason] = true
 end
 
 function M.remove_safe_tile(pos, reason)
-    if not storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000] then return end
-    storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 100][reason] = nil
-    if not M.is_tile_safe(pos) then storage.stabilizer.tiledata.safe_tiles[pos.x + pos.y * 1000] = nil end
+    if not storage.stabilizer.flooring.safe_tiles[pos.x + pos.y * 1000] then return end
+    storage.stabilizer.flooring.safe_tiles[pos.x + pos.y * 100][reason] = nil
+    if not M.is_tile_safe(pos) then storage.stabilizer.flooring.safe_tiles[pos.x + pos.y * 1000] = nil end
 end
 
 function M.recalc_tiles()
-    storage.stabilizer.tiledata = storage.stabilizer.tiledata or {
+    storage.stabilizer.flooring = storage.stabilizer.flooring or {
         entities = { },
         tiles = { },
         safe_tiles = { },
     }
     local safe_tiles = { }
     -- floor pylons
-    for _, e in pairs(storage.stabilizer.tiledata.entities) do
+    for _, e in pairs(storage.stabilizer.flooring.entities) do
         if e.on == true then
             for x = -6, 5 do
                 for y = -6, 5 do
@@ -232,11 +238,11 @@ function M.recalc_tiles()
             end
         end
     end
-    storage.stabilizer.tiledata.safe_tiles = safe_tiles
-    storage.stabilizer.tiledata.tiles = { }
+    storage.stabilizer.flooring.safe_tiles = safe_tiles
+    storage.stabilizer.flooring.tiles = { }
 
     for planet, _ in pairs(storage.stabilizer.config.planets) do
-        storage.stabilizer.tiledata.tiles[planet] = { }
+        storage.stabilizer.flooring.tiles[planet] = { }
     end
 
     for x = -96, 96 do
@@ -245,7 +251,7 @@ function M.recalc_tiles()
             local pos = { x = x, y = y }
             local is_safe = safe_tiles[pos.x + pos.y * 1000] == true
             for planet, pdata in pairs(storage.stabilizer.config.planets) do
-                table.insert(storage.stabilizer.tiledata.tiles[planet], { name = is_safe and "rabbasca-underground-rubble-powered" or pdata.water, position = { x = x, y = y } })
+                table.insert(storage.stabilizer.flooring.tiles[planet], { name = is_safe and "rabbasca-underground-rubble-powered" or pdata.water, position = { x = x, y = y } })
             end
         end
     end
@@ -253,11 +259,13 @@ function M.recalc_tiles()
 end
 
 local function swap_floor(e, on)
+    if not storage.stabilizer then return end
+    local origin = e.position or { x = e.x, y = e.y }
     local to   = on and "rabbasca-underground-rubble-powered" or "rabbasca-underground-rubble"
     local tiles = { }
     for x = -6, 5 do
         for y = -6, 5 do
-            local pos = {x = x + e.position.x, y = y + e.position.y } 
+            local pos = {x = x + origin.x, y = y + origin.y } 
             table.insert(tiles, { name = to, position = pos })
         end
     end
@@ -265,44 +273,44 @@ local function swap_floor(e, on)
 end
 
 function M.update_floorthings()
-    for _, e in pairs(storage.stabilizer.tiledata.entities) do
+    for _, e in pairs(storage.stabilizer.flooring.entities) do
         if not e.entity.valid then return end
         local new_on = e.entity.health > 10
         if new_on ~= e.on then
             if e.on == nil then
                 e.entity.health = 5 -- cant set this as placement trigger response for some reason
             end
-            storage.stabilizer.tiledata.dirty = true
+            storage.stabilizer.flooring.dirty = true
             e.on = new_on
             
             swap_floor(e.entity, new_on)
         end
         e.entity.health = math.max(1, e.entity.health)
     end
-    if storage.stabilizer.tiledata.dirty then
-        storage.stabilizer.tiledata.dirty = nil
+    if storage.stabilizer.flooring.dirty then
+        storage.stabilizer.flooring.dirty = nil
         M.recalc_tiles()
     end
 end
 
 function M.register_floorthing(e)
     local id, _, _ = script.register_on_object_destroyed(e)
-    if storage.stabilizer.tiledata.entities[id] then return end
-
-    storage.stabilizer.tiledata.entities[id] = {
+    if storage.stabilizer.flooring.entities[id] then return end
+    
+    storage.stabilizer.flooring.entities[id] = {
         entity = e,
         position = e.position,
         on = nil
     }
-    table.insert(storage.stabilizer.fuel.consumers, e)
     e.set_recipe("rabbasca-floor-stability-work")
 end
 
 function M.on_floorthing_died(id)
-    if not (storage.stabilizer and storage.stabilizer.tiledata) then return end
-    if not storage.stabilizer.tiledata.entities[id] then return end
-    storage.stabilizer.tiledata.entities[id] = nil
-    storage.stabilizer.tiledata.dirty = true
+    if not (storage.stabilizer and storage.stabilizer.flooring) then return end
+    if not storage.stabilizer.flooring.entities[id] then return end
+    swap_floor({ position = storage.stabilizer.flooring.entities[id].position, surface = storage.stabilizer.entity.surface }, false)
+    storage.stabilizer.flooring.entities[id] = nil
+    storage.stabilizer.flooring.dirty = true
 end
 
 return M
