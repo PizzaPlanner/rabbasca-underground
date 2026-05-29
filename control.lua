@@ -3,20 +3,56 @@ local underground = require("scripts.underground")
 
 local function handle_script_events(event)
   local effect_id = event.effect_id
-  if effect_id == "rabbasca_on_trace_spoiled" then
-    local target = Rabbasca.get_spoiled_in(event)
-    underground.fuel.attempt_cell_recharge(target, true)
-  elseif effect_id == "rabbasca_warp_unprogress" then
+  if effect_id == "rabbasca_warp_unprogress" then
     local from = Rabbasca.get_spoiled_in(event)
     if from then
       underground.on_destabilization(from)
     end
-  elseif effect_id == "rabbasca_on_reboot_underground" then
-    underground.reboot_stabilizer()
+  elseif effect_id == "rabbasca_on_powerspike_progress" then
+    underground.stab.progress_powerspike(10)
   elseif effect_id == "rabbasca_on_repair_component" then
     underground.repair_part()
   elseif effect_id == "rabbasca_on_toggle_component" then
     underground.toggle_component()
+  elseif effect_id == "rabbasca_on_spawn_ufo" then
+    local from = Rabbasca.get_spoiled_in(event)
+    if from then
+      from.surface.create_entity({
+        name = "rabbasca-ufo",
+        position = from.position,
+        force = from.force
+      })
+    end
+  elseif effect_id == "rabbasca_on_spawn_floorpylon" then
+    local from = Rabbasca.get_spoiled_in(event)
+    if from then
+      local pos = from.surface.find_non_colliding_position("rabbasca-stability-pylon", from.position, 10, 0.5)
+      for _, ghost in pairs(from.surface.find_entities_filtered { name = "entity-ghost", ghost_name = "rabbasca-stability-pylon" }) do
+        pos = ghost.position
+        ghost.destroy { }
+        if from.surface.create_entity({
+          name = "rabbasca-stability-pylon",
+          position = pos,
+          force = from.force,
+        }) then return end
+      end
+      if not from.surface.create_entity({
+        name = "rabbasca-stability-pylon",
+        position = pos,
+        force = from.force
+      }) then 
+        game.print("Could not find a valid position to spawn [entity=rabbasca-stability-pylon]")
+      end
+    end
+  elseif effect_id == "rabbasca_register_anomaly_miner" then
+    underground.mining.on_add_miner(event.source_entity)
+  elseif effect_id == "rabbasca_register_fuel_remote" then
+    underground.fuel.register_provider(event.source_entity)
+  elseif effect_id == "rabbasca_on_pylon_relocate" then
+    local from = Rabbasca.get_spoiled_in(event)
+    if from then
+      underground.warp.relocate_floorthing(from)
+    end
   elseif effect_id == "rabbasca_on_summon_ufo" then
     local from = Rabbasca.get_spoiled_in(event)
     if from then
@@ -25,7 +61,7 @@ local function handle_script_events(event)
   elseif effect_id == "rabbasca_warp_progress_warp" then
     underground.warp.warp_to()
   elseif effect_id == "rabbasca_on_abandon" then
-    underground.abandon()
+    underground.stab.abandon()
   elseif effect_id == "rabbasca_on_send_pylon_underground" then
     local from = Rabbasca.get_spoiled_in(event)
     underground.on_locate_progress(from)
@@ -38,14 +74,6 @@ end
 
 script.on_event(defines.events.on_script_trigger_effect, handle_script_events)
 
-script.on_event(defines.events.on_marked_for_deconstruction, function(event)
-  underground.fuel.rescue_cell(event.entity)
-end, {
-  { filter = "name", name = "rabbasca-stability-pylon" }, 
-  { filter = "name", name = "rabbasca-relichunter" }, 
-  { filter = "name", name = "rabbasca-collector-pylon" }
-})
-
 script.on_event(defines.events.on_object_destroyed, function(event)
   if event.type == defines.target_type.entity then
     underground.on_stabilizer_died(event.registration_number)
@@ -55,19 +83,22 @@ script.on_event(defines.events.on_object_destroyed, function(event)
 end)
 
 script.on_event(defines.events.on_gui_opened, function(event)
-    if event.gui_type ~= defines.gui_type.entity then return end
-    if not event.entity or not event.entity.valid then return end
     local player = game.get_player(event.player_index)
     if not player then return end
 
-
-    local entity = event.entity
-    if entity.name == "rabbasca-warp-stabilizer" and entity.force == player.force then
-      underground.ui.set_stabilizer_ui(player)
-    elseif entity.name == "rabbasca-relicary-remote" and entity.force == player.force then
-      underground.ui.set_relicary_remote_ui(player)
-    elseif entity.name == "rabbasca-fuel-remote" and entity.force == player.force then
-      underground.ui.set_fuel_remote_ui(player)
+    if event.gui_type == defines.gui_type.entity then
+      local entity = event.entity
+      if entity and entity.valid then
+        if entity.name == "rabbasca-warp-stabilizer" and entity.force == player.force then
+          underground.ui.set_stabilizer_ui(player)
+        elseif entity.name == "rabbasca-relicary-remote" and entity.force == player.force then
+          underground.ui.set_relicary_remote_ui(player)
+        end
+      end
+    elseif event.gui_type == defines.gui_type.item and event.item then
+      if event.item.name == "rabbasca-warp-cell" or event.item.name == "rabbasca-warp-cell-recharging" then
+        underground.ui.set_cell_ui(player, event.item)
+      end
     end
 end)
 
@@ -88,20 +119,27 @@ script.on_event(defines.events.on_gui_selection_state_changed, function(event)
 end)
 
 script.on_event(defines.events.on_gui_click, function(event) 
-  if event.element.name == "rabbasca_su_btn_reboot_main" then
-    storage.stabilizer.entity.set_recipe("rabbasca-reboot-stabilizer")
-    game.auto_save("rabbasca-first-stabilizer-reboot")
+  local player = game.players[event.player_index]
+  if not player then return end
+  if event.element.tags and event.element.parent and event.element.parent.name == "rabbasca_cell_targets" then
+    local enum = event.element.tags.entity
+    local cell = storage.assign_remote[event.player_index].item
+    local e = game.get_entity_by_unit_number(enum or 0)
+    if cell and e then
+      underground.fuel.tether(cell, e)
+    elseif cell then
+      underground.fuel.untether(cell)
+    end
+  elseif event.element.name == "rabbasca_su_remote_select" then
+      storage.assign_remote = storage.assign_remote or { }
+      storage.assign_remote[event.player_index] = { chest = player.opened }
+      player.opened = nil
   elseif event.element.name == "rabbasca_su_btn_repair_warpdrive" and storage.stabilizer then
     storage.stabilizer.entity.set_recipe("rabbasca-repair-warpdrive")
   elseif event.element.name == "rabbasca_su_btn_repair_extractor" and storage.stabilizer then
     storage.stabilizer.entity.set_recipe("rabbasca-repair-extractor")
   elseif event.element.name == "rabbasca_su_btn_repair_relichunter" and storage.stabilizer then
     storage.stabilizer.entity.set_recipe("rabbasca-repair-relichunter")
-  elseif event.element.parent and event.element.parent.name == "rabbasca_su_fuel_targets" then
-    local tags = event.element.tags
-    if tags then
-      underground.fuel.set_target(tags)
-    end
   elseif event.element.name == "rabbasca_relicary_reconnect" then
     local chest = game.players[event.player_index].opened
     if chest then
@@ -109,6 +147,8 @@ script.on_event(defines.events.on_gui_click, function(event)
         chest.proxy_target_entity = e
       end
     end
+  elseif event.element.name == "rabbasca_cell_confirm" then
+      underground.ui.confirm_cell_selection(player)
   end
 end)
 
@@ -126,19 +166,12 @@ script.on_event(defines.events.on_gui_switch_state_changed, function(event)
   end
 end)
 
-script.on_event(defines.events.on_gui_value_changed, function(event)
-  if event.element.name == "rabbasca_su_miners_target" then
-    storage.stabilizer.miners.active_target = event.element.slider_value
-  end
-end)
-
 script.on_event(defines.events.on_gui_closed, function(event)
     if event.gui_type == defines.gui_type.entity then
         local player = game.get_player(event.player_index)
         if player then
             underground.ui.set_stabilizer_ui(player)
             underground.ui.set_relicary_remote_ui(player)
-            underground.ui.set_fuel_remote_ui(player)
         end
     end
 end)

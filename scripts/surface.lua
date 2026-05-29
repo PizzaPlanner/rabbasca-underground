@@ -74,7 +74,6 @@ function M.force_manifest(data, blocked_pois)
             blocked_pois[data.name] = true
             
             if e.name == "rabbasca-relicary" then
-                e.get_inventory(defines.inventory.burnt_result).insert({ name = "rabbasca-relicary-key-locked", count = 1})
                 storage.stabilizer.left_on_warp = storage.stabilizer.left_on_warp or { }
                 table.insert(storage.stabilizer.left_on_warp, e)
                 for _, access in pairs(data.surface.find_entities_filtered { name = "rabbasca-relicary-remote" }) do
@@ -200,7 +199,7 @@ function M.leave_unsafe(stabilizer)
         if e.valid and not M.is_box_safe(e.bounding_box) then
             e.die()
         end
-    end    
+    end
 end
 
 function M.is_tile_safe(pos)
@@ -270,6 +269,21 @@ local function swap_floor(e, on)
         end
     end
     e.surface.set_tiles(tiles)
+end
+
+function M.relocate_floorthing(e)
+    if not (storage.stabilizer and e.valid) then return end
+    for _, ghost in pairs(e.surface.find_entities_filtered { name = "entity-ghost", ghost_name = e.name }) do
+        local current = e.position
+        local new = ghost.position
+        ghost.destroy{ }
+        if e.teleport(new) then
+            swap_floor({ position = current, surface = e.surface }, false)
+            swap_floor({ position = e.position, surface = e.surface }, true)
+            storage.stabilizer.flooring.dirty = true
+        end
+        return
+    end
 end
 
 function M.update_floorthings()

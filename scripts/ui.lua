@@ -21,54 +21,108 @@ function M.clear_stabilizer_ui(player)
     if frame then frame.destroy() end
 end
 
-local function add_fuel_row(t, e)
-    local b = add_button(t, "entity/"..e.name, "inventory_slot", nil, 32)
-    b.show_percent_for_small_numbers = true
-    local bar = t.add {
-        type = "progressbar",
-        value = e.burner.remaining_burning_fuel / ENERGY_PER_CELL
-    }
-    bar.style.minimal_width = 72
-    bar.style.natural_width = 72
-    bar.style.horizontally_stretchable = true
-    add_button(t, "item/rabbasca-warp-cell", "inventory_slot", nil, 32)
-    add_button(t, "item/rabbasca-warp-cell-recharging", "inventory_slot", nil, 32)
+local function update_remote_assignment()
+    if not storage.assign_remote then return end
+    for player, data in pairs(storage.assign_remote) do
+        local p = game.get_player(player)
+        if not (p and data.chest and data.chest.valid and p.surface == data.chest.surface) then 
+            storage.assign_remote[player] = nil
+            return
+        end
+        local pos = data.chest.position
+        rendering.draw_rectangle({
+            color = {0, 0.07, 0.25, 0.01},
+            filled = true,
+            left_top = { x = pos.x - 10, y = pos.y - 10 },
+            right_bottom = { x = pos.x + 10, y = pos.y + 10 },
+            surface = data.chest.surface,
+            time_to_live = 1,
+            players = { player }
+        })
+        if p.opened then
+            if p.opened == data.selected then 
+                data.chest.proxy_target_entity = data.selected
+                data.chest.proxy_target_inventory = defines.inventory.burnt_result
+                p.opened = data.chest
+            end
+            storage.assign_remote[player] = nil
+        elseif p.selected and p.selected.burner and p.selected.burner.fuel_categories["rabbasca-warp-anomaly"] then
+            local is_in_range = math.abs(data.chest.position.x - p.selected.position.x) < 10 and math.abs(data.chest.position.y - p.selected.position.y) < 10
+            if is_in_range then
+                data.selected = p.selected
+            end
+            rendering.draw_line({
+                surface = data.chest.surface, 
+                players = { player }, 
+                time_to_live = 1, 
+                from = data.chest, to = p.selected, 
+                color = { 0, 0, 0 }, 
+                width = 5, gap_length = 0.25, dash_length = 0.75})
+            rendering.draw_line({
+                surface = data.chest.surface, 
+                players = { player }, 
+                time_to_live = 1, 
+                from = data.chest, to = p.selected, 
+                color = is_in_range and {1, 1, 1} or { 1, 0, 0 }, 
+                width = 3, gap_length = 0.3, dash_length = 0.7, dash_offset = 0.025})
+        end
+    end
+    if table_size(storage.assign_remote) == 0 then storage.assign_remote = nil end
 end
 
-function M.set_fuel_remote_ui(player)
-    local frame = player.gui.relative.rabbasca_fuel_remote
-    if (not player.opened) or player.opened.name ~= "rabbasca-fuel-remote" then
-        if frame then frame.destroy() end
-        return
+function M.confirm_cell_selection(player)
+    local frame = player.gui.screen.rabbasca_cell_assignment
+    if frame then 
+        local new_name = frame.rabbasca_cell_name.text
+        local item = storage.assign_remote[player.index]
+        if item and item.valid and item.valid_for_read and (item.name == "rabbasca-warp-cell" or item.name == "rabbasca-warp-cell-recharging") then
+            item.label = new_name
+        end
+        frame.destroy()
     end
+    storage.assign_remote[player.index] = nil
+end
+
+function M.update_cell_assignment()
+    if not storage.assign_remote then return end
+    for player_index, _ in pairs(storage.assign_remote) do
+        local player = game.get_player(player_index)
+        if not player then 
+            storage.assign_remote[player_index] = nil
+        else
+            M.set_cell_ui(player)
+        end
+    end
+    if table_size(storage.assign_remote) == 0 then storage.assign_remote = nil end
+end
+
+function M.set_cell_ui(player, item)
+    local frame = player.gui.screen.rabbasca_cell_assignment
+    if item and frame then frame.destroy() frame = nil end
     if not frame then
-        frame = player.gui.relative.add{
+        frame = player.gui.screen.add{
             type = "frame",
-            name = "rabbasca_fuel_remote",
-            caption = "Target",
-            direction = "vertical",
-            anchor = {
-                gui = defines.relative_gui_type.proxy_container_gui,
-                position = defines.relative_gui_position.right
-            }
+            name = "rabbasca_cell_assignment",
+            caption = { "", "Cell" },
+            direction = "vertical"
         }
-        frame.add { 
-            type = "switch", 
-            name = "rabbasca_su_fuel_signal_switch",
-            switch_state = "left",
-            allow_none_state = false,
-            left_label_caption = { "", "Manual" },
-            right_label_caption = { "", "Circuit Network" },
-        }
-        local t = frame.add { type = "scroll-pane", name = "scroll" }.add{ 
-            type = "table", 
-            name = "rabbasca_su_fuel_targets",
-            column_count = 4
-        }
-        frame.scroll.style.maximal_height = 600
+        frame.auto_center = true
+        player.opened = nil -- close dummy inventory
+        storage.assign_remote = storage.assign_remote or { }
+        storage.assign_remote[player.index] = item
+        local name = frame.add{ type = "textfield", name = "rabbasca_cell_name", caption = { "", "Cell Name" }, text = item and item.label or "", icon_selector = true, tooltip = {"", "Give the cell a custom name"} }
+        local ok = frame.add{ type = "button", name = "rabbasca_cell_confirm", caption = { "", "Close" }, style = "confirm_button" }
+        local all_targets = frame.add{ type = "flow", name = "rabbasca_cell_targets", direction = "horizontal" }
+        local btn = add_button(all_targets, nil, "inventory_slot", nil, 32)
+        btn.tooltip = { "", "Remove tether, turn back into [item=rabbasca-warp-cell-recharging]"}
+        btn.tags = { entity = 0 }
         for _, e in pairs(storage.stabilizer.fuel.consumers) do
             if e.entity.valid then
-                add_fuel_row(t, e.entity)
+                local btn = add_button(all_targets, "entity/"..e.entity.name, "inventory_slot", nil, 32)
+                btn.number = 0
+                btn.elem_tooltip = { type = "entity", name = e.entity.name, quality = e.entity.quality }
+                btn.tags = { entity = e.entity.unit_number }
+                btn.show_percent_for_small_numbers = true
             end
         end
         local cam = frame.add{ name = "cam0", style = "entity_frame", type = "frame" }.add {
@@ -81,41 +135,61 @@ function M.set_fuel_remote_ui(player)
         cam.parent.style.padding = 0
         cam.style.horizontally_stretchable = true
         cam.style.vertically_stretchable   = true
+        cam.style.minimal_height = 128
+    else
+        item = item or storage.assign_remote[player.index]
+        storage.assign_remote[player.index] = item
     end
-    local selector = storage.stabilizer.fuel.selector
-    frame.rabbasca_su_fuel_signal_switch.switch_state = selector.read_from_network and "right" or "left"
-    local current = selector.unfiltered_index
-    local fueltable = frame.scroll.rabbasca_su_fuel_targets
-    local has_rows = #fueltable.children / 4
-    local i = 0
-    local index_by_type = { }
-    for _, c in pairs(storage.stabilizer.fuel.consumers) do
-        if c.entity.valid then
-            local e = c.entity
-            i = i + 1
-            local id = i * 4 - 3
-            if i > has_rows then
-                add_fuel_row(fueltable, e)
+
+    if not (item and item.valid and item.valid_for_read and (item.name == "rabbasca-warp-cell" or item.name == "rabbasca-warp-cell-recharging")) then
+        storage.assign_remote[player.index] = nil
+        frame.destroy()
+        return
+    end
+
+    local data = item.item_number and storage.stabilizer.fuel.cells[item.item_number]
+    if not data then 
+        fuel.untether(item.item)
+        data = storage.stabilizer.fuel.cells[item.item_number]
+    end
+
+    local selected_number = player.selected and player.selected.valid and player.selected.unit_number
+    local open_number = player.opened and player.opened_gui_type == defines.gui_type.entity and player.opened.unit_number
+    local current = data.tether and data.tether.valid and data.tether
+    local cam_target = current
+    for _, elm in pairs(frame.rabbasca_cell_targets.children) do
+        local is_hovered = selected_number == elm.tags.entity or player.selected == elm
+        local is_open = open_number == elm.tags.entity
+        local is_highlighted = current and current.unit_number == elm.tags.entity or is_hovered
+        elm.style = is_highlighted and "yellow_inventory_slot" or "inventory_slot"
+        local target = game.get_entity_by_unit_number(elm.tags.entity)
+            if target and target.burner and target.burner.currently_burning then
+                elm.number = target.burner.remaining_burning_fuel / (target.burner.currently_burning.name.fuel_value or 1)
+            else 
+                elm.number = 0
             end
-            local inv = e.get_inventory(defines.inventory.burnt_result)
-            index_by_type[e.name] = (index_by_type[e.name] or 0) + 1
-            fueltable.children[id    ].sprite = "entity/"..e.name
-            fueltable.children[id    ].tags   = { name = e.name, index = index_by_type[e.name], full = true }
-            fueltable.children[id    ].style  = i == current and "yellow_inventory_slot" or "inventory_slot"
-            fueltable.children[id    ].number = e.burner.remaining_burning_fuel / fuel.ENERGY_PER_CELL_MINI
-            fueltable.children[id + 1].value  = e.burner.remaining_burning_fuel / fuel.ENERGY_PER_CELL_MINI
-            fueltable.children[id + 2].number = inv.get_item_count("rabbasca-warp-cell")
-            fueltable.children[id + 3].number = inv.get_item_count("rabbasca-warp-cell-recharging")
-            fueltable.children[id + 2].style.size = 32
-            fueltable.children[id + 3].style.size = 32
+        if is_hovered then
+            cam_target = target
+        end
+        if is_open then
+            fuel.tether(item.item, player.opened)
         end
     end
-    for j = 4 * (i + 1), #fueltable.children do
-        fueltable.children[j].destroy()
+    frame.cam0.target_cam.position = cam_target and cam_target.position or { 10000, 0 }
+    frame.cam0.target_cam.surface_index = cam_target and cam_target.surface.index or storage.stabilizer.surface
+
+    -- if player.opened and player.opened_gui_type == defines.gui_type.entity then
+    --     storage.assign_remote[player.index] = nil
+    --     frame.destroy()
+    --     return
+    -- end
+
+    if frame.current_target then
+        frame.current_target.caption = { "", "Current Target: ", current and ("[entity="..current.name.."]") or "None" }
     end
     if frame.cam0 then
-        local pos = storage.stabilizer.fuel.consumers[current] and storage.stabilizer.fuel.consumers[current].entity.valid and storage.stabilizer.fuel.consumers[current].entity.position or {0, 0}
-        frame.cam0.target_cam.position = pos
+        frame.cam0.target_cam.position = current and current.position or { 10000, 0 }
+        frame.cam0.target_cam.surface_index = current and current.surface.index or storage.stabilizer.surface
     end
 end
 
@@ -198,6 +272,26 @@ function M.set_stabilizer_ui(player)
         bar2.style.horizontally_stretchable = true
         bar2.style.color = { 1, 1, 1 }
 
+        f1 = frame.add {
+            type = "frame",
+            name = "rabbasca_su_progress_ps",
+            style = "entity_frame",
+            direction = "horizontal"
+        }
+        add_button(f1, "item/rabbasca-powerspike", "transparent_slot", "icon", 24)
+        bar2 = f1.add {
+            type = "progressbar",
+            name = "bar",
+            value = 0,
+            style = "production_progressbar",
+            caption = "Level 0 - 100%",
+        }
+        bar2.style.minimal_width = 64
+        bar2.style.natural_width = 64
+        bar2.style.horizontal_align = "center"
+        bar2.style.horizontally_stretchable = true
+        bar2.style.color = { 1, 1, 1 }
+
         if storage.stabilizer.fuel.load then
             local f1 = frame.add {
                 type = "frame",
@@ -228,25 +322,6 @@ function M.set_stabilizer_ui(player)
         }
         local f1 = subframe.add { type = "table", name = "rabbasca_su_table", column_count = 2 }
 
-        -- Part Status
-        local is_booted = storage.stabilizer.entity.force.technologies["rabbasca-warp-stabilizer"].researched
-        f1.add { type = "label", caption = { "", "[entity=rabbasca-warp-stabilizer]" } }
-        if is_booted then
-            f1.add {
-                type = "label",
-                caption = { "", "[color=green]ONLINE[/color]" }
-            }
-        else
-            local f2 = f1.add { type = "flow" }
-            f2.add {
-                type = "label",
-                caption = { "", "[color=red]OFFLINE[/color]" }
-            }
-            add_button(f2, "virtual-signal/signal-anticlockwise-circle-arrow", "side_menu_button", "rabbasca_su_btn_reboot_main", 20)
-        end
-
-        f1.add { type = "line" } f1.add { type = "line" }
-
         -- Settings
         f1.add {
             type = "label",
@@ -258,24 +333,16 @@ function M.set_stabilizer_ui(player)
             left_label_caption = "",
             right_label_caption = { "", "Enabled" }
         }
-        local safe_zone_frame = subframe.add { type = "flow", direction = "horizontal", name = "miners" }
-        safe_zone_frame.add { type = "label", caption = {"", "[entity=rabbasca-collector-pylon]"}}
-        safe_zone_frame.add {
-            type = "slider",
-            name = "rabbasca_su_miners_target",
-            style = "notched_slider",
-            minimum_value = 0,
-            maximum_value = storage.stabilizer.miners.available + (storage.stabilizer.miners.available < 2 and 0.000001 or 0),
-            value_step = 1,
-            value = storage.stabilizer.miners.active_target,
-            discrete_values = true,
-            tooltip = { "rabbasca-extra.panel-setting-radius" }
-        }
-        safe_zone_frame.add {
-            type = "label",
-            name = "energy_saved",
-            caption = { "", "???"}
-        }
+        local consumer_count = subframe.add { type = "flow" }
+        local consumers = { }
+        for _, e in pairs(storage.stabilizer.fuel.consumers) do
+            if e.entity.valid then
+                consumers[e.entity.name] = (consumers[e.entity.name] or 0) + 1
+            end
+        end
+        for name, c in pairs(consumers) do
+            add_button(consumer_count, "entity/"..name, "transparent_slot", nil, 24).number = c
+        end
 
         local subframe = frame.add {
             type = "frame",
@@ -303,14 +370,15 @@ function M.set_stabilizer_ui(player)
     local t = frame.rabbasca_su_content.rabbasca_su_table
     t.rabbasca_su_autopilot.switch_state = storage.stabilizer.settings.autopilot and "right" or "left"
 
-    if frame.rabbasca_su_content.miners then
-        frame.rabbasca_su_content.miners.rabbasca_su_miners_target.slider_value = storage.stabilizer.miners.active_target
-        frame.rabbasca_su_content.miners.energy_saved.caption = string.format("%i/%i", #storage.stabilizer.miners.entities, storage.stabilizer.miners.active_target)
-    end
-
     if frame.rabbasca_su_progress then
         frame.rabbasca_su_progress.bar.value = warp.get_repair_progress()
         frame.rabbasca_su_progress.bar.caption = { "rabbasca-extra.panel-progress", string.format("%.1f", warp.get_repair_progress() * 100), storage.stabilizer.anomalies.current }
+    end
+    if frame.rabbasca_su_progress_ps then
+        local level = storage.stabilizer.powerspikes.created
+        local progress = 1 - storage.stabilizer.powerspikes.next / storage.stabilizer.powerspikes.required
+        frame.rabbasca_su_progress_ps.bar.value = progress
+        frame.rabbasca_su_progress_ps.bar.caption = { "rabbasca-extra.panel-progress-spike", level + 1, storage.stabilizer.powerspikes.next }
     end
     if frame.rabbasca_su_drain then
         local load = storage.stabilizer.fuel.load

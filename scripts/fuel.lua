@@ -3,83 +3,71 @@ local M = {
     ENERGY_PER_CELL_MINI = 50000000
 }
 
-function M.set_target(tags)
-    storage.stabilizer.fuel.selector = {
-        read_from_network = false,
-        filter = tags.name and { [tags.name] = tags.index or 1 } or { },
-        filter2 = { full = 0, empty = 0, missing = 0 },
-        index = tags.index or 1,
-        unfiltered_index = 0
-    }
+function M.tether(item, target)
+    local stack = item.item_stack
+    if not stack then return end
+    local burner = target and target.valid and target.burner
+    if not burner then return end
+    if stack.spoil_percent < 0.1 then
+        if storage.stabilizer.entity.burner.remaining_burning_fuel < M.ENERGY_PER_CELL * 0.1 then
+            return
+        end
+        storage.stabilizer.entity.burner.remaining_burning_fuel = storage.stabilizer.entity.burner.remaining_burning_fuel - M.ENERGY_PER_CELL * 0.1
+    end
+    storage.stabilizer.fuel.cells[item.item_number] = nil
+    local label = item.label
+
+    local empty_cell = { name = "rabbasca-warp-cell", count = 1, quality = item.quality, spoil_percent = math.min(stack.spoil_percent + 0.5, 0.95) }
+    stack.set_stack(empty_cell)
+    stack.label = label or ""
+    storage.stabilizer.fuel.cells[stack.item_number] = { item = stack.item, tether = target, tether_capacity = burner.currently_burning.name.fuel_value }
 end
 
-function M.attempt_cell_recharge(inventory_owner, auto_refuel)
-    if not (inventory_owner and inventory_owner.valid) then return end
-    local inventories_from = { defines.inventory.burnt_result, defines.inventory.chest }
-    for _, idx in pairs(inventories_from) do
-        local inv = inventory_owner.get_inventory(idx)
-        local cells = inv and inv.get_item_count("rabbasca-warp-cell-recharging") or 0
-        if cells > 0 then
-            local pity_per = 0.001 + 0.00075 / cells
-            for i = 1,#inv do
-                if inv[i].valid_for_read and inv[i].name == "rabbasca-warp-cell-recharging" then
-                    local current = (inv[i].tags.chance or 0)
-                    if math.random() <= current and inv[i].set_stack({name = "rabbasca-warp-cell", count = 1, quality = inv[i].quality, spoil_percent = 0 }) then
-                        local fuel = auto_refuel and idx ~= defines.inventory.fuel and inventory_owner.get_inventory(defines.inventory.fuel)
-                        if fuel and fuel.insert(inv[i]) > 0 then inv[i].clear() end
-                    else
-                        inv[i].tags = { chance = current + pity_per }
-                        inv[i].spoil_percent = math.min(inv[i].spoil_percent, 0.9 - (inv[i].tags.chance * 5))
-                        inv[i].custom_description = { "", { "item-description.rabbasca-warp-cell-recharging-tags", string.format("%.1f", inv[i].tags.chance * 100) }, { "item-description.rabbasca-warp-cell-recharging" } }
-                    end
+function M.untether(item)
+    local stack = item.item_stack
+    if not stack then return end
+    storage.stabilizer.fuel.cells[item.item_number] = nil
+    local label = item.label
+    local empty_cell = { name = "rabbasca-warp-cell-recharging", count = 1, quality = item.quality }
+    stack.set_stack(empty_cell)
+    stack.label = label or ""
+    storage.stabilizer.fuel.cells[stack.item_number] = { item = stack.item, tether = nil, tether_capacity = 0 }
+end
+
+function M.update_cells()
+    local ticks_per_second = 60
+    local is_recalling = storage.stabilizer.entity.is_crafting() and storage.stabilizer.entity.get_recipe().name == "rabbasca-stabilizer-recharge"
+    local stab_inv = storage.stabilizer.entity.get_inventory(defines.inventory.burnt_result)
+    local can_fuel = storage.stabilizer.entity.burner.remaining_burning_fuel > 0
+    local refuelled = 0
+    local refuel_spoilage_per_tick = 0.025 / ticks_per_second
+    for n, data in pairs(storage.stabilizer.fuel.cells) do
+        local cell = data.item
+        if not cell.valid then
+            storage.stabilizer.fuel.cells[n] = nil
+            break
+        else
+            local stack = cell.item_stack or stab_inv.find_empty_stack()
+            if (not cell.item_stack) or cell.item_stack.spoil_percent >= 0.995 then
+                M.untether(cell)
+                break
+            else
+                if data.tether and data.tether.valid and data.tether.burner then
+                    data.tether.burner.remaining_burning_fuel = data.tether.burner.remaining_burning_fuel + (1 - cell.item_stack.spoil_percent) * M.ENERGY_PER_CELL / ticks_per_second
+                    stack.health = math.max(0, math.min(1, data.tether.burner.remaining_burning_fuel / (data.tether_capacity or 1)))
+                end
+                local is_in_stab = cell.owner_location.entity == storage.stabilizer.entity
+                if is_recalling and not is_in_stab then
+                        local swap, _ = stab_inv.find_empty_stack()
+                        stack.swap_stack(swap)
+                elseif is_in_stab and can_fuel and data.tether and cell.item_stack.spoil_percent > refuel_spoilage_per_tick then
+                    refuelled = refuelled + 1
+                    cell.item_stack.spoil_percent = math.max(0, cell.item_stack.spoil_percent - refuel_spoilage_per_tick)
                 end
             end
         end
     end
-end
-
-function M.recharge_consumers()
-    local new_fuel = 0
-    local inv  = storage.stabilizer.entity.get_inventory(defines.inventory.burnt_result)
-    for i = 1, #inv do
-        local full = 1 - (inv[i].valid_for_read and inv[i].name == "rabbasca-warp-cell" and inv[i].spoil_percent or 1)
-        new_fuel = new_fuel + full
-    end
-    new_fuel = new_fuel * M.ENERGY_PER_CELL / 60
-    local available = new_fuel
-    local total_demand = 0
-    for i, c in pairs(storage.stabilizer.fuel.consumers) do
-        if c.entity.valid then
-            local e = c.entity
-            local required_watts = e.burner.heat_capacity / 1.065 -- Why weird magic number???
-            local demand = M.ENERGY_PER_CELL_MINI - e.burner.remaining_burning_fuel
-            total_demand = total_demand + required_watts
-            local missing = math.min(available, demand)
-            if missing > 0 then
-                e.burner.remaining_burning_fuel = e.burner.remaining_burning_fuel + missing
-                available = available - missing
-            end
-        end
-    end
-    storage.stabilizer.fuel.load = { available = new_fuel, demand = total_demand }
-end
-
-function M.recharge_consumers_alt()
-    for _, e in pairs(storage.stabilizer.fuel.consumers) do
-        if e.entity.valid then
-            local new_fuel = 0
-            local cell  = e.cell
-            if cell.valid_for_read and cell.name == "rabbasca-warp-cell" then
-                local full = 1 - (cell.spoil_percent or 1)
-                new_fuel = new_fuel + full
-            end
-            local burner = e.entity.burner
-            -- if (not burner.currently_burning) or (burner.currently_burning.name ~= "rabbasca-warp-cell-internal") then
-            --     burner.currently_burning = "rabbasca-warp-cell-internal"
-            -- end -- currently_burning will not reset when fuel_inventory == 0
-            burner.remaining_burning_fuel = burner.remaining_burning_fuel + new_fuel * M.ENERGY_PER_CELL / 20
-        end
-    end
+    storage.stabilizer.entity.burner.remaining_burning_fuel = storage.stabilizer.entity.burner.remaining_burning_fuel - refuelled * M.ENERGY_PER_CELL * 0.05 / ticks_per_second
 end
 
 function M.on_consumer_died(id)
@@ -88,21 +76,21 @@ function M.on_consumer_died(id)
     end
 end
 
-function M.register_consumer(e)
-    local inv = e.get_inventory(defines.inventory.burnt_result)
-    local id, _, _ = script.register_on_object_destroyed(e)
+function M.register_provider(e)
+    if not (storage.stabilizer and storage.stabilizer.entity.valid) then return end
+    local inv = e.get_inventory(defines.inventory.chest)
     if not (inv and #inv > 0) then return end
-    storage.stabilizer.fuel.consumers[id] = { entity = e, inventory = inv, cell = inv[1] }
+    storage.stabilizer.fuel.providers[e.unit_number] = { entity = e, target = nil, inventory = inv }
+end
+
+function M.register_consumer(e)
+    if not (storage.stabilizer and storage.stabilizer.entity.valid) then return end
+    local id, _, _ = script.register_on_object_destroyed(e)
+    storage.stabilizer.fuel.consumers[id] = { entity = e, targeted_by = { }  }
     if e.burner.currently_burning == nil then
         e.burner.currently_burning = "rabbasca-warp-cell-internal"
     end
-    game.print("Registered fuel consumer: "..e.gps_tag..", now have "..table_size(storage.stabilizer.fuel.consumers))
+    -- game.print("Registered fuel consumer: "..e.gps_tag..", now have "..table_size(storage.stabilizer.fuel.consumers))
 end
 
-function M.rescue_cell(e)
-    if e.valid and e.burner and e.burner.remaining_burning_fuel > 0 then
-        e.burner.currently_burning = nil
-        e.get_inventory(defines.inventory.burnt_result).insert({name = "rabbasca-warp-cell-recharging", amount = 1})
-    end
-end
 return M

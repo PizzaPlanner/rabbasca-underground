@@ -119,12 +119,6 @@ function M.get_fuel_time_modifier()
     return (1 + (storage.stabilizer.entity.effects.consumption or 0)) / (storage.stabilizer.entity.crafting_speed)
 end
 
-function M.get_warp_cost()
-    local weighted_progress = (1 - M.get_repair_progress() * M.get_repair_progress())
-    local mod_relics = storage.stabilizer.relics and 1 or 0
-    return (0.5 + mod_relics * 0.7 + (12 + mod_relics * 17) * weighted_progress) / M.get_fuel_time_modifier()
-end
-
 function M.get_relic_chance()
     return storage.stabilizer.relics and storage.stabilizer.relics.pity or 0
 end

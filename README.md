@@ -16,5 +16,5 @@ Anomalies generate other resources depending on the current location, requiring 
 Anomalies are limited but each new location will have new anomalies. Since the stabilizer requries them as fuel, and continuously harvests them, it can get stranded in one location forever. You will then have to abandon it and find a new one...
 
 ## Credits
-- Assets for Pylons and Warp inventory uplink 2 by [Hurricane](https://mods.factorio.com/user/Hurricane046) 
-- Safety flooring texture and icons for Spacetime, the mod's "Science packs" and warp core by ChatGPT
+- Assets for Pylons, Stabilizer and Relichunter by [Hurricane](https://mods.factorio.com/user/Hurricane046) 
+- Icons for most new items by ChatGPT

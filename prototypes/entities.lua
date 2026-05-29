@@ -11,11 +11,11 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     crafting_speed = 1,
     collision_box = {{-3.7, -3.7}, {3.7, 3.7}},
     selection_box = {{-4, -4}, {4, 4}},
-    energy_usage = "1MW",
+    energy_usage = "1W",
     energy_source = {
       type = "burner",
       fuel_inventory_size  = 0,
-      burnt_inventory_size = 50,
+      burnt_inventory_size = 100,
       initial_fuel = "rabbasca-warp-cell-internal-big",
       initial_fuel_percent = 0.001,
       fuel_categories = { "rabbasca-warp-anomaly" },
@@ -29,7 +29,7 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
     order = "a[stabilizer]",
 }}
 stabilizer.effect_receiver = {
-  base_effect = { consumption = 4 },
+  -- base_effect = { consumption = 4 },
   uses_module_effects = true,
   uses_beacon_effects = false,
   uses_surface_effects = false
@@ -90,19 +90,20 @@ local relichunter = {
   icon = "__rabbasca-assets__/graphics/by-hurricane/research-center-icon.png",
   icon_size = 64,
   type = "assembling-machine",
-  flags = { "placeable-player", "player-creation" },
+  flags = { "placeable-player", "player-creation", "get-by-unit-number" },
   collision_box = {{-1.8, -1.8},{1.8, 1.8}},
   selection_box = {{-2, -2},{2, 2}},
   crafting_speed = 1,
   module_slots = 0,
+  enable_logistic_control_behavior = false,
   placeable_by = { item = "rabbasca-relichunter", count = 1 },
   minable = { result = "rabbasca-relichunter", count = 1, mining_time = 1 },
   crafting_categories = { "rabbasca-relichunter" },
-  energy_usage = "2MW",
+  energy_usage = "8MW",
   energy_source = {
     type = "burner",
     fuel_inventory_size  = 0,
-    burnt_inventory_size = 0,
+    burnt_inventory_size = 1,
     initial_fuel = "rabbasca-warp-cell-internal",
     initial_fuel_percent = 0.001,
     fuel_categories = { "rabbasca-warp-anomaly" },
@@ -160,14 +161,15 @@ local relicary = {
   result_inventory_size = 10,
   source_inventory_size = 1,
   crafting_speed = 1,
-  energy_usage = "8W",
+  energy_usage = "10W",
   energy_source = {
     type = "burner",
     burner_usage = "fuel",
     effectivity = 1,
     fuel_categories = { "rabbasca-relicary" },
+    initial_fuel = "rabbasca-powerspike",
+    initial_fuel_percent = 0.1,
     fuel_inventory_size = 1,
-    burnt_inventory_size = 1
   },
   module_slots = 0,
   crafting_categories = { "rabbasca-relics" },
@@ -208,34 +210,68 @@ local miner_remote = {
 local fuel_access = {
   name = "rabbasca-fuel-remote",
   icons = Rabbasca.icons({ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }),
-  type = "proxy-container",
+  type = "container",
+  inventory_type = "with_filters_and_bar",
+  inventory_size = 1,
   circuit_wire_max_distance = 90,
-  ignore_output_full = false,
-  minable = nil,
-  placeable_by = nil,
-  allowed_effects = { "speed", "consumption", "pollution" },
+  minable = { result = "rabbasca-fuel-remote", count = 1, mining_time = 1 },
+  placeable_by = { item = "rabbasca-fuel-remote", count = 1 },
   flags = { "placeable-player", "player-creation" },
   next_upgrade = nil,
   deconstruction_alternative = nil,
   draw_inventory_content = true,
   max_health = 100,
   picture = table.deepcopy(data.raw["linked-container"]["linked-chest"].picture),
-  collision_box = {{-0.8, -0.8},{0.8, 0.8}},
-  selection_box = {{-1, -1},{1, 1}},
-  surface_conditions = { Rabbasca.only_underground(true) }
+  collision_box = {{-0.4, -0.4},{0.4, 0.4}},
+  selection_box = {{-0.5, -0.5},{0.5, 0.5}},
+  surface_conditions = { Rabbasca.only_underground(true) },
+  created_effect = {
+    type = "direct",
+    action_delivery = {
+      type = "instant",
+      source_effects = {
+        {
+          type = "script",
+          effect_id = "rabbasca_register_fuel_remote",
+        },
+      }
+    }
+  }
 }
+
+local fuel_access_2 = util.merge {
+  fuel_access,
+  {
+    name = "rabbasca-fuel-remote-big",
+    max_health = 500,
+    inventory_size = 9,
+    collision_box = {{-0.8, -0.8},{0.8, 0.8}},
+    selection_box = {{-1, -1},{1, 1}},
+  }
+}
+fuel_access_2.placeable_by = nil
+fuel_access_2.minable = nil
 
 
 local lab = util.merge {
   data.raw["lab"]["lab"],
   {
     name = "rabbasca-warp-tech-analyzer",
-    energy_usage = "5MW",
+    energy_usage = "14MW",
     placeable_by = { item = "rabbasca-warp-tech-analyzer", count = 1 }
   }
 }
-lab.inputs = { "rabbasca-warp-anomaly", "rabbasca-warp-trace", "rabbasca-twisted-knowledge" }
+lab.inputs = { "rabbasca-warp-anomaly", "rabbasca-warp-trace", "rabbasca-twisted-knowledge", "rabbasca-uncanny-knowledge" }
 lab.minable.result = "rabbasca-warp-tech-analyzer"
+lab.energy_source = {
+  type = "burner",
+  fuel_inventory_size = 0,
+  burnt_inventory_size = 1,
+  initial_fuel = "rabbasca-warp-cell-internal",
+  initial_fuel_percent = 0.001,
+  fuel_categories = { "rabbasca-warp-anomaly" },
+}
+lab.flags = { "placeable-player", "player-creation", "get-by-unit-number" }
 
 local minelon = util.merge {
   data.raw["assembling-machine"]["rabbasca-warp-pylon"],
@@ -245,22 +281,57 @@ local minelon = util.merge {
     icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-2.png",
     resource_searching_radius = 1.5,
     shuffle_resources_to_mine = false,
-    mining_speed = 5,
+    mining_speed = 4,
     resource_categories = { "rabbasca-warp-anomaly" },
     vector_to_place_result = { 0, 0 },
     uses_force_mining_productivity_bonus = false,
     quality_affects_mining_radius = false,
-    graphics_set = { 
-      idle_animation = { layers = { { filename = "__rabbasca-assets__/graphics/by-hurricane/conduit-animation-2.png", }, { } } },
-      working_visualisations = {{ animation = { tint = { 0.75, 0.2, 0.42 } } }}
-    }
+    subgroup = data.raw["item"]["rabbasca-warp-pylon"].subgroup,
+    order = data.raw["item"]["rabbasca-warp-pylon"].order.."-r[rabbasca-underground]",
   }
 }
-minelon.energy_usage = "7MW"
+local anim = {
+  frame_count = 64,
+  line_length = 8,
+  scale = 0.6,
+  shift = {0, -1},
+}
+minelon.graphics_set = {
+  working_visualisations = {{
+    animation = util.merge { anim, {
+          filename = "__rabbasca-assets__/graphics/recolor/entities/centrifuge-C-light.png",
+          draw_as_glow = true,
+          width = 1520 / 8,
+          height = 1656 / 8,
+          blend_mode = "additive-soft",
+          tint = { 0.23, 0.11, 1 }
+    }},
+    apply_recipe_tint = "primary"
+  }},
+  default_recipe_tint = { primary = {0.5, 1, 0} },
+  idle_animation = {
+    layers = {
+      util.merge { anim, {
+            filename = "__rabbasca-assets__/graphics/recolor/entities/centrifuge-C.png",
+            width = 1896 / 8,
+            height = 1712 / 8,
+      }},
+      util.merge { anim, {
+            filename = "__base__/graphics/entity/centrifuge/centrifuge-C-shadow.png",
+            width = 2232 / 8,
+            height = 1216 / 8,
+            draw_as_shadow = true,
+            shift = {0.6, -0.4},
+      }},
+    }
+  },
+  always_draw_idle_animation = true
+}
+minelon.energy_usage = "3MW"
 minelon.energy_source = {
   type = "burner",
   fuel_inventory_size = 0,
-  burnt_inventory_size = 0,
+  burnt_inventory_size = 1,
   initial_fuel = "rabbasca-warp-cell-internal",
   initial_fuel_percent = 0.001,
   fuel_categories = { "rabbasca-warp-anomaly" },
@@ -268,14 +339,30 @@ minelon.energy_source = {
 minelon.placeable_by = nil -- { item = "rabbasca-collector-pylon", count = 1 }
 minelon.minable = nil
 minelon.allowed_effects = { "speed", "productivity" }
-minelon.flags = { "placeable-player", "player-creation", "no-automated-item-insertion" }
+minelon.flags = { "placeable-player", "player-creation", "no-automated-item-insertion", "get-by-unit-number" }
 minelon.custom_tooltip_fields = nil
 minelon.collision_box = {{-1.2, -1.2},{1.2, 1.2}}
 minelon.selection_box = {{-1.5, -1.5},{1.5, 1.5}}
-minelon.collision_mask = {
-    layers = { is_object = true }
+-- minelon.collision_mask = {
+--     layers = { is_object = true }
+-- }
+-- minelon.tile_buildability_rules = nil
+minelon.created_effect = {
+  type = "direct",
+  action_delivery = {
+    type = "instant",
+    source_effects = {
+      {
+        type = "script",
+        effect_id = "rabbasca_register_anomaly_miner",
+      },
+      {
+        type = "script",
+        effect_id = "rabbasca_register_fuel_consumer",
+      },
+    }
+  }
 }
-minelon.tile_buildability_rules = nil
 
 local floorion = util.merge {
   data.raw["assembling-machine"]["rabbasca-warp-pylon"],
@@ -285,14 +372,14 @@ local floorion = util.merge {
     enable_logistic_control_behavior = false,
     production_health_effect = {
       not_producing = -0.5 / second,
-      producing = 0.1 / second
+      producing = 0.25 / second
     },
     max_health = 50,
     graphics_set = { 
       idle_animation = { layers = { { filename = "__rabbasca-assets__/graphics/by-hurricane/conduit-animation-3.png", }, { } } },
       working_visualisations = {{ animation = { tint = { 0.75, 0.2, 0.42 } } }}
     },
-    energy_usage = "5MW",
+    energy_usage = "2MW",
     energy_source = {
       type = "burner",
       fuel_inventory_size  = 0,
@@ -317,9 +404,9 @@ floorion.tile_buildability_rules = {{
 floorion.surface_conditions = { Rabbasca.only_underground(true) }
 floorion.resistances = { }
 floorion.minable = nil
-floorion.placeable_by = { item = "rabbasca-stability-pylon", count = 1 }
+floorion.placeable_by = nil
 floorion.allowed_effects = { }
-floorion.flags = { "placeable-player", "player-creation", "not-repairable", "not-deconstructable" }
+floorion.flags = { "placeable-player", "player-creation", "not-repairable", "not-deconstructable", "get-by-unit-number" }
 floorion.custom_tooltip_fields = nil
 floorion.crafting_categories = { "rabbasca-flooring" }
 floorion.created_effect = {
@@ -343,7 +430,8 @@ local ufo = util.merge {
   data.raw["spider-vehicle"]["spidertron"],
   {
     name = "rabbasca-ufo",
-    movement_energy_consumption = "12MW",
+    icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
+    movement_energy_consumption = "9MW",
     has_belt_immunity = true,
     inventory_size = 20,
     trash_inventory_size = 20,
@@ -363,6 +451,7 @@ local ufo = util.merge {
     },
   }
 }
+ufo.flags = { "placeable-player", "player-creation", "get-by-unit-number" }
 ufo.guns = { 
   "teslagun",
   "teslagun",
@@ -389,7 +478,7 @@ local ufo_leg = util.merge {
   data.raw["spider-leg"]["spidertron-leg-1"],
   {
     name = "rabbasca-ufo-leg",
-    initial_movement_speed = 1.5,
+    initial_movement_speed = 1.8,
     movement_acceleration = 3,
     target_position_randomisation_distance = 0,
   }
@@ -400,12 +489,11 @@ ufo_leg.graphics_set = nil
 data:extend {
   stabilizer,
   ufo, ufo_leg,
-  fuel_access,
-  miner_remote,
+  fuel_access, fuel_access_2,
   lab,
   relicary,
   relicary_access,
   relichunter,
-  minelon,
+  minelon, miner_remote,
   floorion,
 }
