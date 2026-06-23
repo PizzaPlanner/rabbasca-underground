@@ -2,7 +2,7 @@ data:extend {
 {
     type = "tips-and-tricks-item",
     name = "rabbasca-underground-briefing",
-    category = "space-age",
+    categories = { "space-age" },
     tag = "[space-location=rabbasca-underground]",
     indent = 1,
     order = "r[rabbasca]-u",
@@ -14,7 +14,7 @@ data:extend {
 {
     type = "tips-and-tricks-item",
     name = "rabbasca-manifest-anomaly",
-    category = "space-age",
+    categories = { "space-age" },
     tag = "[entity=rabbasca-warp-anomaly]",
     indent = 1,
     order = "r[rabbasca]-u[anomaly]",

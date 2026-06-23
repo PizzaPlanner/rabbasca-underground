@@ -87,7 +87,7 @@ local lithium_amide = util.merge {
 lithium_amide.map_color = { 0.74, 0.94, 0.92 }
 lithium_amide.minable.mining_time = 0.5
 lithium_amide.minable.results = {{ type = "item", name = "rabbasca-lithium-amide", amount = 1 }}
-lithium_amide.autoplace = nil
+lithium_amide.autoplace = st_anomaly.autoplace
 
 local mashup = util.merge {
   table.deepcopy(data.raw["resource"]["calcite"]),
@@ -105,12 +105,12 @@ local mashup = util.merge {
 mashup.map_color = { 0.74, 0.38, 0.1 }
 mashup.minable.mining_time = 0.5
 mashup.minable.results = {
-  { type = "item", name = "spoilage", amount = 1, probability = 0.4 },
-  { type = "item", name = "coal", amount = 1, probability = 0.27 },
-  { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.7, probability = 0.15 },
-  { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.4, probability = 0.08 },
+  { type = "item", name = "spoilage", amount = 1, independent_probability = 0.4 },
+  { type = "item", name = "coal", amount = 1, independent_probability = 0.27 },
+  { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.7, independent_probability = 0.15 },
+  { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.4, independent_probability = 0.08 },
 }
-mashup.autoplace = nil
+lithium_amide.autoplace = st_anomaly.autoplace
 
 local haronite_ore = util.merge {
   data.raw["resource"]["tungsten-ore"],
@@ -118,7 +118,7 @@ local haronite_ore = util.merge {
   {
     name = "haronite",
     type = "resource",
-    category = "basic-solid",
+    categories = { "basic-solid" },
     factoriopedia_alternative = "haronite",
     localised_name = { "item-name.haronite" },
     -- stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/textures/haronite-ore.png" } },
@@ -127,6 +127,7 @@ local haronite_ore = util.merge {
 }
 haronite_ore.minable.mining_time = 3
 haronite_ore.minable.results = {{ type = "item", name = "haronite", amount = 1, percent_spoiled = 0.8 }}
+haronite_ore.autoplace = st_anomaly.autoplace
 
 local holmium_ore = util.merge {
   data.raw["resource"]["tungsten-ore"],
@@ -134,7 +135,7 @@ local holmium_ore = util.merge {
   {
     name = "rabbasca-holmium-ore",
     type = "resource",
-    category = "basic-solid",
+    categories = { "basic-solid" },
     -- factoriopedia_alternative = "holmium-ore",
     localised_name = { "item-name.holmium-ore" },
     stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/textures/holmium-ore.png" } },
@@ -143,5 +144,6 @@ local holmium_ore = util.merge {
 }
 holmium_ore.minable.mining_time = 1.5
 holmium_ore.minable.results = {{ type = "item", name = "holmium-ore", amount = 1 }}
+holmium_ore.autoplace = st_anomaly.autoplace
 
 data:extend{ lithium_amide, haronite_ore, st_anomaly, holmium_ore, mashup }

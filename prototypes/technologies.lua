@@ -15,7 +15,7 @@ local function make_research_dummy(item)
             { type = "item", name = item.name, amount = 1 },
         },
         auto_recycle = false,
-        category = "rabbasca-relichunter"
+        categories = { "rabbasca-relichunter" }
       },
       util.merge {
       {
@@ -59,7 +59,7 @@ data:extend{
       },
       {
         type = "unlock-recipe",
-        recipe = "rabbasca-warp-cell-recharging-indicator"
+        recipe = "rabbasca-hidden-unlocks-underground"
       },
       {
         type = "unlock-space-location",
@@ -99,7 +99,7 @@ data:extend{
     research_trigger =
     {
         type = "mine-entity",
-        entity = "rabbasca-warp-anomaly",
+        entities = { "rabbasca-warp-anomaly" }, 
     }
 },
 {
@@ -142,7 +142,7 @@ data:extend{
     },
     research_trigger = {
       type = "mine-entity",
-      entity = "rabbasca-lithium-amide"
+      entities = { "rabbasca-lithium-amide" }
     }
 },
 {
@@ -158,7 +158,7 @@ data:extend{
     },
     research_trigger = {
       type = "mine-entity",
-      entity = "rabbasca-yumako-mashup"
+      entities = { "rabbasca-yumako-mashup" }
     }
 },
 {
@@ -422,3 +422,4 @@ data:extend{
 
 local warp_tech_3 = data.raw["technology"]["interplanetary-construction-3"]
 warp_tech_3.prerequisites = { "rabbasca-warpfield-science-pack" }
+table.insert(warp_tech_3.unit.ingredients, {"rabbasca-warpfield-science-pack", 1})

@@ -20,11 +20,11 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
             initial_fuel_percent = 0.001,
             fuel_categories      = { "rabbasca-warp-anomaly" },
         },
-        -- fixed_recipe = "rabbasca-warp-trace",
         module_slots = 20,
         trash_inventory_size = 10,
         hidden = false,
         hidden_in_factoriopedia = false,
+        tall = true,
         subgroup = "rabbasca-warp-stabilizer",
         order = "a[stabilizer]",
     } }
@@ -40,14 +40,10 @@ stabilizer.minable = nil
 stabilizer.placeable_by = nil
 stabilizer.allowed_effects = { "speed", "consumption", "pollution" }
 stabilizer.flags = { "placeable-player", "player-creation" }
--- stabilizer.energy_source = {
---   type = "electric",
---   buffer_capacity = "1GJ",
---   usage_priority = "primary-input",
--- }
 stabilizer.next_upgrade = nil
 stabilizer.deconstruction_alternative = nil
 stabilizer.crafting_categories = { "rabbasca-warp-stabilizer" }
+stabilizer.autoplace = { probability_expression = "0" }
 local sprite_data = {
     line_length = 10,
     width = 4000 / 10,
@@ -102,7 +98,6 @@ local relichunter = {
     selection_box = { { -2, -2 }, { 2, 2 } },
     crafting_speed = 1,
     module_slots = 0,
-    enable_logistic_control_behavior = false,
     placeable_by = { item = "rabbasca-relichunter", count = 1 },
     minable = { result = "rabbasca-relichunter", count = 1, mining_time = 1 },
     crafting_categories = { "rabbasca-relichunter" },
@@ -162,10 +157,9 @@ local relicary = {
     --   producing = -8 / second,
     --   not_producing = 0
     -- },
-    flags = { "placeable-neutral", "not-repairable", "not-deconstructable" },
+    flags = { "placeable-neutral", "not-repairable", "not-deconstructable", "no-logistic-connection" },
     collision_box = { { -0.9, -0.9 }, { 0.9, 0.9 } },
     selection_box = { { -1, -1 }, { 1, 1 } },
-    enable_logistic_control_behavior = false,
     result_inventory_size = 10,
     source_inventory_size = 1,
     crafting_speed = 1,
@@ -270,6 +264,7 @@ local minelon = util.merge {
         hidden_in_factoriopedia = false,
         resource_searching_radius = 1.5,
         shuffle_resources_to_mine = false,
+        require_resources_to_place = false,
         mining_speed = 4,
         resource_categories = { "rabbasca-warp-anomaly" },
         vector_to_place_result = { 0, 0 },
@@ -306,7 +301,7 @@ minelon.graphics_set = {
                 height = 1712 / 8,
             } },
             util.merge { anim, {
-                filename = "__base__/graphics/entity/centrifuge/centrifuge-C-shadow.png",
+                filename = "__base__/graphics/entity/centrifuge/centrifuge-ABC-shadow.png",
                 width = 2232 / 8,
                 height = 1216 / 8,
                 draw_as_shadow = true,
@@ -325,7 +320,7 @@ minelon.energy_source = {
     initial_fuel_percent = 0.001,
     fuel_categories = { "rabbasca-warp-anomaly" },
 }
-minelon.placeable_by = nil -- { item = "rabbasca-collector-pylon", count = 1 }
+minelon.placeable_by = { item = "rabbasca-collector-pylon", count = 1 }
 minelon.minable = nil
 minelon.allowed_effects = { "speed", "productivity" }
 minelon.flags = { "placeable-player", "player-creation", "no-automated-item-insertion", "get-by-unit-number" }
@@ -358,7 +353,6 @@ local floorion = util.merge {
     {
         name = "rabbasca-stability-pylon",
         icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-3.png",
-        enable_logistic_control_behavior = false,
         production_health_effect = {
             not_producing = -0.5 / second,
             producing = 0.25 / second
@@ -395,7 +389,7 @@ floorion.resistances = {}
 floorion.minable = nil
 floorion.placeable_by = nil
 floorion.allowed_effects = {}
-floorion.flags = { "placeable-player", "player-creation", "not-repairable", "not-deconstructable", "get-by-unit-number" }
+floorion.flags = { "placeable-player", "player-creation", "not-repairable", "not-deconstructable", "get-by-unit-number", "no-logistic-connection" }
 floorion.custom_tooltip_fields = nil
 floorion.crafting_categories = { "rabbasca-flooring" }
 floorion.created_effect = {

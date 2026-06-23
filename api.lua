@@ -68,7 +68,7 @@ function Rabbasca.Stabilizer.make_atmospheric_recipe(planet, results)
         auto_recycle = false,
         hide_from_player_crafting = true,
         surface_conditions = { Rabbasca.only_underground() },
-        category = "cryogenics",
+        categories = { "cryogenics" },
         subgroup = "rabbasca-remote",
         order = "f[planet]-"..planet.."-d[atmosphere]-"..name,
     }

@@ -184,7 +184,7 @@ Rabbasca.make_trigger_item({
   icon_size = 64,
   stack_size = 1,
   inventory_size = 1, -- cannot open otherwise
-  flags = { "not-stackable", "mod-openable" },
+  flags = { "not-stackable", "mod-openable", "hide-health-bar-in-world" },
   -- spoil_ticks = 30 * second,
   -- spoil_result = "rabbasca-warp-cell-recharging",
   subgroup = "rabbasca-warp-stabilizer",
@@ -201,7 +201,7 @@ Rabbasca.make_trigger_item({
   fuel_value = "10MJ",
   fuel_category = "rabbasca-warp-anomaly",
   stack_size = 1,
-  flags = { "not-stackable", "mod-openable" },
+  flags = { "not-stackable", "mod-openable", "hide-health-bar-in-world" },
   spoil_ticks = 4 * minute,
   spoil_result = "rabbasca-warp-cell-recharging",
   burnt_result = "rabbasca-warp-cell-recharging",
@@ -272,7 +272,7 @@ Rabbasca.make_trigger_item({
   order = "b[science]-e",
 },
 util.merge {
-  data.raw["tool"]["automation-science-pack"],
+  data.raw["item"]["automation-science-pack"],
   {
     name = "rabbasca-warpfield-science-pack",
     icon = "__rabbasca-assets__/graphics/recolor/icons/warp-science-pack.png",
@@ -339,7 +339,7 @@ util.merge {
   hidden_in_factoriopedia = false,
   subgroup = data.raw["item"]["rabbasca-warp-pylon"].subgroup,
   order = data.raw["item"]["rabbasca-warp-pylon"].order.."-r[rabbasca-underground]",
-  factoriopedia_alternative = "rabbasca-collector-pylon"
+  -- factoriopedia_alternative = "rabbasca-collector-pylon"
 },
 -- {
 --     type = "ammo",
