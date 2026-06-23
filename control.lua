@@ -9,11 +9,20 @@ local function handle_script_events(event)
       underground.on_destabilization(from)
     end
   elseif effect_id == "rabbasca_on_powerspike_progress" then
-    underground.stab.progress_powerspike(10)
-  elseif effect_id == "rabbasca_on_repair_component" then
-    underground.repair_part()
-  elseif effect_id == "rabbasca_on_toggle_component" then
-    underground.toggle_component()
+    underground.stab.progress_powerspike(1)
+  elseif effect_id == "rabbasca_on_download_warp_science" then
+    local from = Rabbasca.get_spoiled_in(event)
+    if from then
+      underground.download_science(from)
+    end
+  elseif effect_id == "rabbasca_on_relichunter_progress" then
+    local from = Rabbasca.get_spoiled_in(event)
+    local recipe = from and from.type == "assembling-machine" and from.get_recipe()
+    if recipe and recipe.name == "rabbasca-hunt-anomalies" then
+      underground.on_hunt_anomalies()
+    elseif recipe and recipe.name == "rabbasca-hunt-relicaries" then
+      underground.on_hunt_relicaries()
+    end
   elseif effect_id == "rabbasca_on_spawn_ufo" then
     local from = Rabbasca.get_spoiled_in(event)
     if from then
@@ -121,7 +130,9 @@ end)
 script.on_event(defines.events.on_gui_click, function(event) 
   local player = game.players[event.player_index]
   if not player then return end
-  if event.element.tags and event.element.parent and event.element.parent.name == "rabbasca_cell_targets" then
+  if event.element.tags 
+  and event.element.parent and event.element.parent.parent and event.element.parent.parent.name == "rabbasca_cell_targets" 
+  and storage.assign_remote and storage.assign_remote[event.player_index] then
     local enum = event.element.tags.entity
     local cell = storage.assign_remote[event.player_index].item
     local e = game.get_entity_by_unit_number(enum or 0)

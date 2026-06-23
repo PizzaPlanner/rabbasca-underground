@@ -96,6 +96,13 @@ function M.update_cell_assignment()
     if table_size(storage.assign_remote) == 0 then storage.assign_remote = nil end
 end
 
+local function add_table(parent)
+    local t = parent.add{ type = "table", column_count = 8 }
+    t.style.vertical_spacing = 1
+    t.style.horizontal_spacing = 1
+    return t
+end
+
 function M.set_cell_ui(player, item)
     local frame = player.gui.screen.rabbasca_cell_assignment
     if item and frame then frame.destroy() frame = nil end
@@ -112,13 +119,20 @@ function M.set_cell_ui(player, item)
         storage.assign_remote[player.index] = item
         local name = frame.add{ type = "textfield", name = "rabbasca_cell_name", caption = { "", "Cell Name" }, text = item and item.label or "", icon_selector = true, tooltip = {"", "Give the cell a custom name"} }
         local ok = frame.add{ type = "button", name = "rabbasca_cell_confirm", caption = { "", "Close" }, style = "confirm_button" }
-        local all_targets = frame.add{ type = "flow", name = "rabbasca_cell_targets", direction = "horizontal" }
-        local btn = add_button(all_targets, nil, "inventory_slot", nil, 32)
+        local scroll = frame.add { type = "scroll-pane", name = "rabbasca_cell_targets" }
+        local all_targets = { }
+        all_targets["empty"] = add_table(scroll)
+        local btn = add_button(all_targets["empty"], nil, "inventory_slot", nil, 32)
         btn.tooltip = { "", "Remove tether, turn back into [item=rabbasca-warp-cell-recharging]"}
         btn.tags = { entity = 0 }
         for _, e in pairs(storage.stabilizer.fuel.consumers) do
             if e.entity.valid then
-                local btn = add_button(all_targets, "entity/"..e.entity.name, "inventory_slot", nil, 32)
+                local parent = all_targets[e.entity.name]
+                if not parent then
+                    parent = add_table(scroll)
+                    all_targets[e.entity.name] = parent
+                end
+                local btn = add_button(parent, "entity/"..e.entity.name, "inventory_slot", nil, 32)
                 btn.number = 0
                 btn.elem_tooltip = { type = "entity", name = e.entity.name, quality = e.entity.quality }
                 btn.tags = { entity = e.entity.unit_number }
@@ -157,22 +171,24 @@ function M.set_cell_ui(player, item)
     local open_number = player.opened and player.opened_gui_type == defines.gui_type.entity and player.opened.unit_number
     local current = data.tether and data.tether.valid and data.tether
     local cam_target = current
-    for _, elm in pairs(frame.rabbasca_cell_targets.children) do
-        local is_hovered = selected_number == elm.tags.entity or player.selected == elm
-        local is_open = open_number == elm.tags.entity
-        local is_highlighted = current and current.unit_number == elm.tags.entity or is_hovered
-        elm.style = is_highlighted and "yellow_inventory_slot" or "inventory_slot"
-        local target = game.get_entity_by_unit_number(elm.tags.entity)
-            if target and target.burner and target.burner.currently_burning then
-                elm.number = target.burner.remaining_burning_fuel / (target.burner.currently_burning.name.fuel_value or 1)
-            else 
-                elm.number = 0
+    for _, parent in pairs(frame.rabbasca_cell_targets.children) do
+        for _, elm in pairs(parent.children) do
+            local is_hovered = selected_number == elm.tags.entity or player.selected == elm
+            local is_open = open_number == elm.tags.entity
+            local is_highlighted = current and current.unit_number == elm.tags.entity or is_hovered
+            elm.style = is_highlighted and "yellow_inventory_slot" or "inventory_slot"
+            local target = game.get_entity_by_unit_number(elm.tags.entity)
+                if target and target.burner and target.burner.currently_burning then
+                    elm.number = target.burner.remaining_burning_fuel / (target.burner.currently_burning.name.fuel_value or 1)
+                else 
+                    elm.number = 0
+                end
+            if is_hovered then
+                cam_target = target
             end
-        if is_hovered then
-            cam_target = target
-        end
-        if is_open then
-            fuel.tether(item.item, player.opened)
+            if is_open then
+                fuel.tether(item.item, player.opened)
+            end
         end
     end
     frame.cam0.target_cam.position = cam_target and cam_target.position or { 10000, 0 }

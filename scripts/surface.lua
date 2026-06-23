@@ -154,7 +154,8 @@ function M.replace_entities(surface, config, planet)
 
     storage.stabilizer.anomalies.initial = 0
     storage.stabilizer.anomalies.entities = { }
-    local amount_mult = 1 -- + (game.forces.player.technologies["rabbasca-anomaly-expansion"].level - 1) * 0.1
+    local amount_mult = 1 + (storage.stabilizer.extra_anomalies or 0)
+    storage.stabilizer.extra_anomalies = 0
     for _, e in pairs(surface.find_entities_filtered { name = "rabbasca-warp-anomaly" }) do
         e.amount = e.amount * amount_mult
         storage.stabilizer.anomalies.initial = storage.stabilizer.anomalies.initial + e.amount

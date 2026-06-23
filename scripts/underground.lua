@@ -97,7 +97,7 @@ function M.on_stabilizer_died(id)
         end
         for _, tech in pairs(storage.stabilizer.config.per_surface_techs) do
             game.forces.player.technologies[tech].researched = false
-            game.forces.player.technologies[tech].enabled    = false
+            -- game.forces.player.technologies[tech].enabled    = false
         end
         storage.stabilizer = nil
         M.update_logistic_section()
@@ -120,6 +120,30 @@ function M.summon_fleet(surface, position)
                 e.teleport(p, surface, false)
             end
         end
+    end
+end
+
+function M.on_hunt_anomalies()
+    storage.stabilizer.extra_anomalies = (storage.stabilizer.extra_anomalies or 0) + 0.03
+    game.print("[entity=rabbasca-warp-anomaly] mult = "..(1 + storage.stabilizer.extra_anomalies))
+end
+
+function M.on_hunt_relicaries()
+    storage.stabilizer.relics = storage.stabilizer.relics or { pity = 0 }
+    storage.stabilizer.relics.pity = storage.stabilizer.relics.pity + 0.004
+    game.print("[entity=rabbasca-relicary] chance = "..storage.stabilizer.relics.pity)
+end
+
+function M.download_science(caller)
+    local from = remote.call("rabbasca_warp_inventory", "get")
+    if not from then return end
+    local to = caller.get_inventory(defines.inventory.crafter_trash)
+    if not to then return end
+    local downloaded = from.remove({name = "rabbasca-warpfield-science-pack", count = 200})
+    if downloaded <= 0 then return end
+    local remaining = downloaded - to.insert({ name = "rabbasca-warpfield-science-pack", count = downloaded})
+    if remaining > 0 then
+        from.insert({name = "rabbasca-warpfield-science-pack", count = remaining})
     end
 end
 

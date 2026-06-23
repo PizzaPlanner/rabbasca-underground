@@ -46,7 +46,9 @@ data:extend {
             { type = "fluid", name = "ammonia", amount = 80 },
         },
         surface_conditions = { Rabbasca.only_underground() },
-        category = "electromagnetics"
+        category = "electromagnetics",
+        subgroup = "rabbasca-processes",
+        order = "u[underground]-a[resources]-a[amide-fission]"
     },
     {
         type = "recipe",
@@ -64,7 +66,9 @@ data:extend {
         results = { 
             { type = "fluid", name = "beta-carotene", amount = 75 },
         },
-        category = "organic"
+        category = "organic",
+        subgroup = "rabbasca-processes",
+        order = "u[underground]-a[resources]-c[carotene-alt]"
     },
     {
         type = "recipe",
@@ -110,35 +114,17 @@ data:extend {
     },
     {
         type = "recipe",
-        name = "rabbasca-reboot-stabilizer",
-        enabled = true,
-        energy_required = 20,
-        hidden = true,
-        hidden_in_factoriopedia = true,
-        ingredients = { },
-        results = { { type = "item", name = "rabbasca-reboot-stabilizer", amount = 1 } },
-        category = "rabbasca-warp-stabilizer",
-        order = "0",
-        allow_productivity = false,
-        stabilizer_config = { can_craft_for_free = true },
-        result_is_always_fresh = true,
-        auto_recycle = false,
-        crafting_machine_tint = {
-            primary = { 0.95, 0.83, 0.14 }
-        }
-    },
-    {
-        type = "recipe",
         name ="rabbasca-stability-pylon",
-        enabled = false,
+        enabled = true,
         energy_required = 10,
         ingredients = {
             { type = "item", name = "rabbasca-powerspike", amount = 1 },
-            { type = "item", name = "rabbasca-spatial-anchor", amount = 5 },
+            { type = "item", name = "rabbasca-restored-knowledge",amount = 5 },
         },
         results = { { type = "item", name ="rabbasca-stability-pylon", amount = 1 } },
         category = "rabbasca-warp-stabilizer",
         order = "0",
+        hide_from_player_crafting = true,
         allow_productivity = false,
         stabilizer_config = { can_craft_for_free = true },
         result_is_always_fresh = true,
@@ -154,17 +140,20 @@ data:extend {
         energy_required = 10,
         ingredients = {
             { type = "item", name = "rabbasca-powerspike",  amount = 1 },
+            { type = "item", name = "superconductor", amount = 20 },
         },
         results = { { type = "item", name = "rabbasca-collector-pylon", amount = 1 } },
-        category = "rabbasca-warp-stabilizer"
+        category = "rabbasca-warp-stabilizer",
+        auto_recycle = false
     },
     {
         type = "recipe",
         name = "rabbasca-warp-cell-recharging",
-        enabled = false,
+        enabled = true,
         energy_required = 10,
         ingredients = {
             { type = "item", name = "rabbasca-warp-anomaly", amount = 100 },
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 75 },
             { type = "item", name = "rabbasca-powerspike", amount = 2 },
         },
         results = { { type = "item", name = "rabbasca-warp-cell-recharging", amount = 1 } },
@@ -176,12 +165,12 @@ data:extend {
         auto_recycle = false,
         crafting_machine_tint = {
             primary = { 0.95, 0.83, 0.14 }
-        }
+        },
     },
     {
         type = "recipe",
         name = "rabbasca-ufo",
-        enabled = true,
+        enabled = false,
         energy_required = 40,
         ingredients = {
             { type = "item", name = "rabbasca-warpfield-engine", amount = 5 },
@@ -197,6 +186,7 @@ data:extend {
         type = "recipe",
         name = "rabbasca-abandon-stabilizer",
         enabled = true,
+        hide_from_player_crafting = true,
         energy_required = 45,
         hidden_in_factoriopedia = true,
         ingredients = { },
@@ -214,8 +204,9 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-stabilizer-warp-sequence",
-        enabled = false,
+        enabled = true,
         hidden_in_factoriopedia = true,
+        hide_from_player_crafting = true,
         energy_required = 10,
         result_is_always_fresh = true,
         -- ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
@@ -233,8 +224,9 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-stabilizer-recharge",
+        hide_from_player_crafting = true,
         icons = Rabbasca.icons({
-            { proto = data.raw["item"]["rabbasca-warp-cell-recharging"], scale = 0.5, shift = {8, 8} },
+            { proto = data.raw["item-with-inventory"]["rabbasca-warp-cell-recharging"], scale = 0.5, shift = {8, 8} },
             { proto = data.raw["virtual-signal"]["signal-battery-full"], scale = 0.5, shift = {-8, -8} },
         }),
         enabled = true,
@@ -250,7 +242,8 @@ data:extend {
             primary = { 1, 0.85, 0.75 }
         },
         category = "rabbasca-warp-stabilizer",
-        order = "a",
+        subgroup = "rabbasca-warp-stabilizer-functions",
+        order = "c",
         hide_from_signal_gui = false
     },
     {
@@ -258,6 +251,7 @@ data:extend {
         name = "rabbasca-warp-trace",
         enabled = true,
         hidden_in_factoriopedia = false,
+        hide_from_player_crafting = true,
         energy_required = 2,
         result_is_always_fresh = true,
         ingredients = { { type = "item", name = "rabbasca-warp-anomaly", amount = 25 } },
@@ -280,11 +274,12 @@ data:extend {
         type = "recipe",
         name = "rabbasca-emergency-fuel",
         icons = Rabbasca.icons({
-            { proto = data.raw["item"]["rabbasca-powerspike"], scale = 0.5, shift = {8, 8} },
-            { proto = data.raw["tool"]["rabbasca-warp-trace"] },
-            { proto = data.raw["virtual-signal"]["signal-alert"], scale = 0.5, shift = {-8, -8} },
+            { proto = data.raw["item"]["rabbasca-progress-powerspike"], scale = 0.5, shift = {8, 8} },
+            { proto = data.raw["item"]["rabbasca-warp-trace"] },
+            -- { proto = data.raw["virtual-signal"]["signal-alert"], scale = 0.5, shift = {-8, -8} },
         }),
         enabled = true,
+        hide_from_player_crafting = true,
         energy_required = 30,
         result_is_always_fresh = true,
         ingredients = { { type = "item", name = "rabbasca-powerspike", amount = 1 } },
@@ -306,6 +301,7 @@ data:extend {
         type = "recipe",
         name = "rabbasca-amplify-anomaly",
         enabled = false,
+        hide_from_player_crafting = true,
         energy_required = 2,
         result_is_always_fresh = true,
         reset_freshness_on_craft = true,
@@ -321,31 +317,11 @@ data:extend {
     },
     {
         type = "recipe",
-        name = "rabbasca-coordinate-system",
-        enabled = false,
-        energy_required = 5,
-        ingredients = {
-            { type = "item",  name = "rabbasca-warp-anomaly", amount = 10 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod",  amount = 2 },
-            { type = "fluid", name = "ammonia",  amount = 200 },
-            { type = "item", name = "holmium-plate",  amount = 17 },
-        },
-        results = { 
-            { type = "item", name = "rabbasca-coordinate-system", amount = 3 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1, probability = 0.8 },
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1, probability = 0.8 },
-        },
-        main_product = "rabbasca-coordinate-system",
-        surface_conditions = { Rabbasca.only_underground(true) },
-        category = "cryogenics"
-    },
-    {
-        type = "recipe",
         name = "rabbasca-quantum-device",
         enabled = false,
         energy_required = 7,
         ingredients = {
-            { type = "item", name = "rabbasca-warp-anomaly", amount = 30 },
+            { type = "item", name = "lithium-plate", amount = 3 },
             { type = "item", name = "rabbasca-warp-trace", amount = 5 },
             { type = "item", name = "rabbasca-warpfield-engine", amount = 2 },
             { type = "item", name = "haronite-plate", amount = 1 },
@@ -376,34 +352,62 @@ data:extend {
     },
     {
         type = "recipe",
-        name = "rabbasca-warp-core",
-        enabled = true,
+        name = "rabbasca-warpfield-science-pack",
+        enabled = false,
+        energy_required = 35,
+        ingredients = {
+            { type = "fluid", name = "harene", amount = 10 },
+            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 16 },
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 20 },
+        },
+        results = {
+            { type = "item", name = "rabbasca-warpfield-science-pack", amount = 8 },
+        },
+        allow_productivity = true,
+        category = "crafting-with-fluid",
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-madness-module",
+        enabled = false,
+        energy_required = 30,
+        ingredients = {
+            { type = "fluid", name = "harene", amount = 50 },
+            { type = "item", name = "rabbasca-powerspike", amount = 1 },
+            { type = "item", name = "speed-module-3", amount = 6 },
+        },
+        auto_recycle = false,
+        results = {
+            { type = "item", name = "rabbasca-madness-module", amount = 1 },
+        },
+        allow_productivity = true,
+        category = "electronics-or-assembling",
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-warp-core-from-underground",
+        icons = Rabbasca.icons({{ proto = data.raw["capsule"]["rabbasca-warp-core"] }}),
+        enabled = false,
         auto_recycle = false,
         energy_required = 5,
         ingredients = {
             { type = "item", name = "rabbasca-quantum-device", amount = 1 },
-            { type = "item", name = "rabbasca-spatial-anchor", amount = 1 },
-            { type = "item", name = "rabbasca-coordinate-system", amount = 1 },
+            { type = "item", name = "superconductor", amount = 4 },
+            { type = "item", name = "rabbasca-warp-anomaly", amount = 50 },
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 3 },
         },
-        results = { { type = "item", name = "rabbasca-warp-core", amount = 5 } },
+        results = { 
+            { type = "item", name = "rabbasca-warp-core", amount = 5 },
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 1, probability = 0.1 },
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 1, probability = 0.15 },
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 1, probability = 0.2 },
+        },
         category = "electromagnetics"
     },
     {
         type = "recipe",
-        name = "rabbasca-warp-tech-analyzer",
-        enabled = false,
-        energy_required = 10,
-        ingredients = {
-            { type = "item", name = "lab", amount = 1 },
-            { type = "item", name = "rabbasca-warpfield-engine",  amount = 1 },
-        },
-        results = { { type = "item", name = "rabbasca-warp-tech-analyzer", amount = 1 } },
-        category = "crafting"
-    },
-    {
-        type = "recipe",
         name = "rabbasca-fuel-remote",
-        enabled = true,
+        enabled = false,
         energy_required = 3,
         ingredients = {
             { type = "item", name = "rabbasca-warpfield-excitement-rod",  amount = 2 },
@@ -433,6 +437,7 @@ data:extend {
         icon = data.raw["virtual-signal"]["signal-clockwise-circle-arrow"].icon,
         enabled = true,
         hidden_in_factoriopedia = true,
+        hide_from_player_crafting = true,
         energy_required = 300,
         ingredients = { },
         results = { },
@@ -445,6 +450,7 @@ data:extend {
         name = "rabbasca-relocate-floorthing",
         enabled = true,
         hidden_in_factoriopedia = true,
+        hide_from_player_crafting = true,
         energy_required = 30,
         ingredients = { },
         results = { { type= "item", name = "rabbasca-relocate-floorthing", amount = 1 } },
@@ -458,11 +464,28 @@ data:extend {
         icon = "__rabbasca-assets__/graphics/by-hurricane/research-center-icon.png",
         icon_size = 64,
         enabled = true,
+        hide_from_player_crafting = true,
+        result_is_always_fresh = true,
+        energy_required = 10,
+        ingredients = {
+            { type = "item", name = "rabbasca-warp-trace", amount = 25 },
+        },
+        results = { { type = "item", name = "rabbasca-progress-hunt", amount = 1 } },
+        category = "rabbasca-relichunter"
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-hunt-anomalies",
+        icon = "__rabbasca-assets__/graphics/by-hurricane/research-center-icon.png",
+        icon_size = 64,
+        enabled = true,
+        hide_from_player_crafting = true,
+        result_is_always_fresh = true,
         energy_required = 12,
         ingredients = {
             { type = "item", name = "rabbasca-warp-anomaly", amount = 60 },
         },
-        results = { },
+        results = { { type = "item", name = "rabbasca-progress-hunt", amount = 1 } },
         category = "rabbasca-relichunter"
     },
     {
@@ -498,6 +521,20 @@ data:extend {
         main_product = "rabbasca-summon-ufo",
         category = "crafting"
     },
+    {
+        type = "recipe",
+        name = "rabbasca-warpfield-science-pack-wi-download",
+        enabled = false,
+        energy_required = 10,
+        allow_productivity = false,
+        result_is_always_fresh = true,
+        hide_from_player_crafting = true,
+        ingredients = { },
+        results = { 
+            { type = "item", name = "rabbasca-warpfield-science-pack-wi-download", amount = 1 },
+        },
+        category = "rabbasca-remote"
+    },
 }
 
 Rabbasca.create_vault_recipe("rabbasca-locate-stabilizer", {
@@ -520,51 +557,50 @@ Rabbasca.create_vault_recipe("rabbasca-locate-stabilizer", {
 data:extend {
     {
         type = "recipe",
-        name = "rabbasca-spatial-anchor",
+        name = "rabbasca-obscure-theories",
         enabled = true,
-        energy_required = 17,
-        ingredients = {
-            { type = "item", name = "superconductor", amount = 1 },
-            { type = "item", name = "lithium-plate", amount = 5 },
-            { type = "item", name = "harenic-stabilizer", amount = 1 },
-            { type = "fluid", name = "harene-gas", amount = 200 },
-        },
-        results = { { type = "item", name = "rabbasca-spatial-anchor", amount = 2 } },
-        category = "electromagnetics"
-    },
-    {
-        type = "recipe",
-        name = "rabbasca-twisted-knowledge",
-        icons = Rabbasca.icons({
-            { proto = data.raw["furnace"]["rabbasca-relicary"] },
-            { proto = data.raw["blueprint-book"]["blueprint-book"], scale = 0.5, shift = {8, 8} },
-        }),
-        enabled = true,
-        energy_required = 0.2,
+        hide_from_player_crafting = true,
+        energy_required = 1,
         ingredients = {
             { type = "item", name = "beta-carotene-barrel",   amount = 1 },
         },
         results = { 
-            { type = "item", name = "rabbasca-twisted-knowledge", amount = 1 },
+            { type = "item", name = "rabbasca-obscure-theories", amount_min = 28, amount_max = 34 },
         },
-        main_product = "rabbasca-twisted-knowledge",
+        main_product = "rabbasca-obscure-theories",
         category = "rabbasca-relics"
     },
     {
         type = "recipe",
-        name = "rabbasca-uncanny-knowledge",
-        icons = Rabbasca.icons({
-            { proto = data.raw["furnace"]["rabbasca-relicary"] },
-            { proto = data.raw["blueprint-book"]["blueprint-book"], scale = 0.5, shift = {8, 8}, tint = { 1, 0.5, 0.3 } },
-        }),
-        enabled = true,
-        energy_required = 0.2,
+        name = "rabbasca-restored-knowledge",
+        enabled = false,
+        energy_required = 8,
         ingredients = {
-            { type = "item", name = "rabbasca-warp-core",   amount = 1 },
+            { type = "item", name = "rabbasca-obscure-theories",  amount = 4 },
         },
         results = { 
-            { type = "item", name = "rabbasca-uncanny-knowledge", amount = 1, probability = 0.85 },
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 1, probability = 0.6 },
+            { type = "item", name = "rabbasca-obscure-theories",  amount = 1, probability = 0.2 },
+            { type = "item", name = "rabbasca-obscure-theories",  amount = 1, probability = 0.2 },
+            { type = "item", name = "rabbasca-obscure-theories",  amount = 1, probability = 0.2 },
+            { type = "item", name = "rabbasca-obscure-theories",  amount = 1, probability = 0.2 },
         },
-        category = "rabbasca-relics"
+        main_product = "rabbasca-restored-knowledge",
+        category = "crafting"
     },
+}
+
+
+data:extend {
+  {
+    type = "recipe",
+    name = "rabbasca-warp-cell-recharging-indicator",
+    enabled = false,
+    category = "parameters", -- can not be crafted, just for unlocking the icon in menus?
+    hidden_in_factoriopedia = true,
+    hidden = true,
+    hide_from_player_crafting = true,
+    results = { { type = "item", name = "rabbasca-warp-cell-recharging", amount = 1 }, },
+    main_product = "rabbasca-warp-cell-recharging"
+  }
 }

@@ -32,8 +32,6 @@ function M.on_warp_underground(event)
         end
         local last_location = storage.stabilizer.current_location
         storage.stabilizer.current_location = data.to
-        storage.stabilizer.safe_zone_setting = storage.stabilizer.safe_zone_setting or 10
-        storage.stabilizer.safe_zone_radius = storage.stabilizer.safe_zone_setting
         for _, e in pairs(storage.stabilizer.left_on_warp or { }) do
             if e and e.valid then e.force = "neutral" end
         end
@@ -106,6 +104,12 @@ function M.change_affinity(last_location)
         local tech = game.forces.player.technologies[prev.tech]
         tech.researched = false
         tech.enabled    = false
+    else -- fallback only after data change, migrations, etc., touching techs is performance heavy
+        for _, planet in storage.stabilizer.config.planets do
+            local tech = game.forces.player.technologies[planet.tech]
+            tech.researched = false
+            tech.enabled    = false
+        end
     end
     local next = storage.stabilizer.config.planets[storage.stabilizer.current_location]
     if next then
@@ -127,10 +131,8 @@ function M.hunt_relicary(data)
     if not storage.stabilizer.relics then return end
     if math.random() < M.get_relic_chance() and not data.guaranteed_manifestations then
         data.guaranteed_manifestations = { { type = "poi", name = "rabbasca-relicary", floor = "rabbasca-underground-rubble", force = storage.stabilizer.entity.force } }
-        storage.stabilizer.relics = { pity = 0.05 }
-    else
-        storage.stabilizer.relics = { pity = (storage.stabilizer.relics.pity or 0) + 0.25 * M.get_repair_progress() }
     end
+    storage.stabilizer.relics = { pity = 0 }
 end
 
 function M.warp_to(data)
@@ -139,7 +141,6 @@ function M.warp_to(data)
     M.hunt_relicary(data)
     data = {
         planet = data.planet or M.get_next_planet(),
-        should_recall = data.should_recall or storage.stabilizer.settings.recall,
         fixed_followup = data.fixed_followup or nil,
         guaranteed_manifestations = data.guaranteed_manifestations or { },
     }
@@ -149,7 +150,7 @@ function M.warp_to(data)
     if not (surface and config.planets[data.planet]) then log("error: stabilizer could not warp to "..data.planet) return end
 
     storage.stabilizer.warping = { to = data.planet, warp_tick = game.tick + 90, finished_tick = game.tick + 180,
-                                   recall = data.should_recall, manifestations = data.guaranteed_manifestations }
+                                   manifestations = data.guaranteed_manifestations }
     surface.ticks_per_day = 180 * (config.planet_count + 1.5)
     surface.freeze_daytime = false
     for p, _ in pairs(config.planets) do

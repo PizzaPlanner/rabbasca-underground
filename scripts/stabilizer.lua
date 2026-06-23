@@ -19,7 +19,7 @@ function M.progress_powerspike(num)
 end
 
 function M.get_powerspike_required(level)
-    return 500 + level * (115 + level * 85)
+    return math.floor(50 + level * (11.5 + level * 8.5))
 end
 
 function M.register_stabilizer(s)

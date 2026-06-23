@@ -9,7 +9,7 @@ local st_anomaly = util.merge {
   table.deepcopy(data.raw["resource"]["calcite"]),
   {
     name = "rabbasca-warp-anomaly",
-    icons = Rabbasca.icons({proto = data.raw["tool"]["rabbasca-warp-anomaly"]}),
+    icons = Rabbasca.icons({proto = data.raw["item"]["rabbasca-warp-anomaly"]}),
     minimum = 10,
     normal = 20,
     infinite = false,
@@ -106,6 +106,7 @@ mashup.map_color = { 0.74, 0.38, 0.1 }
 mashup.minable.mining_time = 0.5
 mashup.minable.results = {
   { type = "item", name = "spoilage", amount = 1, probability = 0.4 },
+  { type = "item", name = "coal", amount = 1, probability = 0.27 },
   { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.7, probability = 0.15 },
   { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.4, probability = 0.08 },
 }

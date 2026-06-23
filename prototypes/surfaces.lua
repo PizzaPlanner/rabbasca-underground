@@ -21,11 +21,12 @@ data:extend {
     order = "c[gleba]-r[rabbasca]-a[surface]",
     surface_properties = {
         ["rabbasca-underground"] = 1,
-        ["gravity"] = 14,
+        ["gravity"] = 90.624, -- cleanly dividable by pressure
         ["solar-power"] = 0,
         ["pressure"] = Rabbasca.underground_pressure(),
         ["magnetic-field"] = 45,
         ["harenic-energy-signatures"] = Rabbasca.surface_megawatts() * 0.1,
+        ["rabbasca-or-space"] = 1,
     },
     map_gen_settings = {
       -- cliff_settings = {
@@ -67,12 +68,4 @@ data:extend {
       }
     },
   },
-  util.merge{
-    data.raw["surface"]["space-platform"],
-    {
-      name = "rabbasca-space-platform",
-    }
-  }
 }
-
-data.raw["surface"]["rabbasca-space-platform"].surface_properties["harenic-energy-signatures"] = Rabbasca.surface_megawatts() * 0.1
