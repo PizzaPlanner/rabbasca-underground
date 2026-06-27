@@ -12,6 +12,7 @@ require("prototypes.technologies")
 require("prototypes.technologies-run")
 require("prototypes.tips-and-tricks")
 require("prototypes.warp-locations")
+require("prototypes.sfx")
 
 data.raw["recipe"]["rabbasca-warp-pylon"].hidden = false
 data.raw["recipe"]["rabbasca-warp-pylon"].hidden_in_factoriopedia = false

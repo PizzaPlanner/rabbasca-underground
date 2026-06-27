@@ -22,9 +22,9 @@ function M.on_tick_underground(event)
     end
     
     -- M.fuel.recharge_consumers()
-    M.fuel.update_cells()
-
+    
     if event.tick % 10 ~= 0 then return end
+    M.fuel.update_cells()
     M.warp.update_floorthings()
     M.ui.update_cell_assignment()
 
@@ -105,6 +105,14 @@ function M.on_stabilizer_died(id)
         for _, player in pairs(game.connected_players) do
             M.ui.clear_stabilizer_ui(player)
         end
+
+        local warp_inv = remote.call("rabbasca_warp_inventory", "get")
+        if warp_inv then
+            local c = warp_inv.get_item_count("rabbasca-collector-pylon")
+            if c > 0 then warp_inv.remove({name = "rabbasca-collector-pylon", count = c }) end
+            local s = warp_inv.get_item_count("rabbasca-stability-pylon")
+            if s > 0 then warp_inv.remove({name = "rabbasca-stability-pylon", count = s }) end
+        end
     end
 end
 
@@ -125,13 +133,11 @@ end
 
 function M.on_hunt_anomalies()
     storage.stabilizer.extra_anomalies = (storage.stabilizer.extra_anomalies or 0) + 0.03
-    game.print("[entity=rabbasca-warp-anomaly] mult = "..(1 + storage.stabilizer.extra_anomalies))
 end
 
 function M.on_hunt_relicaries()
     storage.stabilizer.relics = storage.stabilizer.relics or { pity = 0 }
     storage.stabilizer.relics.pity = storage.stabilizer.relics.pity + 0.004
-    game.print("[entity=rabbasca-relicary] chance = "..storage.stabilizer.relics.pity)
 end
 
 function M.download_science(caller)

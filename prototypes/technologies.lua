@@ -58,13 +58,34 @@ data:extend{
         recipe = "rabbasca-spacetime-sensor"
       },
       {
-        type = "unlock-recipe",
-        recipe = "rabbasca-hidden-unlocks-underground"
-      },
-      {
         type = "unlock-space-location",
         space_location = "rabbasca-underground",
         use_icon_overlay_constant = true
+      },
+      {
+        type = "unlock-recipe",
+        hidden = true,
+        recipe = "rabbasca-emergency-fuel"
+      },
+      {
+        type = "unlock-recipe",
+        hidden = true,
+        recipe = "rabbasca-warp-trace"
+      },
+      {
+        type = "unlock-recipe",
+        hidden = true,
+        recipe = "rabbasca-stabilizer-recharge"
+      },
+      {
+        type = "unlock-recipe",
+        hidden = true,
+        recipe = "rabbasca-stabilizer-warp-sequence"
+      },
+      {
+        type = "unlock-recipe",
+        hidden = true,
+        recipe = "rabbasca-abandon-stabilizer"
       },
     },
     unit = {
@@ -107,20 +128,19 @@ data:extend{
     name = "rabbasca-anomaly-studies",
     icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
     icon_size = 640,
-    prerequisites = { "rabbasca-warpfield-science-pack" },
+    prerequisites = { "rabbasca-relicary-remote" },
     effects = {
       {
         type = "unlock-recipe",
         recipe = "rabbasca-amplify-anomaly"
       },
     },
-    unit = {
-      time = 60,
-      count = 400,
-      ingredients = {
-        {"rabbasca-warpfield-science-pack", 1},
-      }
-    },
+    research_trigger =
+    {
+        type = "craft-item",
+        item = "rabbasca-obscure-theories",
+        count = 250
+    }
     -- research_trigger = make_research_dummy({
     --   name = "rabbasca-research-anomalies",
     --   ingredients = {
@@ -166,12 +186,8 @@ data:extend{
     name = "rabbasca-warpfield-science-pack",
     icon = "__rabbasca-assets__/graphics/recolor/technologies/warp-science-pack-big.png",
     icon_size = 256,
-    prerequisites = { "rabbasca-warp-technology-analysis-2" },
+    prerequisites = { "rabbasca-warp-core", "rabbasca-anomaly-studies" },
     effects = {
-      {
-        type = "unlock-recipe",
-        recipe = "rabbasca-restored-knowledge"
-      },
       {
         type = "unlock-recipe",
         recipe = "rabbasca-warpfield-science-pack"
@@ -200,6 +216,14 @@ data:extend{
         type = "unlock-recipe",
         recipe = "rabbasca-relichunter"
       },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-obscure-theories"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-restored-knowledge"
+      },
     },
     ignore_tech_cost_multiplier = true,
     research_trigger =
@@ -213,7 +237,7 @@ data:extend{
     type = "technology",
     name = "rabbasca-relicary-remote",
     icons = Rabbasca.icons({ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }),
-    prerequisites = { "rabbasca-warpfield-science-pack" },
+    prerequisites = { "rabbasca-warp-technology-analysis-2" },
     effects = {
       {
         type = "unlock-recipe",
@@ -221,27 +245,18 @@ data:extend{
       },
     },
     ignore_tech_cost_multiplier = true,
-    unit = {
-      time = 60,
-      count = 100,
-      ingredients = {
-        {"rabbasca-warpfield-science-pack", 1},
-      }
-    },
-    -- research_trigger = make_research_dummy({
-    --   name = "rabbasca-research-access-devices",
-    --   count = 100,
-    --   ingredients = {
-    --     { type = "item", name = "rabbasca-restored-knowledge", amount = 1 },
-    --     { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1 },
-    --   }
-    -- })
+    research_trigger =
+    {
+        type = "craft-item",
+        item = "rabbasca-obscure-theories",
+        count = 100
+    }
 },
 {
     type = "technology",
     name = "rabbasca-nearby-access",
     icons = Rabbasca.icons({ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }),
-    prerequisites = { "rabbasca-relicary-remote", "rabbasca-warp-core" },
+    prerequisites = { "rabbasca-warpfield-science-pack" },
     effects = {
       {
         type = "unlock-recipe",
@@ -265,7 +280,7 @@ data:extend{
     type = "technology",
     name = "rabbasca-quantum-device",
     icons = Rabbasca.icons({ proto = data.raw["item"]["rabbasca-quantum-device"] }),
-    prerequisites = { "rabbasca-warpfield-science-pack" },
+    prerequisites = { "rabbasca-warp-technology-analysis-2" },
     effects = {
       {
         type = "unlock-recipe",
@@ -273,17 +288,12 @@ data:extend{
       },
     },
     ignore_tech_cost_multiplier = true,
-    unit = {
-      time = 60,
-      count = 50,
-      ingredients = {
-        {"rabbasca-warpfield-science-pack", 1},
-      }
-    },
-    -- research_trigger = make_research_dummy({
-    --   name = "rabbasca-research-warp-core",
-    --   count = 50,
-    -- })
+    research_trigger =
+    {
+        type = "craft-item",
+        item = "rabbasca-restored-knowledge",
+        count = 100
+    }
 },
 {
     type = "technology",
@@ -294,27 +304,22 @@ data:extend{
     effects = {
       {
         type = "unlock-recipe",
-        recipe = "rabbasca-warp-core-from-underground"
+        recipe = "rabbasca-warp-core"
       },
     },
-    unit = {
-      time = 60,
-      count = 250,
-      ingredients = {
-        {"rabbasca-warpfield-science-pack", 1},
-      }
-    },
-    -- research_trigger = make_research_dummy({
-    --   name = "rabbasca-research-warp-core",
-    --   count = 100,
-    -- })
+    research_trigger =
+    {
+        type = "craft-item",
+        item = "rabbasca-quantum-device",
+        count = 10
+    }
 },
 {
     type = "technology",
     name = "rabbasca-self-made-warp-pylon",
     icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-big.png",
     icon_size = 640,
-    prerequisites = { "rabbasca-warp-core" },
+    prerequisites = { "rabbasca-warpfield-science-pack" },
     effects = {
       {
         type = "unlock-recipe",
@@ -341,7 +346,7 @@ data:extend{
     name = "rabbasca-ufo",
     icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
     icon_size = 64,
-    prerequisites = { "rabbasca-warp-core", "tesla-weapons" },
+    prerequisites = { "rabbasca-warpfield-science-pack", "tesla-weapons" },
     effects = {
       {
         type = "unlock-recipe",
@@ -374,7 +379,7 @@ data:extend{
     name = "rabbasca-knowledge-efficiency",
     icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-big.png",
     icon_size = 640,
-    prerequisites = { "rabbasca-relicary-remote" },
+    prerequisites = { "rabbasca-warpfield-science-pack" },
     effects = {
       {
         type = "change-recipe-productivity",
@@ -402,7 +407,7 @@ data:extend{
     type = "technology",
     name = "rabbasca-supercharged-module",
     icons = Rabbasca.icons({proto = data.raw["technology"]["modules"]}),
-    prerequisites = { "rabbasca-warp-core", "interplanetary-construction-3", "speed-module-3" },
+    prerequisites = { "rabbasca-warpfield-science-pack", "interplanetary-construction-3", "speed-module-3" },
     effects = {
       {
         type = "unlock-recipe",
@@ -417,9 +422,34 @@ data:extend{
         {"rabbasca-warpfield-science-pack", 1},
       }
     },
+},
+{
+    type = "technology",
+    name = "rabbasca-warp-stabilizer-powerspike-1",
+    icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-powerspike"]}}),
+    prerequisites = { "rabbasca-warp-anomaly" },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-warp-cell-recharging"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-collector-pylon"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-stability-pylon"
+      },
+    },
+    research_trigger =
+    {
+      type = "scripted",
+      trigger_description = { "rabbasca-extra.trigger-unlock-powerspike", tostring(1) }
+    }
   },
 }
 
-local warp_tech_3 = data.raw["technology"]["interplanetary-construction-3"]
-warp_tech_3.prerequisites = { "rabbasca-warpfield-science-pack" }
-table.insert(warp_tech_3.unit.ingredients, {"rabbasca-warpfield-science-pack", 1})
+-- local warp_tech_3 = data.raw["technology"]["interplanetary-construction-3"]
+-- warp_tech_3.prerequisites = { "rabbasca-warpfield-science-pack" }
+-- table.insert(warp_tech_3.unit.ingredients, {"rabbasca-warpfield-science-pack", 1})

@@ -20,6 +20,7 @@ function M.tether(item, target)
     local empty_cell = { name = "rabbasca-warp-cell", count = 1, quality = item.quality, spoil_percent = math.min(stack.spoil_percent + 0.5, 0.95) }
     stack.set_stack(empty_cell)
     stack.label = label or ""
+    burner.currently_burning = burner.currently_burning or "rabbasca-warp-cell-internal"
     storage.stabilizer.fuel.cells[stack.item_number] = { item = stack.item, tether = target, tether_capacity = burner.currently_burning.name.fuel_value }
 end
 
@@ -35,7 +36,7 @@ function M.untether(item)
 end
 
 function M.update_cells()
-    local ticks_per_second = 60
+    local ticks_per_second = 6
     local is_recalling = storage.stabilizer.entity.is_crafting() and storage.stabilizer.entity.get_recipe().name == "rabbasca-stabilizer-recharge"
     local stab_inv = storage.stabilizer.entity.get_inventory(defines.inventory.burnt_result)
     local can_fuel = storage.stabilizer.entity.burner.remaining_burning_fuel > 0
@@ -53,7 +54,13 @@ function M.update_cells()
                 break
             else
                 if data.tether and data.tether.valid and data.tether.burner then
-                    data.tether.burner.remaining_burning_fuel = data.tether.burner.remaining_burning_fuel + (1 - cell.item_stack.spoil_percent) * M.ENERGY_PER_CELL / ticks_per_second
+                    local delta = (1 - cell.item_stack.spoil_percent) * M.ENERGY_PER_CELL / ticks_per_second
+                    if not data.tether.burner.currently_burning then
+                        data.tether.burner.currently_burning = "rabbasca-warp-cell-internal"
+                        data.tether.burner.remaining_burning_fuel = delta
+                    else
+                        data.tether.burner.remaining_burning_fuel = data.tether.burner.remaining_burning_fuel + delta
+                    end
                     stack.health = math.max(0, math.min(1, data.tether.burner.remaining_burning_fuel / (data.tether_capacity or 1)))
                 end
                 local is_in_stab = cell.owner_location.entity == storage.stabilizer.entity

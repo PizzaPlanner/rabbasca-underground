@@ -49,6 +49,14 @@ function M.register_stabilizer(s)
     }
     -- M.fuel.register_consumer(s, 1)
     -- s.get_inventory(defines.inventory.burnt_result).insert({name = "rabbasca-warp-cell-recharging", count = 2})
+    s.force.set_script_visible({ type = "tile", name = "rabbasca-underground-rubble-powered" }, true)
+    s.force.set_script_visible({ type = "entity", name = "rabbasca-warp-stabilizer" }, true)
+    s.force.set_script_visible({ type = "entity", name = "rabbasca-stability-pylon" }, true)
+    s.force.set_script_visible({ type = "entity", name = "rabbasca-collector-pylon" }, true)
+    s.force.set_script_visible({ type = "entity", name = "rabbasca-fuel-remote-big" }, true)
+    s.force.set_script_visible({ type = "item",   name = "rabbasca-warp-cell" }, true)
+    s.force.set_script_visible({ type = "item",   name = "rabbasca-warp-cell-recharging" }, true)
+    s.force.set_script_visible({ type = "item",   name = "rabbasca-powerspike" }, true)
     s.surface.create_entity { 
         name = "rabbasca-collector-pylon",
         surface = s.surface,
@@ -115,14 +123,7 @@ function M.update_crafting()
     recipe = recipe.name
     craft_without_fuel(storage.stabilizer.entity)
     if recipe == "rabbasca-warp-trace" then
-        if not storage.stabilizer.entity.is_crafting() then
-            local inv_in  = storage.stabilizer.entity.get_inventory(defines.inventory.crafter_input)
-            local inv_out = storage.stabilizer.entity.get_inventory(defines.inventory.crafter_trash)
-            local missing = 50 - inv_in.get_item_count("rabbasca-warp-anomaly")
-            if missing > 0 and inv_out.get_item_count("rabbasca-warp-anomaly") >= missing then
-                inv_in.insert({name = "rabbasca-warp-anomaly", count = inv_out.remove({name = "rabbasca-warp-anomaly", count = missing})})
-            end
-        end
+        -- nothing
     elseif recipe == "rabbasca-stabilizer-warp-sequence" then
         if not warp.is_box_safe({left_top = { x = -4, y = -4 }, right_bottom = { x = 4, y = 4 }}) then
             storage.stabilizer.entity.crafting_progress = 0
@@ -137,8 +138,8 @@ function M.update_crafting()
             player.add_custom_alert(storage.stabilizer.entity, { type = "entity", name = "rabbasca-warp-stabilizer" }, { "rabbasca-extra.alert-abandon" }, true)
         end
     elseif recipe == "rabbasca-emergency-fuel" then
-        if game.tick % 120 == 0 and storage.stabilizer.entity.is_crafting() and storage.stabilizer.entity.get_inventory(defines.inventory.crafter_trash).get_item_count("rabbasca-warp-trace") > 0 then
-            storage.stabilizer.entity.crafting_progress = 0.01
+        if storage.stabilizer.entity.is_crafting() and storage.stabilizer.entity.burner.remaining_burning_fuel > 0 then
+            storage.stabilizer.entity.set_recipe(nil)
             for _, player in pairs(storage.stabilizer.entity.force.players) do
                 player.create_local_flying_text { text = {"rabbasca-extra.emergency-paused-has-traces" }, surface = storage.stabilizer.entity.surface, position = storage.stabilizer.entity.position }
             end
@@ -161,7 +162,11 @@ function M.trace_stasis()
     if not saved then return end
     local burner = storage.stabilizer.entity.burner
     local refill_value = 50000000/60
-    if burner.remaining_burning_fuel < burner.currently_burning.name.fuel_value - refill_value then
+    if not burner.currently_burning then
+        saved.count = saved.count - 1
+        burner.currently_burning = "rabbasca-warp-cell-internal-big"
+        burner.remaining_burning_fuel = refill_value
+    elseif burner.remaining_burning_fuel < burner.currently_burning.name.fuel_value - refill_value then
         saved.count = saved.count - 1
         burner.remaining_burning_fuel = burner.remaining_burning_fuel + refill_value
     end

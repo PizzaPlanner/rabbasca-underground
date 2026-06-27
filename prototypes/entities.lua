@@ -43,7 +43,6 @@ stabilizer.flags = { "placeable-player", "player-creation" }
 stabilizer.next_upgrade = nil
 stabilizer.deconstruction_alternative = nil
 stabilizer.crafting_categories = { "rabbasca-warp-stabilizer" }
-stabilizer.autoplace = { probability_expression = "0" }
 local sprite_data = {
     line_length = 10,
     width = 4000 / 10,
@@ -301,7 +300,7 @@ minelon.graphics_set = {
                 height = 1712 / 8,
             } },
             util.merge { anim, {
-                filename = "__base__/graphics/entity/centrifuge/centrifuge-ABC-shadow.png",
+                filename = "__rabbasca-assets__/graphics/recolor/entities/centrifuge-C-shadow.png",
                 width = 2232 / 8,
                 height = 1216 / 8,
                 draw_as_shadow = true,
@@ -320,6 +319,7 @@ minelon.energy_source = {
     initial_fuel_percent = 0.001,
     fuel_categories = { "rabbasca-warp-anomaly" },
 }
+minelon.surface_conditions = { Rabbasca.only_underground(true) }
 minelon.placeable_by = { item = "rabbasca-collector-pylon", count = 1 }
 minelon.minable = nil
 minelon.allowed_effects = { "speed", "productivity" }
@@ -435,7 +435,7 @@ local ufo = util.merge {
     }
 }
 ufo.minable = { result = "rabbasca-ufo", count = 1, mining_time = 1 }
--- ufo.placeable_by = { item = "rabbasca-ufo", count = 1 }
+ufo.placeable_by = { item = "rabbasca-ufo", count = 1 }
 ufo.flags = { "placeable-player", "player-creation", "get-by-unit-number" }
 ufo.guns = {
     "teslagun",

@@ -24,7 +24,7 @@ Rabbasca.make_trigger_item({
 }, "rabbasca_warp_progress_warp"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-destabilize-warpfield",
-  subgroup = "rabbasca-warp-stabilizer-functions",
+  subgroup = "rabbasca-remote-warping",
   order = "z[destabilize]",
   icons = Rabbasca.icons({
     { proto = data.raw["virtual-signal"]["signal-recycle"], tint = { 0.83, 1, 0.15} }
@@ -67,26 +67,10 @@ Rabbasca.make_trigger_item({
   })
 }, "rabbasca_on_floor_stability"),
 Rabbasca.make_trigger_item({
-  name = "rabbasca-ufo",
-  icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
-  icon_size = 64,
-  place_result = "rabbasca-ufo",
-}, "rabbasca_on_spawn_ufo"),
-Rabbasca.make_trigger_item({
   name = "rabbasca-progress-hunt",
   icon = "__base__/graphics/icons/signal/signal-map-marker.png",
   icon_size = 64,
 }, "rabbasca_on_relichunter_progress"),
-Rabbasca.make_trigger_item({
-  name ="rabbasca-stability-pylon",
-  icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-3.png",
-  icon_size = 64,
-  place_result = "rabbasca-stability-pylon",
-  hidden = false,
-  hidden_in_factoriopedia = false,
-  subgroup = data.raw["item"]["rabbasca-warp-pylon"].subgroup,
-  order = data.raw["item"]["rabbasca-warp-pylon"].order.."-r[rabbasca-underground]-stability",
-}, "rabbasca_on_spawn_floorpylon"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-relocate-floorthing",
   icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-3.png",
@@ -96,6 +80,10 @@ Rabbasca.make_trigger_item({
   name = "rabbasca-warpfield-science-pack-wi-download",
   icon = "__rabbasca-assets__/graphics/recolor/icons/warp-science-pack.png",
   icon_size = 64,
+  subgroup = "rabbasca-remote-warping",
+  order = "z[download]",
+  hidden = false,
+  hidden_in_factoriopedia = false,
 }, "rabbasca_on_download_warp_science"),
 {
   name = "rabbasca-warp-trace",
@@ -150,7 +138,7 @@ Rabbasca.make_trigger_item({
   }),
   stack_size = 10,
   subgroup = "rabbasca-warp-stabilizer",
-  order = "r[relics]-c[upgrade]",
+  order = "a[stabilizer]-a[upgrade]",
   weight = 250 * kg,
   fuel_value = "100J",
   fuel_category = "rabbasca-relicary",
@@ -336,11 +324,32 @@ util.merge {
   stack_size = 10,
   weight = 100 * kg,
   auto_recycle = false,
-  hidden_in_factoriopedia = false,
-  subgroup = data.raw["item"]["rabbasca-warp-pylon"].subgroup,
-  order = data.raw["item"]["rabbasca-warp-pylon"].order.."-r[rabbasca-underground]",
-  -- factoriopedia_alternative = "rabbasca-collector-pylon"
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "a[stabilizer]-b[collector]",
 },
+{
+  name ="rabbasca-stability-pylon",
+  type = "item",
+  icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-3.png",
+  icon_size = 64,
+  stack_size = 10,
+  weight = 100 * kg,
+  auto_recycle = false,
+  place_result = "rabbasca-stability-pylon",
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "a[stabilizer]-b[stability]",
+},
+{
+  name = "rabbasca-ufo",
+  type = "item",
+  icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
+  icon_size = 64,
+  place_result = "rabbasca-ufo",
+  stack_size = 1,
+  weight = 5000 * kg,
+  subgroup = "transport",
+  order = "b[personal-transport]-c[spidertron]-r[warpotron]",
+}
 -- {
 --     type = "ammo",
 --     name = "self-replicating-firearm-magazine",

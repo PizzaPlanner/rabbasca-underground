@@ -87,7 +87,7 @@ local lithium_amide = util.merge {
 lithium_amide.map_color = { 0.74, 0.94, 0.92 }
 lithium_amide.minable.mining_time = 0.5
 lithium_amide.minable.results = {{ type = "item", name = "rabbasca-lithium-amide", amount = 1 }}
-lithium_amide.autoplace = st_anomaly.autoplace
+lithium_amide.autoplace = nil
 
 local mashup = util.merge {
   table.deepcopy(data.raw["resource"]["calcite"]),
@@ -110,7 +110,7 @@ mashup.minable.results = {
   { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.7, independent_probability = 0.15 },
   { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.4, independent_probability = 0.08 },
 }
-lithium_amide.autoplace = st_anomaly.autoplace
+lithium_amide.autoplace = nil
 
 local haronite_ore = util.merge {
   data.raw["resource"]["tungsten-ore"],
@@ -127,7 +127,7 @@ local haronite_ore = util.merge {
 }
 haronite_ore.minable.mining_time = 3
 haronite_ore.minable.results = {{ type = "item", name = "haronite", amount = 1, percent_spoiled = 0.8 }}
-haronite_ore.autoplace = st_anomaly.autoplace
+haronite_ore.autoplace = nil
 
 local holmium_ore = util.merge {
   data.raw["resource"]["tungsten-ore"],
@@ -144,6 +144,6 @@ local holmium_ore = util.merge {
 }
 holmium_ore.minable.mining_time = 1.5
 holmium_ore.minable.results = {{ type = "item", name = "holmium-ore", amount = 1 }}
-holmium_ore.autoplace = st_anomaly.autoplace
+holmium_ore.autoplace = nil
 
 data:extend{ lithium_amide, haronite_ore, st_anomaly, holmium_ore, mashup }

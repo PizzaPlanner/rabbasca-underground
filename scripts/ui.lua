@@ -349,16 +349,6 @@ function M.set_stabilizer_ui(player)
             left_label_caption = "",
             right_label_caption = { "", "Enabled" }
         }
-        local consumer_count = subframe.add { type = "flow" }
-        local consumers = { }
-        for _, e in pairs(storage.stabilizer.fuel.consumers) do
-            if e.entity.valid then
-                consumers[e.entity.name] = (consumers[e.entity.name] or 0) + 1
-            end
-        end
-        for name, c in pairs(consumers) do
-            add_button(consumer_count, "entity/"..name, "transparent_slot", nil, 24).number = c
-        end
 
         local subframe = frame.add {
             type = "frame",
@@ -382,6 +372,14 @@ function M.set_stabilizer_ui(player)
             b.show_percent_for_small_numbers = true
             b.number = chance
         end
+        subframe.add {
+            type = "label",
+            caption = { "", string.format("[entity=rabbasca-warp-anomaly] amount: %i%%", warp.get_next_anomaly_richness() * 100) }
+        }
+        subframe.add {
+            type = "label",
+            caption = { "", string.format("[entity=rabbasca-relicary] chance: %i%%", warp.get_relic_chance() * 100) }
+        }
     end
     local t = frame.rabbasca_su_content.rabbasca_su_table
     t.rabbasca_su_autopilot.switch_state = storage.stabilizer.settings.autopilot and "right" or "left"

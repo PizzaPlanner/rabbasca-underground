@@ -1,5 +1,9 @@
 local M = { }
 
+function M.get_next_anomaly_richness()
+    return 1 + (storage.stabilizer.extra_anomalies or 0)
+end
+
 function M.get_repair_progress()
     local progress = 1 - storage.stabilizer.anomalies.current / storage.stabilizer.anomalies.initial
     return math.max(0, math.min(1, progress))
@@ -48,6 +52,9 @@ function M.force_manifest(data, blocked_pois)
         for _, entry in pairs(entities) do
             if data.surface.create_entity(entry) then count = count + 1 end
         end
+        if count > 0 then
+            storage.stabilizer.entity.force.set_script_visible({ type = "entity", name = data.name }, true)
+        end
         return count > 0
     elseif data.type == "poi" and blocked_pois and blocked_pois[data.name] == nil then
         local tiles = { }
@@ -70,7 +77,7 @@ function M.force_manifest(data, blocked_pois)
             data.surface.set_tiles(tiles)
             local e = data.surface.create_entity({ name = data.name, position = data.position, force = data.force })
             if e == nil then return false end
-
+            storage.stabilizer.entity.force.set_script_visible({ type = "entity", name = data.name }, true)
             blocked_pois[data.name] = true
             
             if e.name == "rabbasca-relicary" then
@@ -93,7 +100,7 @@ end
 function M.try_manifest(source, chance_mult, possible_anomalies, existing_pois)
     if chance_mult <= 0 then return end
     for _, new in pairs(possible_anomalies) do
-        local prob_total = new.probability * chance_mult
+        local prob_total = (new.probability or 0) * chance_mult
         for _, player in pairs(game.players) do
             player.create_local_flying_text { text = { "", string.format("Chance for manifestation: %.2f%%", prob_total * 100) }, surface = source.surface, position = source.position }
         end
@@ -154,7 +161,7 @@ function M.replace_entities(surface, config, planet)
 
     storage.stabilizer.anomalies.initial = 0
     storage.stabilizer.anomalies.entities = { }
-    local amount_mult = 1 + (storage.stabilizer.extra_anomalies or 0)
+    local amount_mult = M.get_next_anomaly_richness()
     storage.stabilizer.extra_anomalies = 0
     for _, e in pairs(surface.find_entities_filtered { name = "rabbasca-warp-anomaly" }) do
         e.amount = e.amount * amount_mult

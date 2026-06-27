@@ -21,7 +21,8 @@ data:extend {
     order = "c[gleba]-r[rabbasca]-a[surface]",
     surface_properties = {
         ["rabbasca-underground"] = 1,
-        ["gravity"] = 90.624, -- cleanly dividable by pressure
+        ["gravity"] = 15,
+        ["robot-energy-usage"] = 0.5,
         ["solar-power"] = 0,
         ["pressure"] = Rabbasca.underground_pressure(),
         ["magnetic-field"] = 45,
@@ -49,11 +50,6 @@ data:extend {
         }},
         entity = { settings = { 
           ["rabbasca-warp-anomaly"] = { },
-          ["rabbasca-lithium-amide"] = { },
-          ["rabbasca-yumako-mashup"] = { },
-          ["haronite"] = { },
-          ["rabbasca-holmium-ore"] = { },
-          ["rabbasca-warp-stabilizer"] = { },
         } }
       },
     },
