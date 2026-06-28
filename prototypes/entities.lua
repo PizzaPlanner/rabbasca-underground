@@ -15,13 +15,13 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
         energy_source = {
             type                 = "burner",
             fuel_inventory_size  = 0,
-            burnt_inventory_size = 100,
+            burnt_inventory_size = 90,
             initial_fuel         = "rabbasca-warp-cell-internal-big",
             initial_fuel_percent = 0.001,
             fuel_categories      = { "rabbasca-warp-anomaly" },
         },
-        module_slots = 20,
-        trash_inventory_size = 10,
+        module_slots = 10,
+        trash_inventory_size = 20,
         hidden = false,
         hidden_in_factoriopedia = false,
         tall = true,
@@ -111,8 +111,8 @@ local relichunter = {
     },
     hidden = false,
     hidden_in_factoriopedia = false,
-    subgroup = "rabbasca-warp-stabilizer",
-    order = "a[stabilizer]-c[relichunter]",
+    subgroup = "rabbasca-relics",
+    order = "a[hunter]",
     created_effect = {
         type = "direct",
         action_delivery = {
@@ -175,7 +175,9 @@ local relicary = {
     module_slots = 0,
     crafting_categories = { "rabbasca-relics" },
     -- cant_insert_at_source_message_key = "inventory-restriction.not-a-vault-key",
-    graphics_set = table.deepcopy(data.raw["assembling-machine"]["rabbasca-vault-console"].graphics_set)
+    graphics_set = table.deepcopy(data.raw["assembling-machine"]["rabbasca-vault-console"].graphics_set),
+    subgroup = "rabbasca-relics",
+    order = "b[relicary]"
 }
 
 local relicary_access = {
@@ -189,7 +191,9 @@ local relicary_access = {
     picture = table.deepcopy(data.raw["linked-container"]["linked-chest"].picture),
     collision_box = { { -0.4, -0.4 }, { 0.4, 0.4 } },
     selection_box = { { -0.5, -0.5 }, { 0.5, 0.5 } },
-    surface_conditions = { Rabbasca.only_underground(true) }
+    surface_conditions = { Rabbasca.only_underground(true) },
+    subgroup = "rabbasca-relics",
+    order = "b[relicary-access]-0[access]"
 }
 
 local miner_remote = {
@@ -210,14 +214,15 @@ local miner_remote = {
 }
 
 local fuel_access = {
-    name = "rabbasca-fuel-remote",
-    icons = Rabbasca.icons({ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }),
+    name = "rabbasca-remote-access-chest",
+    icon = "__rabbasca-assets__/graphics/recolor/icons/nearby-access.png",
+    icon_size = 64,
     type = "container",
     inventory_type = "with_filters_and_bar",
     inventory_size = 1,
     circuit_wire_max_distance = 90,
-    minable = { result = "rabbasca-fuel-remote", count = 1, mining_time = 1 },
-    placeable_by = { item = "rabbasca-fuel-remote", count = 1 },
+    minable = { result = "rabbasca-remote-access-chest", count = 1, mining_time = 1 },
+    placeable_by = { item = "rabbasca-remote-access-chest", count = 1 },
     flags = { "placeable-player", "player-creation" },
     next_upgrade = nil,
     deconstruction_alternative = nil,
@@ -240,11 +245,12 @@ local fuel_access = {
         }
     }
 }
+fuel_access.picture.layers[1].filename = "__rabbasca-assets__/graphics/recolor/entities/nearby-access.png"
 
 local fuel_access_2 = util.merge {
     fuel_access,
     {
-        name = "rabbasca-fuel-remote-big",
+        name = "rabbasca-anomaly-storage",
         max_health = 500,
         inventory_size = 9,
         collision_box = { { -0.8, -0.8 }, { 0.8, 0.8 } },
@@ -253,6 +259,10 @@ local fuel_access_2 = util.merge {
 }
 fuel_access_2.placeable_by = nil
 fuel_access_2.minable = nil
+fuel_access_2.picture.layers[1].filename = "__rabbasca-assets__/graphics/recolor/entities/anomaly-access.png"
+for _, layer in pairs(fuel_access_2.picture.layers) do
+    layer.scale = (layer.scale or 1) * 2
+end
 
 local minelon = util.merge {
     data.raw["assembling-machine"]["rabbasca-warp-pylon"],
@@ -327,9 +337,9 @@ minelon.flags = { "placeable-player", "player-creation", "no-automated-item-inse
 minelon.custom_tooltip_fields = nil
 minelon.collision_box = { { -1.2, -1.2 }, { 1.2, 1.2 } }
 minelon.selection_box = { { -1.5, -1.5 }, { 1.5, 1.5 } }
--- minelon.collision_mask = {
---     layers = { is_object = true }
--- }
+minelon.collision_mask = {
+    layers = { is_object = true, out_of_map = true }
+}
 -- minelon.tile_buildability_rules = nil
 minelon.created_effect = {
     type = "direct",
@@ -385,6 +395,9 @@ floorion.tile_buildability_rules = { {
     remove_on_collision = true
 } }
 floorion.surface_conditions = { Rabbasca.only_underground(true) }
+floorion.collision_mask = {
+    layers = { is_object = true, out_of_map = true, resource = true }
+}
 floorion.resistances = {}
 floorion.minable = nil
 floorion.placeable_by = nil

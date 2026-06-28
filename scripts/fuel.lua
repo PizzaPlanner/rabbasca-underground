@@ -8,6 +8,8 @@ function M.tether(item, target)
     if not stack then return end
     local burner = target and target.valid and target.burner
     if not burner then return end
+    local empty_cell = { name = "rabbasca-warp-cell", count = 1, quality = item.quality, spoil_percent = math.min(stack.spoil_percent + 0.5, 0.95) }
+    if not stack.can_set_stack(empty_cell) then return end
     if stack.spoil_percent < 0.1 then
         if storage.stabilizer.entity.burner.remaining_burning_fuel < M.ENERGY_PER_CELL * 0.1 then
             return
@@ -16,8 +18,6 @@ function M.tether(item, target)
     end
     storage.stabilizer.fuel.cells[item.item_number] = nil
     local label = item.label
-
-    local empty_cell = { name = "rabbasca-warp-cell", count = 1, quality = item.quality, spoil_percent = math.min(stack.spoil_percent + 0.5, 0.95) }
     stack.set_stack(empty_cell)
     stack.label = label or ""
     burner.currently_burning = burner.currently_burning or "rabbasca-warp-cell-internal"

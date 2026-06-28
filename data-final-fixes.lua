@@ -20,3 +20,5 @@ for _, silo in pairs(data.raw["rocket-silo"]) do
 end
 
 require("prototypes.stabilizer-config-final-fixes")
+
+require("compatibility.expand-warpfield-science-usage-final-fixes")

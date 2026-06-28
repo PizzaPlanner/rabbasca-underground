@@ -80,11 +80,6 @@ data:extend{
       {
         type = "unlock-recipe",
         hidden = true,
-        recipe = "rabbasca-stabilizer-warp-sequence"
-      },
-      {
-        type = "unlock-recipe",
-        hidden = true,
         recipe = "rabbasca-abandon-stabilizer"
       },
     },
@@ -104,8 +99,10 @@ data:extend{
     type = "technology",
     name = "rabbasca-warp-anomaly",
     prerequisites = { "rabbasca-underground" },
-    icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
-    icon_size = 1024,
+    icons = Rabbasca.icons({
+      {proto = data.raw["item"]["rabbasca-warpfield-excitement-rod"], shift = {-16, -16} },
+      {proto = data.raw["item"]["rabbasca-warpfield-engine"], shift = {16, 16} },
+    }),
     effects = {
       {
         type = "unlock-recipe",
@@ -126,13 +123,17 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-anomaly-studies",
-    icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png",
-    icon_size = 640,
+    icon = "__rabbasca-assets__/graphics/icons/warp-anomaly.png",
+    icon_size = 256,
     prerequisites = { "rabbasca-relicary-remote" },
     effects = {
       {
         type = "unlock-recipe",
         recipe = "rabbasca-amplify-anomaly"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-hunt-anomalies"
       },
     },
     research_trigger =
@@ -196,6 +197,10 @@ data:extend{
         type = "unlock-recipe",
         recipe = "rabbasca-warpfield-science-pack-wi-download"
       },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-warpfield-science-pack-wi-upload"
+      },
     },
     ignore_tech_cost_multiplier = true,
     research_trigger =
@@ -215,6 +220,10 @@ data:extend{
       {
         type = "unlock-recipe",
         recipe = "rabbasca-relichunter"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-hunt-relicaries"
       },
       {
         type = "unlock-recipe",
@@ -255,12 +264,12 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-nearby-access",
-    icons = Rabbasca.icons({ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }),
+    icons = Rabbasca.icons({ proto = data.raw["container"]["rabbasca-remote-access-chest"] }),
     prerequisites = { "rabbasca-warpfield-science-pack" },
     effects = {
       {
         type = "unlock-recipe",
-        recipe = "rabbasca-fuel-remote"
+        recipe = "rabbasca-remote-access-chest"
       },
     },
     ignore_tech_cost_multiplier = true,
@@ -298,8 +307,8 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-warp-core",
-    icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-big.png",
-    icon_size = 640,
+    icon = "__rabbasca-assets__/graphics/recolor/icons/warp-core.png",
+    icon_size = 64,
     prerequisites = { "rabbasca-quantum-device" },
     effects = {
       {
@@ -346,7 +355,7 @@ data:extend{
     name = "rabbasca-ufo",
     icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
     icon_size = 64,
-    prerequisites = { "rabbasca-warpfield-science-pack", "tesla-weapons" },
+    prerequisites = { "rabbasca-warpfield-science-pack", "tesla-weapons", "spidertron" },
     effects = {
       {
         type = "unlock-recipe",
@@ -425,18 +434,44 @@ data:extend{
 },
 {
     type = "technology",
-    name = "rabbasca-warp-stabilizer-powerspike-1",
+    name = "rabbasca-warp-stabilizer-powerspike-1-unlock",
     icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-powerspike"]}}),
     prerequisites = { "rabbasca-warp-anomaly" },
     effects = {
       {
         type = "unlock-recipe",
-        recipe = "rabbasca-warp-cell-recharging"
+        recipe = "rabbasca-stabilizer-warp-sequence"
       },
+    },
+    research_trigger =
+    {
+      type = "scripted",
+      trigger_description = { "rabbasca-extra.trigger-unlock-powerspike", tostring(1) }
+    }
+},
+{
+    type = "technology",
+    name = "rabbasca-warp-stabilizer-powerspike-4-unlock",
+    icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-powerspike"]}}),
+    prerequisites = { "rabbasca-warp-stabilizer-powerspike-1-unlock" },
+    effects = {
       {
         type = "unlock-recipe",
         recipe = "rabbasca-collector-pylon"
       },
+    },
+    research_trigger =
+    {
+      type = "scripted",
+      trigger_description = { "rabbasca-extra.trigger-unlock-powerspike", tostring(4) }
+    }
+  },
+  {
+    type = "technology",
+    name = "rabbasca-warp-stabilizer-powerspike-6-unlock",
+    icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-powerspike"]}}),
+    prerequisites = { "rabbasca-warp-stabilizer-powerspike-4-unlock" },
+    effects = {
       {
         type = "unlock-recipe",
         recipe = "rabbasca-stability-pylon"
@@ -445,7 +480,24 @@ data:extend{
     research_trigger =
     {
       type = "scripted",
-      trigger_description = { "rabbasca-extra.trigger-unlock-powerspike", tostring(1) }
+      trigger_description = { "rabbasca-extra.trigger-unlock-powerspike", tostring(6) }
+    }
+  },
+  {
+    type = "technology",
+    name = "rabbasca-warp-stabilizer-powerspike-8-unlock",
+    icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-powerspike"]}}),
+    prerequisites = { "rabbasca-warp-stabilizer-powerspike-6-unlock" },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-warp-cell-recharging"
+      },
+    },
+    research_trigger =
+    {
+      type = "scripted",
+      trigger_description = { "rabbasca-extra.trigger-unlock-powerspike", tostring(8) }
     }
   },
 }

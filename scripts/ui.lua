@@ -358,11 +358,11 @@ function M.set_stabilizer_ui(player)
         }
         subframe.add {
             type = "label",
-            caption = { "", string.format("[font=default-bold]%i[/font] warps without incident", storage.stabilizer.finished_warps or 0) }
+            caption = { "rabbasca-extra.ui-warps-without-incident-label", string.format("%i", storage.stabilizer.finished_warps or 0) }
         }
         subframe.add {
             type = "label",
-            caption = { "", "Next [recipe=rabbasca-stabilizer-warp-sequence] target:" }
+            caption = { "rabbasca-extra.ui-next-warp-target-label" }
         }
         local chances = warp.get_next_planet_chances()
         local f1 = subframe.add { type = "flow", name = "chances" }
@@ -374,11 +374,11 @@ function M.set_stabilizer_ui(player)
         end
         subframe.add {
             type = "label",
-            caption = { "", string.format("[entity=rabbasca-warp-anomaly] amount: %i%%", warp.get_next_anomaly_richness() * 100) }
+            caption = { "rabbasca-extra.ui-anomaly-yield", string.format("%i", warp.get_next_anomaly_richness() * 100) }
         }
         subframe.add {
             type = "label",
-            caption = { "", string.format("[entity=rabbasca-relicary] chance: %i%%", warp.get_relic_chance() * 100) }
+            caption = { "rabbasca-extra.ui-find-relicary-chance", string.format("%.1f", warp.get_relic_chance() * 100) }
         }
     end
     local t = frame.rabbasca_su_content.rabbasca_su_table

@@ -15,38 +15,40 @@ local function post_warp_surface(surface)
     end
 end
 
+local function mask_lights(tick)
+local data = storage.stabilizer.warping
+if (not data.overlay_mask) and tick < data.finished_tick - 90 then
+    -- block any lights that would shine through white lut effect
+    storage.stabilizer.warping.overlay_mask = rendering.draw_circle{
+        color = {1, 1, 1, 0},
+        filled = true,
+        radius = 400,
+        surface = game.surfaces[storage.stabilizer.surface],
+        time_to_live = data.finished_tick - tick + 5,
+        target = {0, 0}
+    }
+    storage.stabilizer.warping.overlay_mask_delta = 2 / (data.finished_tick - tick)
+    data = storage.stabilizer.warping
+end
+local mask = data.overlay_mask
+if mask and mask.valid then
+    local a = math.max(0, math.min(1, mask.color.a + data.overlay_mask_delta))
+    mask.color = {a, a, a, a}
+end
+return data
+end
+
 function M.on_warp_underground(event)
     if not storage.stabilizer then return end
-    local data = storage.stabilizer.warping
+    if not storage.stabilizer.warping then return end
     local surface = game.surfaces[storage.stabilizer.surface]
-    if not (data and surface and surface.valid) then
+    if not (surface and surface.valid) then
         storage.stabilizer.warping = nil -- if surface got removed in between
         return
     end
-    if not data.overlay_mask then
-        -- some graphic settings make lava render weird with white lut, cover with additional texture
-        storage.stabilizer.warping.overlay_mask = rendering.draw_light{
-            sprite =  "utility/light_medium",
-            -- light_mode = "glow",
-            scale = 1,
-            intensity = 1000,
-            -- y_scale = 32 * 20,
-            surface = surface,
-            time_to_live = data.finished_tick - event.tick + 5,
-            tint = { 1, 1, 1, 0 },
-            color = { 0, 0, 1, 0 },
-            render_layer = "cursor",
-            target = {0, 0}
-        }
-        storage.stabilizer.warping.overlay_mask_delta = 20 / (data.finished_tick - event.tick)
-        data = storage.stabilizer.warping
-    end
-    local mask = data.overlay_mask
-    if mask and mask.valid then
-        -- mask.color = {1, 1, 1, math.max(0, math.min(1, mask.color.a + data.overlay_mask_delta)) }
-        mask.scale = mask.scale + data.overlay_mask_delta * 25
-    end
-    if event.tick > data.warp_tick  then
+    local data = mask_lights(event.tick)
+    if event.tick % 5 > 0 then return end
+    if event.tick > data.warp_tick then
         storage.stabilizer.warping.overlay_mask_delta = -storage.stabilizer.warping.overlay_mask_delta
         storage.stabilizer.warping.warp_tick = math.huge
         local config = storage.stabilizer.config
@@ -177,10 +179,10 @@ function M.warp_to(data)
                                    manifestations = data.guaranteed_manifestations }
     surface.ticks_per_day = 180 * (config.planet_count + 1.5)
     surface.freeze_daytime = false
-    surface.create_entity{
-        name = "rabbasca-warp-overlay-dummy",
-        position = {0, 0},
-    }
+    -- surface.create_entity{
+    --     name = "rabbasca-warp-overlay-dummy",
+    --     position = {0, 0},
+    -- }
     for p, _ in pairs(config.planets) do
         if p == data.planet or (data.fixed_followup and p ~= data.fixed_followup) then
             storage.stabilizer.next.weights[p] = 0

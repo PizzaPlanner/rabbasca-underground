@@ -3,10 +3,10 @@ local underground = require("scripts.underground")
 
 local function handle_script_events(event)
   local effect_id = event.effect_id
-  if effect_id == "rabbasca_warp_unprogress" then
+  if effect_id == "rabbasca_make_floor_anomaly" then
     local from = Rabbasca.get_spoiled_in(event)
     if from then
-      underground.on_destabilization(from)
+      underground.on_progress_floor_anomaly(from)
     end
   elseif effect_id == "rabbasca_on_powerspike_progress" then
     underground.stab.progress_powerspike(1)
@@ -14,6 +14,12 @@ local function handle_script_events(event)
     local from = Rabbasca.get_spoiled_in(event)
     if from then
       underground.download_science(from)
+    end
+  elseif effect_id == "rabbasca_on_upload_warp_science" then
+    local from = Rabbasca.get_spoiled_in(event)
+    local _, quality = from and from.get_recipe()
+    if from then
+      underground.upload_science(10, quality and quality.name or "normal")
     end
   elseif effect_id == "rabbasca_on_relichunter_progress" then
     local from = Rabbasca.get_spoiled_in(event)
@@ -122,7 +128,7 @@ script.on_event(defines.events.on_gui_selection_state_changed, function(event)
         or defines.inventory.burnt_result
   elseif event.element.name == "rabbasca_su_fuel_strategy" then
     local player = game.players[event.player_index]
-    if not (player.opened and player.opened.name == "rabbasca-fuel-remote") then return end
+    if not (player.opened and player.opened.name == "rabbasca-remote-access-chest") then return end
     storage.stabilizer.fuel.selection_strategy.filter = event.element.selected_index
   end
 end)

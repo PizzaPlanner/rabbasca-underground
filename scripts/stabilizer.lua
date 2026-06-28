@@ -7,19 +7,28 @@ function M.progress_powerspike(num)
     if storage.stabilizer.powerspikes.next <= 0 then
         storage.stabilizer.entity.get_inventory(defines.inventory.crafter_trash).insert({ name = "rabbasca-powerspike", count = 1 })
         storage.stabilizer.powerspikes.created = storage.stabilizer.powerspikes.created + 1
-        storage.stabilizer.powerspikes.required = storage.stabilizer.powerspikes.next + M.get_powerspike_required(storage.stabilizer.powerspikes.created)
-        storage.stabilizer.powerspikes.next = storage.stabilizer.powerspikes.required
-        storage.stabilizer.entity.force.print({ "rabbasca-extra.generated-powerspike", storage.stabilizer.powerspikes.created, storage.stabilizer.powerspikes.required }, { sound_path = "utility/achievement_unlocked" })
+        storage.stabilizer.powerspikes.required = M.get_powerspike_required(storage.stabilizer.powerspikes.created)
+        storage.stabilizer.powerspikes.next = storage.stabilizer.powerspikes.next + storage.stabilizer.powerspikes.required
         local techs = storage.stabilizer.entity.force.technologies
-        local tech = techs["rabbasca-warp-stabilizer-powerspike-"..storage.stabilizer.powerspikes.created]
+        local tech = techs["rabbasca-warp-stabilizer-powerspike-"..storage.stabilizer.powerspikes.created.."-unlock"]
+        storage.stabilizer.entity.force.print({ "rabbasca-extra.generated-powerspike", storage.stabilizer.powerspikes.created, storage.stabilizer.powerspikes.required }, { sound_path = "utility/achievement_unlocked" })
         if tech then
             tech.research_recursive()
+            if tech.prototype.effects then
+                for _, e in pairs(tech.prototype.effects) do
+                    if e.type == "unlock-recipe" then storage.stabilizer.entity.force.print({ "rabbasca-extra.generated-powerspike-unlock", e.recipe }) end
+                end
+            end
+        end
+        if storage.stabilizer.powerspikes.next <= 0 then
+            -- unlock another one
+            M.progress_powerspike(0)
         end
     end
 end
 
 function M.get_powerspike_required(level)
-    return math.floor(50 + level * (11.5 + level * 8.5))
+    return math.floor(35 + level * (11.5 + level * 8.5))
 end
 
 function M.register_stabilizer(s)
@@ -53,7 +62,7 @@ function M.register_stabilizer(s)
     s.force.set_script_visible({ type = "entity", name = "rabbasca-warp-stabilizer" }, true)
     s.force.set_script_visible({ type = "entity", name = "rabbasca-stability-pylon" }, true)
     s.force.set_script_visible({ type = "entity", name = "rabbasca-collector-pylon" }, true)
-    s.force.set_script_visible({ type = "entity", name = "rabbasca-fuel-remote-big" }, true)
+    s.force.set_script_visible({ type = "entity", name = "rabbasca-anomaly-storage" }, true)
     s.force.set_script_visible({ type = "item",   name = "rabbasca-warp-cell" }, true)
     s.force.set_script_visible({ type = "item",   name = "rabbasca-warp-cell-recharging" }, true)
     s.force.set_script_visible({ type = "item",   name = "rabbasca-powerspike" }, true)
@@ -65,7 +74,7 @@ function M.register_stabilizer(s)
         force = s.force
     }
     local chest = s.surface.create_entity {
-        name = "rabbasca-fuel-remote-big",
+        name = "rabbasca-anomaly-storage",
         surface = s.surface,
         position = { 0, 6 },
         force = s.force
@@ -138,8 +147,11 @@ function M.update_crafting()
             player.add_custom_alert(storage.stabilizer.entity, { type = "entity", name = "rabbasca-warp-stabilizer" }, { "rabbasca-extra.alert-abandon" }, true)
         end
     elseif recipe == "rabbasca-emergency-fuel" then
-        if storage.stabilizer.entity.is_crafting() and storage.stabilizer.entity.burner.remaining_burning_fuel > 0 then
-            storage.stabilizer.entity.set_recipe(nil)
+        if storage.stabilizer.entity.is_crafting() and storage.stabilizer.entity.burner.remaining_burning_fuel > 1000000 then
+            local inputs = storage.stabilizer.entity.set_recipe("rabbasca-warp-trace") -- must set a valid recipe or we cant access trash inventory below
+            for _, item in pairs(inputs) do
+                storage.stabilizer.entity.get_inventory(defines.inventory.crafter_trash).insert(item)
+            end
             for _, player in pairs(storage.stabilizer.entity.force.players) do
                 player.create_local_flying_text { text = {"rabbasca-extra.emergency-paused-has-traces" }, surface = storage.stabilizer.entity.surface, position = storage.stabilizer.entity.position }
             end

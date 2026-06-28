@@ -20,9 +20,11 @@ function M.on_tick_underground(event)
     for _, player in pairs(game.connected_players) do
         M.ui.set_stabilizer_ui(player)
     end
-    
-    -- M.fuel.recharge_consumers()
-    
+
+    if storage.stabilizer.warping then
+        M.warp.on_warp_underground(event)
+    end
+
     if event.tick % 10 ~= 0 then return end
     M.fuel.update_cells()
     M.warp.update_floorthings()
@@ -42,10 +44,6 @@ function M.on_tick_underground(event)
                 M.initiate_warp()
             end
         end
-    end
-    
-    if storage.stabilizer.warping then
-        M.warp.on_warp_underground(event)
     end
 end
 
@@ -109,11 +107,28 @@ function M.on_stabilizer_died(id)
         local warp_inv = remote.call("rabbasca_warp_inventory", "get")
         if warp_inv then
             local c = warp_inv.get_item_count("rabbasca-collector-pylon")
-            if c > 0 then warp_inv.remove({name = "rabbasca-collector-pylon", count = c }) end
+            if c > 0 then 
+                warp_inv.remove({name = "rabbasca-collector-pylon", count = c })
+            end
             local s = warp_inv.get_item_count("rabbasca-stability-pylon")
-            if s > 0 then warp_inv.remove({name = "rabbasca-stability-pylon", count = s }) end
+            if s > 0 then
+                warp_inv.remove({name = "rabbasca-stability-pylon", count = s })
+            end
         end
     end
+end
+
+function M.on_progress_floor_anomaly(entity)
+    if not storage.stabilizer then return end
+    local key = string.format("%i,%i", entity.position.x, entity.position.y)
+    if not storage.stabilizer.selfmade_anomalies[key] then
+        local text = rendering.draw_text { text =  { "rabbasca-extra.selfmade-anomaly", 0 }, surface = entity.surface, target = entity.position, 
+                                           color = { 1, 1, 1 }, alignment = "center", use_rich_text = true, only_in_alt_mode = true }
+        storage.stabilizer.selfmade_anomalies[key] = { amount = 0, text = text, position = entity.position }
+    end
+    local my_anomaly = storage.stabilizer.selfmade_anomalies[key]
+    my_anomaly.amount = my_anomaly.amount + 1
+    my_anomaly.text.text = { "rabbasca-extra.selfmade-anomaly", my_anomaly.amount }
 end
 
 function M.summon_fleet(surface, position)
@@ -141,16 +156,22 @@ function M.on_hunt_relicaries()
 end
 
 function M.download_science(caller)
-    local from = remote.call("rabbasca_warp_inventory", "get")
-    if not from then return end
-    local to = caller.get_inventory(defines.inventory.crafter_trash)
-    if not to then return end
-    local downloaded = from.remove({name = "rabbasca-warpfield-science-pack", count = 200})
-    if downloaded <= 0 then return end
-    local remaining = downloaded - to.insert({ name = "rabbasca-warpfield-science-pack", count = downloaded})
-    if remaining > 0 then
-        from.insert({name = "rabbasca-warpfield-science-pack", count = remaining})
+    if not storage.vault_items then return end
+    local inv = caller.get_inventory(defines.inventory.crafter_trash)
+    if not inv then return end
+    game.print(serpent.line(storage.vault_items["rabbasca-warpfield-science-pack"] or { }))
+    for quality, count in pairs(storage.vault_items["rabbasca-warpfield-science-pack"] or { }) do
+        if count <= 0 then return end
+        local inserted = inv.insert({ name = "rabbasca-warpfield-science-pack", quality = quality, count = math.min(100, count) })
+        game.print(inserted)
+        storage.vault_items["rabbasca-warpfield-science-pack"][quality] = count - inserted
     end
+end
+
+function M.upload_science(num, quality)
+    storage.vault_items = storage.vault_items or { }
+    storage.vault_items["rabbasca-warpfield-science-pack"] = storage.vault_items["rabbasca-warpfield-science-pack"] or { }
+    storage.vault_items["rabbasca-warpfield-science-pack"][quality] = (storage.vault_items["rabbasca-warpfield-science-pack"][quality] or 0) + num
 end
 
 function M.on_locate_progress(vault)
@@ -223,6 +244,10 @@ if settings.global["rabbasca-debug-mode"] then
     commands.add_command("rabbasca_ug_hey", nil, function(command)
         surface = game.planets["rabbasca-underground"].create_surface()
         M.on_locate_progress()
+    end)
+
+    commands.add_command("rabbasca_ug_pp", nil, function(command)
+        if storage.stabilizer then M.stab.progress_powerspike(tonumber(command.parameter) or 1) end
     end)
 
     commands.add_command("rabbasca_ug_repair", nil, function(command)

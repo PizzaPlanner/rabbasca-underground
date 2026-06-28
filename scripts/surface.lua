@@ -87,7 +87,7 @@ function M.force_manifest(data, blocked_pois)
                     access.proxy_target_entity = e
                 end
                 for _, player in pairs(storage.stabilizer.entity.force.connected_players) do
-                    player.add_custom_alert(e, { type = "virtual", name = "signal-map-marker" }, { "rabbasca-extra.alert-found-relicary" }, true)
+                    player.add_custom_alert(e, { type = "recipe", name = "rabbasca-hunt-relicaries" }, { "rabbasca-extra.alert-found-relicary" }, true)
                 end
             end
 
@@ -149,7 +149,7 @@ function M.replace_entities(surface, config, planet)
         end
     end
     for _, data in pairs(storage.stabilizer.selfmade_anomalies or { }) do
-        M.try_manifest({ position = data.position, quality = "normal", surface = surface }, data.amount * 3 * progress, anomalies)
+        M.try_manifest({ position = data.position, quality = "normal", surface = surface }, data.amount * progress, anomalies)
         if data.text then data.text.destroy() end
     end
     storage.stabilizer.selfmade_anomalies = { }

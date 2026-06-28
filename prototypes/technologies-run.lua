@@ -3,8 +3,8 @@ local function make_spike_tech(level, unlocks)
   {
     type = "technology",
     name = "rabbasca-warp-stabilizer-powerspike-"..level,
-    icon = "__rabbasca-assets__/graphics/by-openai/warp-matrix.png",
-    icon_size = 1024,
+    icon = "__rabbasca-assets__/graphics/icons/warp-anomaly.png",
+    icon_size = 256,
     rabbasca_underground_temporary = true,
     prerequisites = { level == 1 and "rabbasca-underground" or "rabbasca-warp-stabilizer-powerspike-"..(level - 1) },
     effects = unlocks or  { },
