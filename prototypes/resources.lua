@@ -48,7 +48,7 @@ st_anomaly.stages = {
     {
       priority = "extra-high",
       frame_count = 4,
-      scale = 0.75,
+      scale = 0.5,
       tint = { 0, 0, 0 }
     })
   }
@@ -106,7 +106,6 @@ mashup.map_color = { 0.74, 0.38, 0.1 }
 mashup.minable.mining_time = 0.5
 mashup.minable.results = {
   { type = "item", name = "spoilage", amount = 1, independent_probability = 0.4 },
-  { type = "item", name = "coal", amount = 1, independent_probability = 0.27 },
   { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.7, independent_probability = 0.15 },
   { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.4, independent_probability = 0.08 },
 }
@@ -139,7 +138,9 @@ local holmium_ore = util.merge {
     -- factoriopedia_alternative = "holmium-ore",
     localised_name = { "item-name.holmium-ore" },
     stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/textures/holmium-ore.png" } },
-    localised_description = { "item-description.holmium-ore" }
+    localised_description = { "item-description.holmium-ore" },
+    -- subgroup = "rabbasca-ug-processes",
+    -- order = "a[resources]-f[holmium]"
   }
 }
 holmium_ore.minable.mining_time = 1.5

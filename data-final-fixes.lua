@@ -18,6 +18,10 @@ for _, silo in pairs(data.raw["rocket-silo"]) do
     silo.surface_conditions = silo.surface_conditions or { }
     table.insert(silo.surface_conditions, Rabbasca.not_underground())
 end
+for _, thing in pairs(data.raw["cargo-landing-pad"]) do
+    thing.surface_conditions = thing.surface_conditions or { }
+    table.insert(thing.surface_conditions, Rabbasca.not_underground())
+end
 
 require("prototypes.stabilizer-config-final-fixes")
 

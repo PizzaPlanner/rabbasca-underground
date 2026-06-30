@@ -97,11 +97,11 @@ data:extend{
 },
 {
     type = "technology",
-    name = "rabbasca-warp-anomaly",
+    name = "rabbasca-anomaly-studies-1",
     prerequisites = { "rabbasca-underground" },
     icons = Rabbasca.icons({
-      {proto = data.raw["item"]["rabbasca-warpfield-excitement-rod"], shift = {-16, -16} },
-      {proto = data.raw["item"]["rabbasca-warpfield-engine"], shift = {16, 16} },
+      {proto = data.raw["item"]["rabbasca-warpfield-excitement-rod"], shift = {-8, -8} },
+      {proto = data.raw["item"]["rabbasca-warpfield-engine"], shift = {8, 8} },
     }),
     effects = {
       {
@@ -117,12 +117,12 @@ data:extend{
     research_trigger =
     {
         type = "mine-entity",
-        entities = { "rabbasca-warp-anomaly" }, 
+        entities = { "rabbasca-warp-anomaly" },
     }
 },
 {
     type = "technology",
-    name = "rabbasca-anomaly-studies",
+    name = "rabbasca-anomaly-studies-2",
     icon = "__rabbasca-assets__/graphics/icons/warp-anomaly.png",
     icon_size = 256,
     prerequisites = { "rabbasca-relicary-remote" },
@@ -136,6 +136,7 @@ data:extend{
         recipe = "rabbasca-hunt-anomalies"
       },
     },
+    localised_description = { "technology-description.rabbasca-anomaly-studies-floor" },
     research_trigger =
     {
         type = "craft-item",
@@ -153,7 +154,7 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-lithium-amide-fission",
-    icons = Rabbasca.icons({{proto = data.raw["recipe"]["rabbasca-lithium-amide-fission"]}, { shift_multiplier = 4 }}),
+    icons = Rabbasca.icons({{proto = data.raw["recipe"]["rabbasca-lithium-amide-fission"]}}, 256),
     prerequisites = { "rabbasca-underground" },
     effects = {
       {
@@ -168,9 +169,25 @@ data:extend{
 },
 {
     type = "technology",
+    name = "rabbasca-plastic-from-petroleum-gas",
+    icons = Rabbasca.icons({ {proto = data.raw["recipe"]["rabbasca-plastic-from-petroleum-gas"]} }, 256),
+    prerequisites = { "rabbasca-lithium-amide-fission" },
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-plastic-from-petroleum-gas"
+      },
+    },
+    research_trigger = {
+      type = "scripted",
+      trigger_description = { "rabbasca-extra.unlock-tech-on-warp", "rabbasca" }
+    }
+},
+{
+    type = "technology",
     name = "rabbasca-beta-carotene-from-yumako",
-    icons = Rabbasca.icons({{proto = data.raw["recipe"]["rabbasca-beta-carotene-from-yumako"]}, { shift_multiplier = 4 }}),
-    prerequisites = { "rabbasca-underground" },
+    icons = Rabbasca.icons({{proto = data.raw["recipe"]["rabbasca-beta-carotene-from-yumako"]}}, 256),
+    prerequisites = { "rabbasca-lithium-amide-fission" },
     effects = {
       {
         type = "unlock-recipe",
@@ -187,7 +204,7 @@ data:extend{
     name = "rabbasca-warpfield-science-pack",
     icon = "__rabbasca-assets__/graphics/recolor/technologies/warp-science-pack-big.png",
     icon_size = 256,
-    prerequisites = { "rabbasca-warp-core", "rabbasca-anomaly-studies" },
+    prerequisites = { "rabbasca-warp-core", "rabbasca-anomaly-studies-2" },
     effects = {
       {
         type = "unlock-recipe",
@@ -206,16 +223,16 @@ data:extend{
     research_trigger =
     {
         type = "craft-item",
-        item = "rabbasca-obscure-theories",
-        count = 5
+        item = "rabbasca-restored-knowledge",
+        count = 250
     }
 },
 {
     type = "technology",
-    name = "rabbasca-warp-technology-analysis-2",
+    name = "rabbasca-archives",
     icon = "__rabbasca-assets__/graphics/by-hurricane/research-center-icon-big.png",
     icon_size = 640,
-    prerequisites = { "rabbasca-warp-anomaly" },
+    prerequisites = { "rabbasca-anomaly-studies-1" },
     effects = {
       {
         type = "unlock-recipe",
@@ -245,8 +262,8 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-relicary-remote",
-    icons = Rabbasca.icons({ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }),
-    prerequisites = { "rabbasca-warp-technology-analysis-2" },
+    icons = Rabbasca.icons({{ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }}),
+    prerequisites = { "rabbasca-archives" },
     effects = {
       {
         type = "unlock-recipe",
@@ -289,7 +306,7 @@ data:extend{
     type = "technology",
     name = "rabbasca-quantum-device",
     icons = Rabbasca.icons({ proto = data.raw["item"]["rabbasca-quantum-device"] }),
-    prerequisites = { "rabbasca-warp-technology-analysis-2" },
+    prerequisites = { "rabbasca-archives" },
     effects = {
       {
         type = "unlock-recipe",
@@ -436,7 +453,7 @@ data:extend{
     type = "technology",
     name = "rabbasca-warp-stabilizer-powerspike-1-unlock",
     icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-powerspike"]}}),
-    prerequisites = { "rabbasca-warp-anomaly" },
+    prerequisites = { "rabbasca-anomaly-studies-1" },
     effects = {
       {
         type = "unlock-recipe",

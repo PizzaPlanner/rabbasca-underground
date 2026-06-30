@@ -5,7 +5,8 @@ Rabbasca.Stabilizer.add_location{
     anomaly_replace_entities = { 
         { type = "resource", name = "haronite", probability = 0.0063, richness = 165, floor = "volcanic-folds-warm" },
     },
-    lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-rabbasca.png",
+    lut = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-rabbasca.png",
+    unlock_on_first_arrival = { "rabbasca-plastic-from-petroleum-gas" }
 }
 Rabbasca.Stabilizer.add_location{
     planet = "vulcanus",
@@ -13,12 +14,12 @@ Rabbasca.Stabilizer.add_location{
     anomaly_replace_entities = { 
         { type = "resource", name = "tungsten-ore", probability = 0.0011, richness = 290, floor = "volcanic-cracks-hot" }, 
     },
-    lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-vulcanus.png",
+    lut = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-vulcanus.png",
 }
 Rabbasca.Stabilizer.add_location{
     planet = "gleba",
     filler_tile = "wetland-light-green-slime",
-    lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-gleba.png",
+    lut = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-gleba.png",
     anomaly_replace_entities = { 
         { type = "resource", name = "rabbasca-yumako-mashup", probability = 0.0015, richness = 582, floor = "lowland-brown-blubber" }, 
     },
@@ -29,7 +30,7 @@ Rabbasca.Stabilizer.add_location{
     anomaly_replace_entities = { 
         { type = "resource", name = "rabbasca-holmium-ore", probability = 0.06, richness = 21, floor = "fulgoran-rock" }, 
     },
-    lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-fulgora.png",
+    lut = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-fulgora.png",
 }
 
 Rabbasca.Stabilizer.add_location{
@@ -39,11 +40,13 @@ Rabbasca.Stabilizer.add_location{
     anomaly_replace_entities = { 
         { type = "resource", name = "rabbasca-lithium-amide", probability = 0.008, richness = 200, floor = "volcanic-smooth-stone" }, 
     },
-    lut_texture = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-aquilo.png",
+    lut = "__rabbasca-assets__/graphics/recolor/textures/lut-underground-aquilo.png",
 }
 
 data:extend{
     Rabbasca.Stabilizer.make_atmospheric_recipe("rabbasca", {{ type = "fluid", name = "petroleum-gas", amount = 20 }}),
     Rabbasca.Stabilizer.make_atmospheric_recipe("vulcanus", {{ type = "fluid", name = "sulfuric-acid", amount = 50 }}),
-    Rabbasca.Stabilizer.make_atmospheric_recipe("aquilo", {{ type = "fluid", name = "fluorine", amount = 10 }})
+    Rabbasca.Stabilizer.make_atmospheric_recipe("aquilo", {{ type = "fluid", name = "fluorine", amount = 10 }}),
+    Rabbasca.Stabilizer.make_atmospheric_recipe("fulgora", {{ type = "fluid", name = "heavy-oil", amount = 25 }}),
+    Rabbasca.Stabilizer.make_atmospheric_recipe("gleba", {{ type = "fluid", name = "water", amount = 100 }})
 }

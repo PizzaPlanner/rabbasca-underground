@@ -25,7 +25,7 @@ local function update_remote_assignment()
     if not storage.assign_remote then return end
     for player, data in pairs(storage.assign_remote) do
         local p = game.get_player(player)
-        if not (p and data.chest and data.chest.valid and p.surface == data.chest.surface) then 
+        if not (p and p.connected and data.chest and data.chest.valid and p.surface == data.chest.surface) then 
             storage.assign_remote[player] = nil
             return
         end
@@ -75,7 +75,7 @@ function M.confirm_cell_selection(player)
     if frame then 
         local new_name = frame.rabbasca_cell_name.text
         local item = storage.assign_remote[player.index]
-        if item and item.valid and item.valid_for_read and (item.name == "rabbasca-warp-cell" or item.name == "rabbasca-warp-cell-recharging") then
+        if item and item.valid and item.valid_for_read and item.name:find("^rabbasca%-warp%-cell") then
             item.label = new_name
         end
         frame.destroy()
@@ -155,7 +155,7 @@ function M.set_cell_ui(player, item)
         storage.assign_remote[player.index] = item
     end
 
-    if not (item and item.valid and item.valid_for_read and (item.name == "rabbasca-warp-cell" or item.name == "rabbasca-warp-cell-recharging")) then
+    if not (item and item.valid and item.valid_for_read and item.name:find("^rabbasca%-warp%-cell")) then
         storage.assign_remote[player.index] = nil
         frame.destroy()
         return

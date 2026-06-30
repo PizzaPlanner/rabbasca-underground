@@ -1,7 +1,8 @@
 local M = require("scripts.surface")
 
 local function post_warp_surface(surface)
-    surface.daytime = storage.stabilizer.config.planets[storage.stabilizer.current_location].lut_index
+    local config = storage.stabilizer.config.planets[storage.stabilizer.current_location]
+    surface.daytime = config.lut_index
     surface.freeze_daytime = true
     surface.min_brightness = 1
     storage.stabilizer.warping = nil
@@ -125,21 +126,28 @@ function M.get_next_planet_chances()
 end
 
 function M.change_affinity(last_location)
+    local techs = storage.stabilizer.entity.force.technologies
     local prev = storage.stabilizer.config.planets[last_location]
     if prev then
-        local tech = game.forces.player.technologies[prev.tech]
+        local tech = techs[prev.tech]
         tech.researched = false
         tech.enabled    = false
     else -- fallback only after data change, migrations, etc., touching techs is performance heavy
         for _, planet in storage.stabilizer.config.planets do
-            local tech = game.forces.player.technologies[planet.tech]
+            local tech = techs[planet.tech]
             tech.researched = false
             tech.enabled    = false
         end
     end
     local next = storage.stabilizer.config.planets[storage.stabilizer.current_location]
     if next then
-        local tech = game.forces.player.technologies[next.tech]
+        for _, tech in pairs(next.unlock_on_first_arrival or { }) do
+            if not techs[tech].researched then
+                techs[tech].researched = true
+                storage.stabilizer.entity.force.print({ "technology-researched", "[technology="..tech.."]" }, { sound_path = "utility/research_completed" })
+            end
+        end
+        local tech = techs[next.tech]
         tech.researched = true
         tech.enabled    = true
     end
@@ -157,8 +165,8 @@ function M.hunt_relicary(data)
     if not storage.stabilizer.relics then return end
     if math.random() < M.get_relic_chance() and not data.guaranteed_manifestations then
         data.guaranteed_manifestations = { { type = "poi", name = "rabbasca-relicary", floor = "rabbasca-underground-rubble", force = storage.stabilizer.entity.force } }
+        storage.stabilizer.relics = { pity = 0 }
     end
-    storage.stabilizer.relics = { pity = 0 }
 end
 
 function M.warp_to(data)

@@ -11,7 +11,7 @@ data:extend {
     name = "rabbasca-underground",
     icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png", 
     icon_size = 640,
-    hidden = true, -- mainly to disable it as target for space platform creation
+    -- hidden = true, -- mainly to disable it as target for space platform creation
     hidden_in_factoriopedia = false,
     draw_orbit = false,
     distance = 10,

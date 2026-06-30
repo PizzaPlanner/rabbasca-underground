@@ -23,15 +23,37 @@ data:extend {
     },
     {
         type = "item-subgroup",
-        name = "rabbasca-relics",
-        group = data.raw["item-group"]["rabbasca-extensions"] and "rabbasca-extensions" or "intermediate-products",
-        order = "1[stabilizer]-2[relics]"
+        name = "rabbasca-ug-processes",
+        group = "intermediate-products",
+        order = "l-rabbasca-ug"
     },
     {
         type = "item-subgroup",
-        name = "rabbasca-warp-stabilizer-functions",
+        name = "rabbasca-events",
         group = data.raw["item-group"]["rabbasca-extensions"] and "rabbasca-extensions" or nil,
         order = "2[stabilizer-functions]"
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-plastic-from-petroleum-gas",
+        icons = Rabbasca.icons({
+            { proto = data.raw["item"]["plastic-bar"] },
+            { proto = data.raw["fluid"]["petroleum-gas"], shift = {-8, 8}, scale = 0.5 },
+        }),
+        enabled = false,
+        hide_from_player_crafting = true,
+        energy_required = 1,
+        ingredients = { { type = "fluid", name = "petroleum-gas", amount = 40 } },
+        allow_productivity = true,
+        results = { { type = "item", name = "plastic-bar", amount = 2 } },
+        surface_conditions = { Rabbasca.only_underground(false) },
+        crafting_machine_tint =
+        {
+            primary = { 0.7, 0.71, 0.72 }
+        },
+        subgroup = "rabbasca-ug-processes",
+        order = "b[parts]-a[plastic]",
+        categories = { "cryogenics" }
     },
     {
         type = "recipe",
@@ -53,15 +75,15 @@ data:extend {
         },
         surface_conditions = { Rabbasca.only_underground() },
         categories = { "electromagnetics" },
-        subgroup = "rabbasca-processes",
-        order = "u[underground]-a[resources]-a[amide-fission]"
+        subgroup = "rabbasca-ug-processes",
+        order = "a[resources]-a[amide-fission]"
     },
     {
         type = "recipe",
         name = "rabbasca-beta-carotene-from-yumako",
         icons = Rabbasca.icons({
-            { proto = data.raw["capsule"]["yumako-mash"], scale = 0.5, shift = {-3, -8} },
-            { proto = data.raw["fluid"]["beta-carotene"] }
+            { proto = data.raw["capsule"]["yumako-mash"], scale = 0.7, shift = {-6, -8} },
+            { proto = data.raw["fluid"]["beta-carotene"] },
         }),
         enabled = false,
         energy_required = 6,
@@ -73,8 +95,8 @@ data:extend {
             { type = "fluid", name = "beta-carotene", amount = 75 },
         },
         categories = { "organic" },
-        subgroup = "rabbasca-processes",
-        order = "u[underground]-a[resources]-c[carotene-alt]"
+        subgroup = "rabbasca-ug-processes",
+        order = "a[resources]-c[carotene-alt]"
     },
     {
         type = "recipe",
@@ -124,7 +146,8 @@ data:extend {
         energy_required = 10,
         ingredients = {
             { type = "item", name = "rabbasca-powerspike", amount = 1 },
-            { type = "item", name = "rabbasca-restored-knowledge",amount = 5 },
+            { type = "item", name = "harenic-stabilizer",amount = 5 },
+            { type = "item", name = "carbon-fiber",amount = 5 },
         },
         results = { { type = "item", name ="rabbasca-stability-pylon", amount = 1, always_fresh = true } },
         categories = { "rabbasca-warp-stabilizer" },
@@ -191,12 +214,12 @@ data:extend {
         name = "rabbasca-abandon-stabilizer",
         enabled = false,
         hide_from_player_crafting = true,
-        hidden_in_factoriopedia = true,
         energy_required = 45,
         ingredients = { },
         results = { { type = "item", name = "rabbasca-abandon-stabilizer", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false } },
         categories = { "rabbasca-warp-stabilizer" },
-        order = "x",
+        subgroup = "rabbasca-events",
+        order = "a[stabilizer]-x",
         allow_productivity = false,
         stabilizer_config = { can_craft_for_free = true },
         auto_recycle = false,
@@ -219,7 +242,8 @@ data:extend {
             primary = { 0.85, 0.42, 1 }
         },
         categories = { "rabbasca-warp-stabilizer" },
-        order = "a",
+        subgroup = "rabbasca-events",
+        order = "a[stabilizer]-a",
         hide_from_signal_gui = false
     },
     {
@@ -227,8 +251,9 @@ data:extend {
         name = "rabbasca-stabilizer-recharge",
         hide_from_player_crafting = true,
         icons = Rabbasca.icons({
-            { proto = data.raw["item-with-inventory"]["rabbasca-warp-cell-recharging"], scale = 0.5, shift = {8, 8} },
-            { proto = data.raw["virtual-signal"]["signal-battery-full"], scale = 0.5, shift = {-8, -8} },
+            { proto = data.raw["item-with-inventory"]["rabbasca-warp-cell-recharging"], scale = 0.75, shift = {-8, -8} },
+            { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"], scale = 0.75, shift = {8, 8} },
+            { proto = data.raw["virtual-signal"]["down-right-arrow"], scale = 0.5 },
         }),
         enabled = false,
         energy_required = 2,
@@ -241,8 +266,8 @@ data:extend {
             primary = { 1, 0.85, 0.75 }
         },
         categories = { "rabbasca-warp-stabilizer" },
-        subgroup = "rabbasca-warp-stabilizer-functions",
-        order = "c",
+        subgroup = "rabbasca-events",
+        order = "a[stabilizer]-c",
         hide_from_signal_gui = false
     },
     {
@@ -274,8 +299,7 @@ data:extend {
         name = "rabbasca-emergency-fuel",
         icons = Rabbasca.icons({
             { proto = data.raw["item"]["rabbasca-warp-trace"] },
-            { proto = data.raw["virtual-signal"]["signal-alert"], scale = 0.3, shift = {8, 8} },
-            -- { proto = data.raw["virtual-signal"]["signal-alert"], scale = 0.5, shift = {-8, -8} },
+            { proto = data.raw["virtual-signal"]["signal-alert"], scale = 0.5, shift = {8, 8} },
         }),
         enabled = false,
         hide_from_player_crafting = true,
@@ -293,7 +317,8 @@ data:extend {
             primary = { 0.2, 0.33, 1 }
         },
         categories = { "rabbasca-warp-stabilizer" },
-        order = "z[emergency-fuel]",
+        subgroup = "rabbasca-events",
+        order = "a[stabilizer]-m",
     },
     {
         type = "recipe",
@@ -369,6 +394,7 @@ data:extend {
         type = "recipe",
         name = "rabbasca-warpfield-science-pack-wi-upload",
         enabled = false,
+        hide_from_player_crafting = true,
         energy_required = 2,
         ingredients = {
             { type = "item", name = "rabbasca-warpfield-science-pack", amount = 10 },
@@ -478,8 +504,8 @@ data:extend {
         type = "recipe",
         name = "rabbasca-hunt-relicaries",
         icons = Rabbasca.icons({
-            { proto = data.raw["furnace"]["rabbasca-relicary"] },
-            { proto = data.raw["virtual-signal"]["signal-map-marker"], scale = 0.3, shift = {8, 8} },
+            { proto = data.raw["furnace"]["rabbasca-relicary"], scale = 1 },
+            { proto = data.raw["virtual-signal"]["signal-map-marker"], scale = 0.5, shift = {8, 8} },
         }),
         enabled = false,
         hide_from_player_crafting = true,
@@ -489,15 +515,15 @@ data:extend {
         ingredients = { { type = "item", name = "rabbasca-lithium-amide", amount = 5 } },
         results = { { type = "item", name = "rabbasca-progress-hunt", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false} },
         categories = { "rabbasca-relichunter" },
-        subgroup = "rabbasca-relics",
-        order = "a[hunter]-a[relics]"
+        subgroup = "rabbasca-events",
+        order = "h[hunter]-a[relics]"
     },
     {
         type = "recipe",
         name = "rabbasca-hunt-anomalies",
         icons = Rabbasca.icons({
             { proto = data.raw["resource"]["rabbasca-warp-anomaly"] },
-            { proto = data.raw["virtual-signal"]["signal-map-marker"], scale = 0.3, shift = {8, 8} },
+            { proto = data.raw["virtual-signal"]["signal-map-marker"], scale = 0.5, shift = {8, 8} },
         }),
         enabled = false,
         hide_from_player_crafting = true,
@@ -507,8 +533,8 @@ data:extend {
         ingredients = { { type = "item", name = "rabbasca-lithium-amide", amount = 5 } },
         results = { { type = "item", name = "rabbasca-progress-hunt", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false } },
         categories = { "rabbasca-relichunter" },
-        subgroup = "rabbasca-relics",
-        order = "a[hunter]-b[anomalies]"
+        subgroup = "rabbasca-events",
+        order = "h[hunter]-b[anomalies]"
     },
     {
         type = "recipe",

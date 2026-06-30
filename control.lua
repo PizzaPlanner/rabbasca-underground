@@ -111,7 +111,7 @@ script.on_event(defines.events.on_gui_opened, function(event)
         end
       end
     elseif event.gui_type == defines.gui_type.item and event.item then
-      if event.item.name == "rabbasca-warp-cell" or event.item.name == "rabbasca-warp-cell-recharging" then
+      if event.item.name:find("^rabbasca%-warp%-cell") then
         underground.ui.set_cell_ui(player, event.item)
       end
     end
@@ -126,10 +126,6 @@ script.on_event(defines.events.on_gui_selection_state_changed, function(event)
         or (event.element.selected_index == 2 and defines.inventory.crafter_output)
         or (event.element.selected_index == 3 and defines.inventory.fuel)
         or defines.inventory.burnt_result
-  elseif event.element.name == "rabbasca_su_fuel_strategy" then
-    local player = game.players[event.player_index]
-    if not (player.opened and player.opened.name == "rabbasca-remote-access-chest") then return end
-    storage.stabilizer.fuel.selection_strategy.filter = event.element.selected_index
   end
 end)
 

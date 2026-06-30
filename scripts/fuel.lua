@@ -1,6 +1,6 @@
 local M = { 
     ENERGY_PER_CELL      = prototypes.item["rabbasca-warp-cell"].fuel_value,
-    ENERGY_PER_CELL_MINI = 50000000
+    ENERGY_PER_STAB_CELL = prototypes.item["rabbasca-warp-cell-internal-big"].fuel_value,
 }
 
 function M.tether(item, target)
@@ -8,8 +8,9 @@ function M.tether(item, target)
     if not stack then return end
     local burner = target and target.valid and target.burner
     if not burner then return end
-    local empty_cell = { name = "rabbasca-warp-cell", count = 1, quality = item.quality, spoil_percent = math.min(stack.spoil_percent + 0.5, 0.95) }
-    if not stack.can_set_stack(empty_cell) then return end
+    local cell_name = prototypes.item["rabbasca-warp-cell-indicator-"..target.name] and "rabbasca-warp-cell-indicator-"..target.name or "rabbasca-warp-cell"
+    local new_cell = { name = cell_name, count = 1, quality = item.quality, spoil_percent = math.min(stack.spoil_percent + 0.5, 0.95) }
+    if not stack.can_set_stack(new_cell) then return end
     if stack.spoil_percent < 0.1 then
         if storage.stabilizer.entity.burner.remaining_burning_fuel < M.ENERGY_PER_CELL * 0.1 then
             return
@@ -18,7 +19,7 @@ function M.tether(item, target)
     end
     storage.stabilizer.fuel.cells[item.item_number] = nil
     local label = item.label
-    stack.set_stack(empty_cell)
+    stack.set_stack(new_cell)
     stack.label = label or ""
     burner.currently_burning = burner.currently_burning or "rabbasca-warp-cell-internal"
     storage.stabilizer.fuel.cells[stack.item_number] = { item = stack.item, tether = target, tether_capacity = burner.currently_burning.name.fuel_value }
@@ -53,15 +54,19 @@ function M.update_cells()
                 M.untether(cell)
                 break
             else
-                if data.tether and data.tether.valid and data.tether.burner then
-                    local delta = (1 - cell.item_stack.spoil_percent) * M.ENERGY_PER_CELL / ticks_per_second
-                    if not data.tether.burner.currently_burning then
-                        data.tether.burner.currently_burning = "rabbasca-warp-cell-internal"
-                        data.tether.burner.remaining_burning_fuel = delta
+                if data.tether then
+                    if data.tether.valid and data.tether.burner then
+                        local delta = (1 - cell.item_stack.spoil_percent) * M.ENERGY_PER_CELL / ticks_per_second
+                        if not data.tether.burner.currently_burning then
+                            data.tether.burner.currently_burning = "rabbasca-warp-cell-internal"
+                            data.tether.burner.remaining_burning_fuel = delta
+                        else
+                            data.tether.burner.remaining_burning_fuel = data.tether.burner.remaining_burning_fuel + delta
+                        end
+                        stack.health = math.max(0, math.min(1, data.tether.burner.remaining_burning_fuel / (data.tether_capacity or 1)))
                     else
-                        data.tether.burner.remaining_burning_fuel = data.tether.burner.remaining_burning_fuel + delta
+                        M.untether(cell)
                     end
-                    stack.health = math.max(0, math.min(1, data.tether.burner.remaining_burning_fuel / (data.tether_capacity or 1)))
                 end
                 local is_in_stab = cell.owner_location.entity == storage.stabilizer.entity
                 if is_recalling and not is_in_stab then

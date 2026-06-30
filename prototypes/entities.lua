@@ -111,8 +111,8 @@ local relichunter = {
     },
     hidden = false,
     hidden_in_factoriopedia = false,
-    subgroup = "rabbasca-relics",
-    order = "a[hunter]",
+    subgroup = "rabbasca-ug-processes",
+    order = "h[hunter]",
     created_effect = {
         type = "direct",
         action_delivery = {
@@ -149,7 +149,8 @@ local relichunter = {
 
 local relicary = {
     name = "rabbasca-relicary",
-    icons = Rabbasca.icons({ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }),
+    icon = "__rabbasca-assets__/graphics/icons/archive.png",
+    icon_size = 128,
     type = "furnace",
     max_health = 100,
     -- production_health_effect = {
@@ -157,8 +158,8 @@ local relicary = {
     --   not_producing = 0
     -- },
     flags = { "placeable-neutral", "not-repairable", "not-deconstructable", "no-logistic-connection" },
-    collision_box = { { -0.9, -0.9 }, { 0.9, 0.9 } },
-    selection_box = { { -1, -1 }, { 1, 1 } },
+    collision_box = { { -1.4, -1.4 }, { 1.4, 1.4 } },
+    selection_box = { { -1.5, -1.5 }, { 1.5, 1.5 } },
     result_inventory_size = 10,
     source_inventory_size = 1,
     crafting_speed = 1,
@@ -171,18 +172,29 @@ local relicary = {
         initial_fuel = "rabbasca-powerspike",
         initial_fuel_percent = 0.1,
         fuel_inventory_size = 1,
+        light_flicker = { },
     },
     module_slots = 0,
     crafting_categories = { "rabbasca-relics" },
     -- cant_insert_at_source_message_key = "inventory-restriction.not-a-vault-key",
-    graphics_set = table.deepcopy(data.raw["assembling-machine"]["rabbasca-vault-console"].graphics_set),
-    subgroup = "rabbasca-relics",
-    order = "b[relicary]"
+    graphics_set = { 
+        working_visualisations = { {
+            fadeout = true, 
+            animation = Rabbasca.animation_layer("__rabbasca-assets__/graphics/entities/archive/emission", { scale = 0.7, draw_as_glow = true, blend_mode = "additive" }),
+        } },
+        idle_animation = { layers = { 
+            Rabbasca.animation_layer("__rabbasca-assets__/graphics/entities/archive/base", { scale = 0.7 }),
+            Rabbasca.animation_layer("__rabbasca-assets__/graphics/entities/archive/shadow", { draw_as_shadow = true, scale = 0.7 }),
+        } },
+        always_draw_idle_animation = true 
+    },
+    subgroup = "rabbasca-warp-stabilizer",
+    order = "h[hunter]-b[relicary]"
 }
 
 local relicary_access = {
     name = "rabbasca-relicary-remote",
-    icons = Rabbasca.icons({ proto = data.raw["assembling-machine"]["rabbasca-vault-console"] }),
+    icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-relicary-remote"]}}),
     type = "proxy-container",
     flags = { "placeable-player" },
     placeable_by = { item = "rabbasca-relicary-remote", count = 1 },
@@ -192,7 +204,7 @@ local relicary_access = {
     collision_box = { { -0.4, -0.4 }, { 0.4, 0.4 } },
     selection_box = { { -0.5, -0.5 }, { 0.5, 0.5 } },
     surface_conditions = { Rabbasca.only_underground(true) },
-    subgroup = "rabbasca-relics",
+    subgroup = "rabbasca-ug-processes",
     order = "b[relicary-access]-0[access]"
 }
 
@@ -427,6 +439,7 @@ local ufo = util.merge {
     {
         name = "rabbasca-ufo",
         icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
+        icon_size = 64,
         movement_energy_consumption = "9MW",
         has_belt_immunity = true,
         inventory_size = 20,
@@ -493,4 +506,31 @@ data:extend {
     relichunter,
     minelon, miner_remote,
     floorion,
+}
+
+local function make_warp_cell_with_indicator(entity)
+  local cell =  util.merge {
+    data.raw["item-with-inventory"]["rabbasca-warp-cell"],
+    {
+        name = "rabbasca-warp-cell-indicator-"..entity.name,
+        localised_name = { "item-name.rabbasca-warp-cell" },
+        localised_description = { "item-description.rabbasca-warp-cell" },
+        factoriopedia_alternative = "rabbasca-warp-cell",
+        hidden_in_factoriopedia = true,
+        hidden = true,
+    }
+  }
+  cell.icon = nil
+  cell.icons = Rabbasca.icons({
+    { proto = data.raw["item-with-inventory"]["rabbasca-warp-cell"] },
+    { proto = entity, scale = 0.5, shift = { 8, 8 } }
+  })
+  return cell
+end
+
+data:extend{
+  make_warp_cell_with_indicator(data.raw["assembling-machine"]["rabbasca-relichunter"]),
+  make_warp_cell_with_indicator(data.raw["assembling-machine"]["rabbasca-stability-pylon"]),
+  make_warp_cell_with_indicator(data.raw["mining-drill"]["rabbasca-collector-pylon"]),
+  make_warp_cell_with_indicator(data.raw["spider-vehicle"]["rabbasca-ufo"])
 }

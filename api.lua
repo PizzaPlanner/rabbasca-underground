@@ -3,17 +3,17 @@ if not data then return end
 local function create_affinity_tech(planet)
   local tech_flex = {
     type = "technology",
-    name = "rabbasca-warp-anchoring-"..planet,
+    name = "rabbasca-stabilier-on-"..planet,
     icons = Rabbasca.icons({
-        { proto = data.raw["planet"][planet], scale = 1, shift = {0, 32} },
+        { proto = data.raw["planet"][planet], scale = 1, shift = {0, 16} },
         { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"], scale = 0.5 },
-    }),
+    }, 256),
     enabled = false,
     rabbasca_underground_temporary = true,
     prerequisites = { "rabbasca-underground" },
     effects = { },
-    localised_name = { "technology-name.rabbasca-warp-anchoring", planet },
-    localised_description = { "technology-description.rabbasca-warp-anchoring", planet },
+    localised_name = { "technology-name.rabbasca-stabilier-on", planet },
+    localised_description = { "technology-description.rabbasca-stabilier-on", planet },
     research_trigger =
     {
         type = "scripted",
@@ -37,7 +37,8 @@ function Rabbasca.Stabilizer.add_location(config)
         water = config.filler_tile or "lava-hot",
         autoplace_entities = { ["rabbasca-warp-anomaly"] = { } },
         anomaly_replace_entities = config.anomaly_replace_entities or { },
-        lut = config.lut_texture or "identity",
+        unlock_on_first_arrival = config.unlock_on_first_arrival or { },
+        lut = config.lut or "identity",
         tech = nil,
         -- tech_prep = nil,
         -- in final fixes for better change resilience
@@ -52,7 +53,7 @@ end
 
 function Rabbasca.Stabilizer.make_atmospheric_recipe(planet, results)
     local name = results[1].name
-    table.insert(data.raw["technology"]["rabbasca-warp-anchoring-"..planet].effects, { type = "unlock-recipe", recipe = "rabbasca-underground-"..planet.."-extract-atmosphere" })
+    table.insert(data.raw["technology"]["rabbasca-stabilier-on-"..planet].effects, { type = "unlock-recipe", recipe = "rabbasca-underground-"..planet.."-extract-atmosphere" })
     return {
         type = "recipe",
         name = "rabbasca-underground-"..planet.."-extract-atmosphere",

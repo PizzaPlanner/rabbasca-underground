@@ -1,15 +1,10 @@
 - TODO before release:
-  - Uploadable warpfield science
-  - Anomaly amplification T&T
   - Short range access point functionality
-  - Handling of structure pylons and extractors
+  - Fix jankiness of overlapping stability floors
 ---------------------------------------------------------------------------------------------------
-Version: 0.3.0
+Version: 0.4.0
 Date: ??????
   Changes:
     - Initial release
-    - Added a new post-aquilo progression which involves locating and using the warp-field analyzer
-    - The warp-field analyzer has its own surface deep underground, featuring a challenge mode with its own technology tree
-    - Added a new science lab with specialized science packs dedicated to working with these new techs
-    - Warp sequence: Modules now requires analyzer tech to unlock
-    - Warp pylons can now be crafted in machining assembler, requring analyzer technology to unlock
+    - Added a new post-aquilo progression which involves locating and using the warpfield stabilizer
+    - The warpfield stabilizer has its own surface deep underground, where space is limited and access to resources requires warping around

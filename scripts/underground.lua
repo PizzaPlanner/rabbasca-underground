@@ -16,7 +16,7 @@ function M.on_tick_underground(event)
 
     M.stab.update_crafting()
     M.stab.trace_stasis()
-    
+
     for _, player in pairs(game.connected_players) do
         M.ui.set_stabilizer_ui(player)
     end
@@ -43,6 +43,9 @@ function M.on_tick_underground(event)
             if storage.stabilizer.anomalies.current == 0 and storage.stabilizer.settings.autopilot then
                 M.initiate_warp()
             end
+        end
+        if event.tick % 300 == 0 then
+            M.stab.fuel_alert()
         end
     end
 end
@@ -159,11 +162,9 @@ function M.download_science(caller)
     if not storage.vault_items then return end
     local inv = caller.get_inventory(defines.inventory.crafter_trash)
     if not inv then return end
-    game.print(serpent.line(storage.vault_items["rabbasca-warpfield-science-pack"] or { }))
     for quality, count in pairs(storage.vault_items["rabbasca-warpfield-science-pack"] or { }) do
         if count <= 0 then return end
         local inserted = inv.insert({ name = "rabbasca-warpfield-science-pack", quality = quality, count = math.min(100, count) })
-        game.print(inserted)
         storage.vault_items["rabbasca-warpfield-science-pack"][quality] = count - inserted
     end
 end
