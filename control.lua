@@ -1,5 +1,6 @@
 require("__planet-rabbasca__.api")
 local underground = require("scripts.underground")
+local sanity = require("scripts.sanity")
 
 local function handle_script_events(event)
   local effect_id = event.effect_id
@@ -84,6 +85,15 @@ local function handle_script_events(event)
     if event.source_entity then underground.fuel.register_consumer(event.source_entity) end
   elseif effect_id == "rabbasca_register_floorthing" then
     if event.source_entity then underground.warp.register_floorthing(event.source_entity) end
+  elseif effect_id == "rabbasca_on_sanity_loss" then
+    local from = Rabbasca.get_spoiled_in(event)
+    local force = from and from.force or game.forces.player
+    sanity.remove_sanity(1, force)
+  elseif effect_id == "rabbasca_on_sanity_restore" then
+    local from = Rabbasca.get_spoiled_in(event)
+    if from and from.force then
+      sanity.restore_sanity(1, from.force)
+    end
   end
 end
 
