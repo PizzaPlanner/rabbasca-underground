@@ -36,10 +36,3 @@ for _, tech in pairs(data.raw["technology"]) do
         table.insert(config.per_surface_techs, tech.name)
     end
 end
-
-for _, recipe in pairs(data.raw["recipe"]) do
-    if recipe.stabilizer_config then
-        config.recipe_settings[recipe.name] = recipe.stabilizer_config
-        config.recipe_settings[recipe.name].energy_required = recipe.energy_required
-    end
-end

@@ -187,10 +187,6 @@ function M.warp_to(data)
                                    manifestations = data.guaranteed_manifestations }
     surface.ticks_per_day = 180 * (config.planet_count + 1.5)
     surface.freeze_daytime = false
-    -- surface.create_entity{
-    --     name = "rabbasca-warp-overlay-dummy",
-    --     position = {0, 0},
-    -- }
     for p, _ in pairs(config.planets) do
         if p == data.planet or (data.fixed_followup and p ~= data.fixed_followup) then
             storage.stabilizer.next.weights[p] = 0

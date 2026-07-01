@@ -106,7 +106,7 @@ data:extend {
         ingredients = { 
             { type = "item", name = "engine-unit", amount = 1 }, 
             { type = "item", name = "electronic-circuit", amount = 10 }, 
-            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 12 },
+            { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 4 },
             { type = "item", name = "rabbasca-warp-anomaly", amount = 25 },
             { type = "fluid", name = "fluoroketone-hot", amount = 60 },
         },
@@ -132,11 +132,11 @@ data:extend {
             { type = "fluid", name = "fluorine", amount = 100 } },
         results = { { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1 } },
         auto_recycle = false,
+        allow_productivity = true,
         crafting_machine_tint =
         {
             primary = { 0.85, 0.42, 1 }
         },
-        stabilizer_config = { can_craft_for_free = true, freecraft_time_multiplier = 2 },
         categories = { "electromagnetics" },
     },
     {
@@ -149,12 +149,11 @@ data:extend {
             { type = "item", name = "harenic-stabilizer",amount = 5 },
             { type = "item", name = "carbon-fiber",amount = 5 },
         },
-        results = { { type = "item", name ="rabbasca-stability-pylon", amount = 1, always_fresh = true } },
+        results = { { type = "item", name ="rabbasca-stability-pylon", amount = 1, affected_by_quality = false } },
         categories = { "rabbasca-warp-stabilizer" },
         order = "0",
         hide_from_player_crafting = true,
         allow_productivity = false,
-        stabilizer_config = { can_craft_for_free = true },
         auto_recycle = false,
         crafting_machine_tint = {
             primary = { 0.95, 0.83, 0.14 }
@@ -169,7 +168,7 @@ data:extend {
             { type = "item", name = "rabbasca-powerspike",  amount = 1 },
             { type = "item", name = "superconductor", amount = 20 },
         },
-        results = { { type = "item", name = "rabbasca-collector-pylon", amount = 1 } },
+        results = { { type = "item", name = "rabbasca-collector-pylon", amount = 1, affected_by_quality = false } },
         categories = { "rabbasca-warp-stabilizer" },
         auto_recycle = false,
         hide_from_player_crafting = true,
@@ -181,15 +180,14 @@ data:extend {
         energy_required = 10,
         ingredients = {
             { type = "item", name = "rabbasca-warp-anomaly", amount = 100 },
-            { type = "item", name = "rabbasca-restored-knowledge", amount = 75 },
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 1 },
             { type = "item", name = "rabbasca-powerspike", amount = 2 },
         },
-        results = { { type = "item", name = "rabbasca-warp-cell-recharging", amount = 1, always_fresh = true } },
+        results = { { type = "item", name = "rabbasca-warp-cell-recharging", amount = 1, always_fresh = true, affected_by_quality = false } },
         categories = { "rabbasca-warp-stabilizer" },
         order = "0",
         hide_from_player_crafting = true,
         allow_productivity = false,
-        stabilizer_config = { can_craft_for_free = true },
         auto_recycle = false,
         crafting_machine_tint = {
             primary = { 0.95, 0.83, 0.14 }
@@ -221,7 +219,6 @@ data:extend {
         subgroup = "rabbasca-events",
         order = "a[stabilizer]-x",
         allow_productivity = false,
-        stabilizer_config = { can_craft_for_free = true },
         auto_recycle = false,
         crafting_machine_tint = {
             primary = { 1, 0, 0 }
@@ -236,7 +233,6 @@ data:extend {
         -- ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
         results = { { type = "item", name = "rabbasca-stabilizer-warp-sequence", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false } },
         allow_productivity = false,
-        stabilizer_config = { }, -- cache energy_required
         crafting_machine_tint =
         {
             primary = { 0.85, 0.42, 1 }
@@ -260,7 +256,6 @@ data:extend {
         -- ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
         results = { },
         allow_productivity = false,
-        stabilizer_config = { }, -- cache energy_required
         crafting_machine_tint =
         {
             primary = { 1, 0.85, 0.75 }
@@ -286,7 +281,6 @@ data:extend {
         main_product = "rabbasca-warp-trace",
         allow_productivity = true,
         auto_recycle = false,
-        stabilizer_config = { }, -- cache energy_required
         crafting_machine_tint =
         {
             primary = { 0.5, 0.83, 1 }
@@ -311,7 +305,6 @@ data:extend {
         -- main_product = "rabbasca-warp-trace",
         allow_productivity = true,
         auto_recycle = false,
-        stabilizer_config = { }, -- cache energy_required
         crafting_machine_tint =
         {
             primary = { 0.2, 0.33, 1 }
@@ -407,7 +400,7 @@ data:extend {
     },          
     {
         type = "recipe",
-        name = "rabbasca-madness-module",
+        name = "rabbasca-supercharged-module",
         enabled = false,
         energy_required = 30,
         ingredients = {
@@ -417,7 +410,7 @@ data:extend {
         },
         auto_recycle = false,
         results = {
-            { type = "item", name = "rabbasca-madness-module", amount = 1 },
+            { type = "item", name = "rabbasca-supercharged-module", amount = 1 },
         },
         surface_conditions = { Rabbasca.only_underground(true) },
         allow_productivity = true,
@@ -438,9 +431,6 @@ data:extend {
         },
         results = { 
             { type = "item", name = "rabbasca-warp-core", amount = 5 },
-            { type = "item", name = "rabbasca-restored-knowledge", amount = 1, independent_probability = 0.1 },
-            { type = "item", name = "rabbasca-restored-knowledge", amount = 1, independent_probability = 0.15 },
-            { type = "item", name = "rabbasca-restored-knowledge", amount = 1, independent_probability = 0.2 },
         },
         surface_conditions = { Rabbasca.only_underground(true) },
         categories = { "electromagnetics" },
@@ -587,12 +577,15 @@ Rabbasca.create_vault_recipe("rabbasca-locate-stabilizer", {
   },
   ingredients = {
       { type = "item", name = "rabbasca-warp-pylon", amount = 1 },
-      { type = "item", name = "rabbasca-spacetime-sensor", amount = 10 },
+      { type = "item", name = "rabbasca-spacetime-sensor", amount = 5 },
   },
   results = { 
-      { type = "item", name = "rabbasca-locate-stabilizer", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false },
+      { type = "item", name = "rabbasca-locate-stabilizer", amount = 1, shared_probability = { min = 0, max = 0.2 }, always_fresh = true, show_details_in_recipe_tooltip = false },
+      { type = "item", name = "rabbasca-warp-pylon", amount = 1, shared_probability = { min = 0.2, max = 1 }, affected_by_quality = false, show_details_in_recipe_tooltip = false },
   },
-  energy_required = 120,
+  can_set_quality = false,
+  energy_required = 60,
+  allow_quality = false,
   allow_productivity = false,
 })
 
@@ -618,15 +611,14 @@ data:extend {
         enabled = false,
         energy_required = 8,
         ingredients = {
-            { type = "item", name = "rabbasca-obscure-theories",  amount = 4 },
+            { type = "item", name = "rabbasca-obscure-theories",  amount = 4, ignored_by_stats = 4 },
         },
         results = { 
-            { type = "item", name = "rabbasca-restored-knowledge", amount = 1, independent_probability = 0.6 },
-            { type = "item", name = "rabbasca-obscure-theories",  amount = 1, independent_probability = 0.2 },
-            { type = "item", name = "rabbasca-obscure-theories",  amount = 1, independent_probability = 0.2 },
-            { type = "item", name = "rabbasca-obscure-theories",  amount = 1, independent_probability = 0.2 },
-            { type = "item", name = "rabbasca-obscure-theories",  amount = 1, independent_probability = 0.2 },
+            { type = "item", name = "rabbasca-sanity-loss", amount = 1, independent_probability = 0.001, always_fresh = true },
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 1, shared_probability = { min = 0, max = 0.1 } },
+            { type = "item", name = "rabbasca-obscure-theories",  amount = 4, shared_probability = { min = 0.1, max = 1 }, ignored_by_productivity = 4, ignored_by_stats = 4 },
         },
+        maximum_productivity = 249,
         main_product = "rabbasca-restored-knowledge",
         categories = { "crafting" }
     },

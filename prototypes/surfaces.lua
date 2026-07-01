@@ -11,14 +11,30 @@ data:extend {
     name = "rabbasca-underground",
     icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png", 
     icon_size = 640,
-    -- hidden = true, -- mainly to disable it as target for space platform creation
+    hidden = true, -- dont show up in space map
     hidden_in_factoriopedia = false,
     draw_orbit = false,
-    distance = 10,
-    orientation = 0,
+    label_orientation = 0.625,
+    magnitude = 0.5,
+    distance = 75,
+    orientation = 0.125,
     subgroup = "satellites",
     -- subgroup = "rabbasca-warp-stabilizer",
     order = "c[gleba]-r[rabbasca]-a[surface]",
+    -- orbit = {
+    --   orientation = 0.625,
+    --   distance = 1.5,
+    --   parent = {
+    --     type = "planet",
+    --     name = "rabbasca",
+    --   },
+    --   sprite = {
+    --     type = "sprite",
+    --     filename = "__rabbasca-assets__/graphics/textures/stabilizer-orbit.png",
+    --     size = 470,
+    --     scale = 0.2,
+    --   }
+    -- },
     surface_properties = {
         ["rabbasca-underground"] = 1,
         ["gravity"] = 15,
@@ -30,17 +46,8 @@ data:extend {
         ["rabbasca-or-space"] = 1,
     },
     map_gen_settings = {
-      -- cliff_settings = {
-      --   name = "rabbasca-underground-cliff",
-      --   cliff_elevation_0 = 0.1,
-      --   cliff_elevation_interval = 0.6,
-      --   cliff_smoothing = 0,
-      --   -- richness = 10,
-      -- },
       property_expression_names = {
         elevation = "rabbasca_underground_elevation",
-        -- cliff_elevation = "rabbasca_underground_elevation",
-        -- cliffiness = "0.3",
       },
       autoplace_controls = { },
       autoplace_settings = {
@@ -58,6 +65,7 @@ data:extend {
       draw_sprite_clouds = false,
       clouds = nil,
       day_night_cycle_color_lookup = {
+          -- fill in final-fixes
           {0.0, "identity"},
           {1.0, "identity"},
       },

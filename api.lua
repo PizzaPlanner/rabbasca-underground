@@ -3,7 +3,7 @@ if not data then return end
 local function create_affinity_tech(planet)
   local tech_flex = {
     type = "technology",
-    name = "rabbasca-stabilier-on-"..planet,
+    name = "rabbasca-stabilizer-on-"..planet,
     icons = Rabbasca.icons({
         { proto = data.raw["planet"][planet], scale = 1, shift = {0, 16} },
         { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"], scale = 0.5 },
@@ -12,8 +12,8 @@ local function create_affinity_tech(planet)
     rabbasca_underground_temporary = true,
     prerequisites = { "rabbasca-underground" },
     effects = { },
-    localised_name = { "technology-name.rabbasca-stabilier-on", planet },
-    localised_description = { "technology-description.rabbasca-stabilier-on", planet },
+    localised_name = { "technology-name.rabbasca-stabilizer-on", planet },
+    localised_description = { "technology-description.rabbasca-stabilizer-on", planet },
     research_trigger =
     {
         type = "scripted",
@@ -53,7 +53,7 @@ end
 
 function Rabbasca.Stabilizer.make_atmospheric_recipe(planet, results)
     local name = results[1].name
-    table.insert(data.raw["technology"]["rabbasca-stabilier-on-"..planet].effects, { type = "unlock-recipe", recipe = "rabbasca-underground-"..planet.."-extract-atmosphere" })
+    table.insert(data.raw["technology"]["rabbasca-stabilizer-on-"..planet].effects, { type = "unlock-recipe", recipe = "rabbasca-underground-"..planet.."-extract-atmosphere" })
     return {
         type = "recipe",
         name = "rabbasca-underground-"..planet.."-extract-atmosphere",

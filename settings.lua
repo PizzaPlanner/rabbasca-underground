@@ -9,11 +9,11 @@ data:extend {
     order="u[ux]"
 },
 {
-type = "bool-setting",
-name = "rabbasca-expand-warpfield-science-usage",
-setting_type = "startup",
-default_value = true,
-allow_blank = false,
-order="a[balance]"
+    type = "bool-setting",
+    name = "rabbasca-expand-warpfield-science-usage",
+    setting_type = "startup",
+    default_value = true,
+    allow_blank = false,
+    order="a[balance]"
 },
 }

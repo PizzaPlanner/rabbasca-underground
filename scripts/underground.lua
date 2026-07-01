@@ -178,16 +178,11 @@ end
 function M.on_locate_progress(vault)
     local surface = game.planets["rabbasca-underground"].surface
     if not surface then
-        if math.random() > 0.2 then 
-            if vault then vault.get_inventory(defines.inventory.crafter_input).insert({name = "rabbasca-warp-pylon", count = 1}) end
-            return
-        end
         surface = game.planets["rabbasca-underground"].create_surface()
+        M.init_underground(surface)
     end
     local offset = {0, 10}
     local radius = 3 * 32
-    surface.request_to_generate_chunks(offset, 3)
-    surface.force_generate_chunk_requests()
     local pos = surface.find_non_colliding_position("rabbasca-warp-pylon", offset, radius, 1)
     if not pos then
         game.forces.player.print({ "rabbasca-extra.created-underground-pylon-error", offset.x, offset.y })
@@ -203,12 +198,11 @@ function M.on_locate_progress(vault)
     if spawner and vault then
         vault.set_recipe(nil)
     end
-    M.init_underground(surface)
 end
 
 function M.init_underground(surface)
     surface.create_global_electric_network()
-    surface.request_to_generate_chunks({0, 0}, 1)
+    surface.request_to_generate_chunks({0, 0}, 3)
     surface.force_generate_chunk_requests()
     storage.underground_seed_rng = storage.underground_seed_rng or game.create_random_generator(game.default_map_gen_settings.seed + 571681)
     local stab = surface.create_entity {
@@ -216,7 +210,6 @@ function M.init_underground(surface)
         position = {0, 0},
         force = game.forces.player
     }
-    if not stab then game.forces.player.print("[ERROR] Could not create [entity=rabbasca-warp-stabilizer]. This should never happen. Please report a bug.") return end
     M.stab.register_stabilizer(stab)
 end
 

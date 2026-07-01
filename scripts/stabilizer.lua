@@ -34,7 +34,7 @@ end
 function M.fuel_alert()
     if not (storage.stabilizer and storage.stabilizer.entity and storage.stabilizer.entity.burner.remaining_burning_fuel < fuel.ENERGY_PER_STAB_CELL / 4) then return end
     storage.stabilizer.entity.force.add_custom_alert(storage.stabilizer.entity, { type = "entity", name = "rabbasca-warp-stabilizer" }, { "rabbasca-extra.alert-low-fuel" }, true)
-    storage.stabilizer.entity.surface.play_sound({position = {0, 0}, path = "utility/alert_destroyed" })
+    storage.stabilizer.entity.surface.play_sound({position = {0, 0}, path = "rabbasca-stabilizer-low-fuel", override_sound_type = "alert", volume_modifier = 0.5})
 end
 
 function M.register_stabilizer(s)
@@ -85,7 +85,7 @@ function M.register_stabilizer(s)
         position = { 0, 6 },
         force = s.force
     }
-    chest.health = 127
+    -- chest.health = 127
     storage.stabilizer.miners.chest = chest
     local inv = chest.get_inventory(defines.inventory.chest)
     inv.insert({name = "rabbasca-warp-cell-recharging", count = 4})

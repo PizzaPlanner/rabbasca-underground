@@ -115,28 +115,13 @@ Rabbasca.make_trigger_item({
 },
 {
   type = "module",
-  name = "rabbasca-madness-module",
-  icon = "__rabbasca-assets__/graphics/recolor/icons/madness-module.png",
+  name = "rabbasca-supercharged-module",
+  icon = "__rabbasca-assets__/graphics/recolor/icons/supercharged-module.png",
   icon_size = 64,
   stack_size = 50,
-  spoil_ticks = 1 * minute,
-  spoil_result = "rabbasca-madness-module-low",
   category = "speed",
   tier = 10,
-  effect = { speed = 3, quality = 1 }
-},
-{
-  type = "module",
-  name = "rabbasca-madness-module-low",
-  icon = "__rabbasca-assets__/graphics/recolor/icons/madness-module-off.png",
-  icon_size = 64,
-  stack_size = 50,
-  spoil_ticks = 1 * minute,
-  spoil_result = "rabbasca-madness-module",
-  category = "speed",
-  tier = 10,
-  localised_description = { "item-description.rabbasca-madness-module" },
-  effect = { speed = 4, quality = -1 }
+  effect = { speed = 3 }
 },
 {
   type = "fuel-category",
@@ -372,7 +357,18 @@ util.merge {
   weight = 5000 * kg,
   subgroup = "transport",
   order = "b[personal-transport]-c[spidertron]-r[warpotron]",
-}
+},
+{
+  name = "rabbasca-tinfoil-hat",
+  type = "item",
+  place_as_equipment_result = "rabbasca-tinfoil-hat",
+  icon = "__rabbasca-assets__/graphics/recolor/icons/tinfoil-hat.png",
+  icon_size = 64,
+  stack_size = 10,
+  weight = 1 * kg,
+  subgroup = "utility-equipment",
+  order = "h[tinfoil-hat]",
+},
 -- {
 --     type = "ammo",
 --     name = "self-replicating-firearm-magazine",
