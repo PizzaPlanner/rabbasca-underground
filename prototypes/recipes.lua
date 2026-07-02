@@ -457,8 +457,8 @@ data:extend {
         enabled = false,
         energy_required = 3,
         ingredients = {
-            { type = "item", name = "storage-chest",   amount = 5 },
-            { type = "item", name = "rabbasca-warpfield-engine",   amount = 5 },
+            { type = "item", name = "storage-chest",   amount = 2 },
+            { type = "item", name = "rabbasca-warpfield-engine",   amount = 1 },
             { type = "item", name = "rabbasca-spacetime-sensor",   amount = 1 },
             { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 5 },
         },

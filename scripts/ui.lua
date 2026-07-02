@@ -3,8 +3,6 @@ local M = { }
 local warp = require("scripts.warp")
 local fuel = require("scripts.fuel")
 
-local ENERGY_PER_CELL = 1000000000
-
 local function add_button(parent, sprite, style, name, size)
     local btn = parent.add{
         type = "sprite-button",
@@ -22,11 +20,11 @@ function M.clear_stabilizer_ui(player)
 end
 
 local function update_remote_assignment()
-    if not storage.assign_remote then return end
-    for player, data in pairs(storage.assign_remote) do
+    if not storage.assign_remote_chest then return end
+    for player, data in pairs(storage.assign_remote_chest) do
         local p = game.get_player(player)
         if not (p and p.connected and data.chest and data.chest.valid and p.surface == data.chest.surface) then 
-            storage.assign_remote[player] = nil
+            storage.assign_remote_chest[player] = nil
             return
         end
         local pos = data.chest.position
@@ -45,7 +43,7 @@ local function update_remote_assignment()
                 data.chest.proxy_target_inventory = defines.inventory.burnt_result
                 p.opened = data.chest
             end
-            storage.assign_remote[player] = nil
+            storage.assign_remote_chest[player] = nil
         elseif p.selected and p.selected.burner and p.selected.burner.fuel_categories["rabbasca-warp-anomaly"] then
             local is_in_range = math.abs(data.chest.position.x - p.selected.position.x) < 10 and math.abs(data.chest.position.y - p.selected.position.y) < 10
             if is_in_range then
@@ -67,33 +65,33 @@ local function update_remote_assignment()
                 width = 3, gap_length = 0.3, dash_length = 0.7, dash_offset = 0.025})
         end
     end
-    if table_size(storage.assign_remote) == 0 then storage.assign_remote = nil end
+    if table_size(storage.assign_remote_chest) == 0 then storage.assign_remote_chest = nil end
 end
 
 function M.confirm_cell_selection(player)
     local frame = player.gui.screen.rabbasca_cell_assignment
     if frame then 
         local new_name = frame.rabbasca_cell_name.text
-        local item = storage.assign_remote[player.index]
+        local item = storage.assign_cell[player.index]
         if item and item.valid and item.valid_for_read and item.name:find("^rabbasca%-warp%-cell") then
             item.label = new_name
         end
         frame.destroy()
     end
-    storage.assign_remote[player.index] = nil
+    storage.assign_cell[player.index] = nil
 end
 
 function M.update_cell_assignment()
-    if not storage.assign_remote then return end
-    for player_index, _ in pairs(storage.assign_remote) do
+    if not storage.assign_cell then return end
+    for player_index, _ in pairs(storage.assign_cell) do
         local player = game.get_player(player_index)
         if not player then 
-            storage.assign_remote[player_index] = nil
+            storage.assign_cell[player_index] = nil
         else
             M.set_cell_ui(player)
         end
     end
-    if table_size(storage.assign_remote) == 0 then storage.assign_remote = nil end
+    if table_size(storage.assign_cell) == 0 then storage.assign_cell = nil end
 end
 
 local function add_table(parent)
@@ -115,8 +113,8 @@ function M.set_cell_ui(player, item)
         }
         frame.auto_center = true
         player.opened = nil -- close dummy inventory
-        storage.assign_remote = storage.assign_remote or { }
-        storage.assign_remote[player.index] = item
+        storage.assign_cell = storage.assign_cell or { }
+        storage.assign_cell[player.index] = item
         local name = frame.add{ type = "textfield", name = "rabbasca_cell_name", caption = { "", "Cell Name" }, text = item and item.label or "", icon_selector = true, tooltip = {"", "Give the cell a custom name"} }
         local ok = frame.add{ type = "button", name = "rabbasca_cell_confirm", caption = { "", "Close" }, style = "confirm_button" }
         local scroll = frame.add { type = "scroll-pane", name = "rabbasca_cell_targets" }
@@ -151,12 +149,12 @@ function M.set_cell_ui(player, item)
         cam.style.vertically_stretchable   = true
         cam.style.minimal_height = 128
     else
-        item = item or storage.assign_remote[player.index]
-        storage.assign_remote[player.index] = item
+        item = item or storage.assign_cell[player.index]
+        storage.assign_cell[player.index] = item
     end
 
     if not (item and item.valid and item.valid_for_read and item.name:find("^rabbasca%-warp%-cell")) then
-        storage.assign_remote[player.index] = nil
+        storage.assign_cell[player.index] = nil
         frame.destroy()
         return
     end

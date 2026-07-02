@@ -84,9 +84,12 @@ data:extend {
     energy_required = 5,
     allow_productivity = false,
     hide_from_player_crafting = false,
-    ingredients = { },
+    ingredients = { 
+      { type = "item", name = "carbon-fiber", amount = 1 },
+      { type = "item", name = "iron-plate", amount = 10 },
+    },
     results = {
-        { type = "item", name = "rabbasca-tinfoil-hat", amount = 1 },
+      { type = "item", name = "rabbasca-tinfoil-hat", amount = 1 },
     },
     categories = { "crafting" }
 },

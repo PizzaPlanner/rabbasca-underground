@@ -402,7 +402,10 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-warp-stabilizer-powerspike-1-unlock",
-    icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-powerspike"]}}),
+    icons = Rabbasca.icons({
+      {proto = data.raw["item"]["rabbasca-stabilizer-warp-sequence"]},
+      {proto = data.raw["item"]["rabbasca-progress-powerspike"]},
+    }, 256),
     prerequisites = { "rabbasca-anomaly-studies-1" },
     effects = {
       {
@@ -410,6 +413,7 @@ data:extend{
         recipe = "rabbasca-stabilizer-warp-sequence"
       },
     },
+    localised_name = { "item-name.rabbasca-stabilizer-warp-sequence" },
     research_trigger =
     {
       type = "scripted",
@@ -419,7 +423,10 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-warp-stabilizer-powerspike-4-unlock",
-    icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-powerspike"]}}),
+    icons = Rabbasca.icons({
+      {proto = data.raw["item"]["rabbasca-collector-pylon"]},
+      {proto = data.raw["item"]["rabbasca-progress-powerspike"]},
+    }, 256),
     prerequisites = { "rabbasca-warp-stabilizer-powerspike-1-unlock" },
     effects = {
       {
@@ -427,6 +434,7 @@ data:extend{
         recipe = "rabbasca-collector-pylon"
       },
     },
+    localised_name = { "entity-name.rabbasca-collector-pylon" },
     research_trigger =
     {
       type = "scripted",
@@ -436,7 +444,10 @@ data:extend{
   {
     type = "technology",
     name = "rabbasca-warp-stabilizer-powerspike-5-unlock",
-    icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-powerspike"]}}),
+    icons = Rabbasca.icons({
+      {proto = data.raw["item"]["rabbasca-stability-pylon"]},
+      {proto = data.raw["item"]["rabbasca-progress-powerspike"]},
+    }, 256),
     prerequisites = { "rabbasca-warp-stabilizer-powerspike-4-unlock" },
     effects = {
       {
@@ -444,16 +455,20 @@ data:extend{
         recipe = "rabbasca-stability-pylon"
       },
     },
+    localised_name = { "entity-name.rabbasca-stability-pylon" },
     research_trigger =
     {
       type = "scripted",
-      trigger_description = { "rabbasca-extra.trigger-unlock-powerspike", tostring(6) }
+      trigger_description = { "rabbasca-extra.trigger-unlock-powerspike", tostring(5) }
     }
   },
   {
     type = "technology",
     name = "rabbasca-warp-stabilizer-powerspike-6-unlock",
-    icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-powerspike"]}}),
+    icons = Rabbasca.icons({
+      {proto = data.raw["item-with-inventory"]["rabbasca-warp-cell-recharging"]},
+      {proto = data.raw["item"]["rabbasca-progress-powerspike"]},
+    }, 256),
     prerequisites = { "rabbasca-warp-stabilizer-powerspike-5-unlock" },
     effects = {
       {
@@ -461,14 +476,17 @@ data:extend{
         recipe = "rabbasca-warp-cell-recharging"
       },
     },
+    localised_name = { "item-name.rabbasca-warp-cell-recharging" },
     research_trigger =
     {
       type = "scripted",
-      trigger_description = { "rabbasca-extra.trigger-unlock-powerspike", tostring(8) }
+      trigger_description = { "rabbasca-extra.trigger-unlock-powerspike", tostring(6) }
     }
   },
 }
 
--- local warp_tech_3 = data.raw["technology"]["interplanetary-construction-3"]
--- warp_tech_3.prerequisites = { "rabbasca-warpfield-science-pack" }
--- table.insert(warp_tech_3.unit.ingredients, {"rabbasca-warpfield-science-pack", 1})
+if settings.startup["rabbasca-interplanetary-construction-3-requires-warpfield-science"].value then
+  local warp_tech_3 = data.raw["technology"]["interplanetary-construction-3"]
+  warp_tech_3.prerequisites = { "rabbasca-warpfield-science-pack" }
+  table.insert(warp_tech_3.unit.ingredients, {"rabbasca-warpfield-science-pack", 1})
+end

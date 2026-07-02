@@ -38,7 +38,7 @@ Rabbasca.make_trigger_item({
   hidden_in_factoriopedia = true,
   hidden = false,
   icons = Rabbasca.icons({
-    { icon = "__rabbasca-assets__/graphics/recolor/icons/powerspike-overlay.png", icon_size = 96, shift = {-8, -8} }
+    { icon = "__rabbasca-assets__/graphics/recolor/icons/powerspike-overlay.png", icon_size = 96 }
   })
 }, "rabbasca_on_powerspike_progress"),
 Rabbasca.make_trigger_item({

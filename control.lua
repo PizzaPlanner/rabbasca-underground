@@ -144,9 +144,9 @@ script.on_event(defines.events.on_gui_click, function(event)
   if not player then return end
   if event.element.tags 
   and event.element.parent and event.element.parent.parent and event.element.parent.parent.name == "rabbasca_cell_targets" 
-  and storage.assign_remote and storage.assign_remote[event.player_index] then
+  and storage.assign_cell and storage.assign_cell[event.player_index] then
     local enum = event.element.tags.entity
-    local cell = storage.assign_remote[event.player_index].item
+    local cell = storage.assign_cell[event.player_index].item
     local e = game.get_entity_by_unit_number(enum or 0)
     if cell and e then
       underground.fuel.tether(cell, e)
@@ -154,8 +154,8 @@ script.on_event(defines.events.on_gui_click, function(event)
       underground.fuel.untether(cell)
     end
   elseif event.element.name == "rabbasca_su_remote_select" then
-      storage.assign_remote = storage.assign_remote or { }
-      storage.assign_remote[event.player_index] = { chest = player.opened }
+      storage.assign_cell = storage.assign_cell or { }
+      storage.assign_cell[event.player_index] = { chest = player.opened }
       player.opened = nil
   elseif event.element.name == "rabbasca_su_btn_repair_warpdrive" and storage.stabilizer then
     storage.stabilizer.entity.set_recipe("rabbasca-repair-warpdrive")
@@ -183,8 +183,8 @@ script.on_event(defines.events.on_gui_switch_state_changed, function(event)
     storage.stabilizer.settings.autopilot = event.element.switch_state == "right"
   elseif event.element.name == "rabbasca_su_fuel_signal_switch" then
       storage.stabilizer.fuel.selector.read_from_network = event.element.switch_state == "right"
-      storage.assign_remote = storage.assign_remote or { }
-      storage.assign_remote[event.player_index] = { chest = player.opened }
+      storage.assign_cell = storage.assign_cell or { }
+      storage.assign_cell[event.player_index] = { chest = player.opened }
       player.opened = nil
   end
 end)
