@@ -63,7 +63,7 @@ function M.on_warp_underground(event)
             if e and e.valid then e.force = "neutral" end
         end
         storage.stabilizer.left_on_warp = { }
-        if not storage.stabilizer.flooring.tiles[data.to] then
+        if storage.stabilizer.flooring.dirty or not storage.stabilizer.flooring.tiles[data.to] then
             M.recalc_tiles()
         end
         if storage.stabilizer.finished_warps then
