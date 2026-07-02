@@ -16,4 +16,12 @@ data:extend {
     allow_blank = false,
     order="a[balance]"
 },
+{
+    type = "bool-setting",
+    name = "rabbasca-interplanetary-construction-3-requires-warpfield-science",
+    setting_type = "startup",
+    default_value = false,
+    allow_blank = false,
+    order="a[balance]"
+},
 }
