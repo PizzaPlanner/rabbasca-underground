@@ -352,4 +352,12 @@ function M.on_floorthing_died(id)
     storage.stabilizer.flooring.dirty = true
 end
 
+function M.get_pylon_off_count()
+    local count = 0
+    for _, data in pairs(storage.stabilizer.flooring.entities) do
+        if not data.on then count = count + 1 end
+    end
+    return count
+end
+
 return M

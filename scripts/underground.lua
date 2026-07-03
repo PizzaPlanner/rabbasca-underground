@@ -79,6 +79,30 @@ function M.update_logistic_section()
             {
                 value = { name = "rabbasca-warp-anomaly", type = "entity", quality = "normal" },
                 min = storage.stabilizer.anomalies.current
+            },
+            {
+                value = { name = "rabbasca-stability-pylon", type = "entity", quality = "normal" },
+                min = M.warp.get_pylon_off_count()
+            },
+            {
+                value = { name = "rabbasca-warp-trace", type = "item", quality = "normal" },
+                min = M.stab.get_fuel_percentage() * 100
+            },
+            {
+                value = { name = "rabbasca-powerspike", type = "item", quality = "normal" },
+                min = storage.stabilizer.powerspikes.created
+            },
+            {
+                value = { name = "rabbasca-progress-powerspike", type = "item", quality = "normal" },
+                min = storage.stabilizer.powerspikes.next
+            },
+            {
+                value = { name = "rabbasca-hunt-relicaries", type = "recipe", quality = "normal" },
+                min = M.warp.get_relic_chance() * 100
+            },
+            {
+                value = { name = "rabbasca-hunt-anomalies", type = "recipe", quality = "normal" },
+                min = M.warp.get_next_anomaly_richness() * 100
             }
         }
     else

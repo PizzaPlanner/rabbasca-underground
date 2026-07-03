@@ -1,6 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.1
+Date: 2026-07-03
+  Changes:
+    - Added various signals to the stabilizer's exported logistics group
+    - Added tips and tricks entry for underground automation
+    - Added missing locale entries
+---------------------------------------------------------------------------------------------------
 Version: 0.5.0
-Date: 2026-06-03
+Date: 2026-07-03
   Changes:
     - Initial release
     - Added a new post-aquilo progression which involves locating and using the warpfield stabilizer
