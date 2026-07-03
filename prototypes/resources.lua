@@ -105,9 +105,9 @@ local mashup = util.merge {
 mashup.map_color = { 0.74, 0.38, 0.1 }
 mashup.minable.mining_time = 0.5
 mashup.minable.results = {
-  { type = "item", name = "spoilage", amount = 1, independent_probability = 0.4 },
-  { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.7, independent_probability = 0.15 },
-  { type = "item", name = "yumako-mash", amount = 1, percent_spoiled = 0.4, independent_probability = 0.08 },
+  { type = "item", name = "spoilage", amount = 3, independent_probability = 0.4 },
+  { type = "item", name = "yumako-mash", amount = 4, percent_spoiled = 0.7, independent_probability = 0.15 },
+  { type = "item", name = "yumako-mash", amount = 11, percent_spoiled = 0.4, independent_probability = 0.08 },
 }
 lithium_amide.autoplace = nil
 
@@ -125,7 +125,7 @@ local haronite_ore = util.merge {
   }
 }
 haronite_ore.minable.mining_time = 3
-haronite_ore.minable.results = {{ type = "item", name = "haronite", amount = 1, percent_spoiled = 0.8 }}
+haronite_ore.minable.results = {{ type = "item", name = "haronite", amount = 1, percent_spoiled = 0.2 }}
 haronite_ore.autoplace = nil
 
 local holmium_ore = util.merge {

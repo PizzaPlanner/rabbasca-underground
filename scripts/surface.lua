@@ -300,9 +300,15 @@ function M.relocate_floorthing(e)
         local new = ghost.position
         ghost.destroy{ }
         if e.teleport(new) then
-            storage.stabilizer.flooring.dirty = true
+            local id, _, _ = script.register_on_object_destroyed(e)
+            M.remove_floorthing(current, id)
+            storage.stabilizer.flooring.entities[id] = {
+                entity = e,
+                position = e.position,
+                on = nil
+            }
+            return
         end
-        return
     end
 end
 

@@ -236,7 +236,6 @@ if settings.global["rabbasca-debug-mode"] then
     end)
 
     commands.add_command("rabbasca_ug_hey", nil, function(command)
-        surface = game.planets["rabbasca-underground"].create_surface()
         M.on_locate_progress()
     end)
 

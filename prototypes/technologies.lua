@@ -5,7 +5,7 @@ data:extend{
     icons = Rabbasca.icons({
       { icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png", icon_size = 640 },
     }),
-    prerequisites = { "interplanetary-construction-2", "rabbasca-ears-technology-2", "circuit-network", "harene-synthesis" },
+    prerequisites = { "interplanetary-construction-2", "rabbasca-ears-technology-2", "harene-synthesis", "foundation" },
     essential = true,
     effects = {
       {
@@ -100,7 +100,7 @@ data:extend{
     {
         type = "craft-item",
         item = "rabbasca-obscure-theories",
-        count = 250
+        count = 200
     }
 },
 {
@@ -221,13 +221,17 @@ data:extend{
         type = "unlock-recipe",
         recipe = "rabbasca-relicary-remote"
       },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-powershard"
+      },
     },
     ignore_tech_cost_multiplier = true,
     research_trigger =
     {
         type = "craft-item",
         item = "rabbasca-obscure-theories",
-        count = 100
+        count = 75
     }
 },
 {

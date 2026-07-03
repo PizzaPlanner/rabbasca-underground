@@ -181,10 +181,33 @@ data:extend {
         ingredients = {
             { type = "item", name = "rabbasca-warp-anomaly", amount = 100 },
             { type = "item", name = "rabbasca-restored-knowledge", amount = 1 },
-            { type = "item", name = "rabbasca-powerspike", amount = 2 },
+            { type = "item", name = "rabbasca-powerspike", amount = 1 },
         },
         results = { { type = "item", name = "rabbasca-warp-cell-recharging", amount = 1, always_fresh = true, affected_by_quality = false } },
         categories = { "rabbasca-warp-stabilizer" },
+        order = "0",
+        hide_from_player_crafting = true,
+        allow_productivity = false,
+        auto_recycle = false,
+        crafting_machine_tint = {
+            primary = { 0.95, 0.83, 0.14 }
+        },
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-powershard",
+        enabled = false,
+        energy_required = 15,
+        ingredients = {
+            { type = "item", name = "rabbasca-powerspike", amount = 1 },
+            { type = "item", name = "repair-pack", amount = 20 },
+        },
+        results = { 
+            { type = "item", name = "rabbasca-powershard", amount = 5 },
+            { type = "item", name = "rabbasca-powerspike-weak", amount = 1, affected_by_quality = false, always_fresh = true, ignored_by_productivity = 1 },
+         },
+        categories = { "crafting" },
+        main_product = "rabbasca-powershard",
         order = "0",
         hide_from_player_crafting = true,
         allow_productivity = false,
@@ -319,8 +342,8 @@ data:extend {
         enabled = false,
         hide_from_player_crafting = true,
         can_set_quality = false,
-        energy_required = 0.5,
-        ingredients = { { type = "item", name = "rabbasca-warp-trace", amount = 1 } },
+        energy_required = 1,
+        ingredients = { { type = "item", name = "rabbasca-warp-trace", amount = 5 } },
         allow_productivity = false,
         results = { { type = "item", name = "rabbasca-amplify-anomaly", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false } },
         surface_conditions = { Rabbasca.only_underground(true) },
@@ -336,10 +359,10 @@ data:extend {
         enabled = false,
         energy_required = 7,
         ingredients = {
-            { type = "item", name = "lithium-plate", amount = 3 },
+            { type = "item", name = "lithium-plate", amount = 4 },
             { type = "item", name = "rabbasca-warp-trace", amount = 5 },
             { type = "item", name = "rabbasca-warpfield-engine", amount = 2 },
-            { type = "item", name = "haronite-plate", amount = 1 },
+            { type = "item", name = "haronite-plate", amount = 3 },
         },
         results = {
             { type = "item", name = "rabbasca-quantum-device", amount = 1 },
@@ -371,10 +394,10 @@ data:extend {
         enabled = false,
         energy_required = 35,
         ingredients = {
-            { type = "fluid", name = "harene", amount = 10 },
+            { type = "fluid", name = "harene", amount = 5 },
             { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 4 },
             { type = "item", name = "rabbasca-warp-core", amount = 1 },
-            { type = "item", name = "rabbasca-restored-knowledge", amount = 20 },
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 10 },
         },
         results = {
             { type = "item", name = "rabbasca-warpfield-science-pack", amount = 12 },
@@ -595,12 +618,12 @@ data:extend {
         name = "rabbasca-obscure-theories",
         enabled = false,
         hide_from_player_crafting = true,
-        energy_required = 1,
+        energy_required = 0.5,
         ingredients = {
             { type = "item", name = "beta-carotene-barrel",   amount = 1 },
         },
         results = { 
-            { type = "item", name = "rabbasca-obscure-theories", amount_min = 28, amount_max = 34 },
+            { type = "item", name = "rabbasca-obscure-theories", amount_min = 15, amount_max = 17 },
         },
         main_product = "rabbasca-obscure-theories",
         categories = { "rabbasca-relics" }

@@ -28,7 +28,7 @@ data:extend {
     {
       type = "craft-item",
       item = "rabbasca-sanity-loss",
-      count = 3
+      count = 2
     }
   },
   {
@@ -43,7 +43,7 @@ data:extend {
     {
       type = "craft-item",
       item = "rabbasca-sanity-loss",
-      count = 500
+      count = 100
     }
 },
   {
@@ -58,7 +58,7 @@ data:extend {
     {
       type = "craft-item",
       item = "rabbasca-sanity-loss",
-      count = 5000
+      count = 2000
     }
 },
     {

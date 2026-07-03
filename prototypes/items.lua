@@ -137,10 +137,39 @@ Rabbasca.make_trigger_item({
     {icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png", icon_size = 640 },
     {icon = "__rabbasca-assets__/graphics/recolor/icons/powerspike-overlay.png", icon_size = 96 }
   }),
-  stack_size = 10,
+  stack_size = 20,
   subgroup = "rabbasca-warp-stabilizer",
   order = "a[stabilizer]-a[upgrade]",
   weight = 250 * kg,
+  auto_recycle = false,
+},
+{
+  type = "item",
+  name = "rabbasca-powerspike-weak",
+  icons = Rabbasca.icons({
+    {icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png", icon_size = 640 },
+    {icon = "__rabbasca-assets__/graphics/recolor/icons/powerspike-overlay.png", icon_size = 96 },
+    { icon = "__base__/graphics/icons/signal/signal-battery-low.png", icon_size = 64, shift = {-8, 8}, scale = 0.5 }
+  }),
+  stack_size = 20,
+  spoil_ticks = 30 * minute,
+  spoil_result = "rabbasca-powerspike",
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "a[stabilizer]-a[upgrade-down]",
+  weight = 250 * kg,
+  auto_recycle = false,
+},
+{
+  type = "item",
+  name = "rabbasca-powershard",
+  icons = Rabbasca.icons({
+    { icon = "__rabbasca-assets__/graphics/icons/archive.png", icon_size = 128 },
+    { icon = "__base__/graphics/icons/signal/signal-battery-full.png", icon_size = 64, shift = { 8, 8 }, scale = 0.5 }
+  }),
+  stack_size = 200,
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "a[stabilizer]-a[upgrade-broken]",
+  weight = 25 * kg,
   fuel_value = "100J",
   fuel_category = "rabbasca-relicary",
   auto_recycle = false,

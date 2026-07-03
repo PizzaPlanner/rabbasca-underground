@@ -230,12 +230,11 @@ function M.set_relicary_remote_ui(player)
         local list = frame.add{ 
             type = "list-box", 
             name = "rabbasca_relicary_target_inventory",
-            items = { {"", "Relic input"}, {"", "Relic output"}, {"", "Security lock"}, {"", "Security access"}}
+            items = { {"", "Input"}, {"", "Output"}, {"", "Fuel"} }
         }
         list.selected_index = (player.opened.proxy_target_inventory == defines.inventory.crafter_input and 1) 
                            or (player.opened.proxy_target_inventory == defines.inventory.crafter_output and 2) 
                            or (player.opened.proxy_target_inventory == defines.inventory.fuel and 3)
-                           or (player.opened.proxy_target_inventory == defines.inventory.burnt_result and 4)
                            or 0 
     end
 end

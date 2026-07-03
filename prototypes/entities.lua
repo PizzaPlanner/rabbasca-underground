@@ -169,7 +169,7 @@ local relicary = {
         burner_usage = "fuel",
         effectivity = 1,
         fuel_categories = { "rabbasca-relicary" },
-        initial_fuel = "rabbasca-powerspike",
+        initial_fuel = "rabbasca-powershard",
         initial_fuel_percent = 0.1,
         fuel_inventory_size = 1,
         light_flicker = { },
@@ -196,16 +196,16 @@ local relicary_access = {
     name = "rabbasca-relicary-remote",
     icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-relicary-remote"]}}),
     type = "proxy-container",
-    flags = { "placeable-player" },
+    flags = { "placeable-player", "player-creation" },
     placeable_by = { item = "rabbasca-relicary-remote", count = 1 },
+    minable = { result = "rabbasca-relicary-remote", count = 1, mining_time = 1 },
     draw_inventory_content = true,
     max_health = 100,
+    circuit_wire_max_distance = 90,
     picture = table.deepcopy(data.raw["linked-container"]["linked-chest"].picture),
     collision_box = { { -0.4, -0.4 }, { 0.4, 0.4 } },
     selection_box = { { -0.5, -0.5 }, { 0.5, 0.5 } },
     surface_conditions = { Rabbasca.only_underground(true) },
-    subgroup = "rabbasca-ug-processes",
-    order = "b[relicary-access]-0[access]"
 }
 
 local miner_remote = {

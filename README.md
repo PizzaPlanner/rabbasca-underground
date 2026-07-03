@@ -11,22 +11,22 @@ This is a late-game challenge/puzzle mod that expands [Rabbasca](https://mods.fa
 ### Is this mod for me?
 | Yes if: | No if: |
 | ------- | ------ |
-| - You like fresh experiences | You prefer a more vanilla-style experience |
-| - You enjoy playing the summoner class | You don't like complexity |
-| - You like a challenge on restricted space | You don't read tooltips and tips, even if you are stuck |
-| - You like the concept of [Warptorio](https://mods.factorio.com/mod/warptorio-space-age)<br>     (however, the underground is peaceful and has no time pressure) | |
+| You like fresh experiences | You prefer a more vanilla-style experience |
+| You enjoy playing the summoner class | You don't like complexity |
+| You like a challenge on restricted space | You don't read tooltips and tips, even if you are stuck |
+| You like the concept of [Warptorio](https://mods.factorio.com/mod/warptorio-space-age) (without enemies and time pressure) | |
 
 ### Spacetime anomalies
 The warp-field stabilizer is seeking anomalies, warping from one location to the next, purging them to stabilize the warpfield in the process. 
 Anomalies manifest into other resources depending on the current location. This gives access to all the resources needed to establish a factory.
 
-![](https://github.com/PizzaPlanner/rabbasca-underground/blob/master/.web/resources.png)
+![](https://github.com/PizzaPlanner/rabbasca-underground/blob/master/.web/resources.png?raw=true)
 
 ### Level up the stabilizer
 By purging anomalies, the stabilizer gradually unlocks powerspikes, which can be used to craft upgrades, notably more anomaly harvesters, power cells, and building space expansions. The required purging costs scale with each level, so use them wisely.
 Since there are many stabilizers in the universe, if you mess up you can abandon the current one and locate a new one.
 
-![](https://github.com/PizzaPlanner/rabbasca-underground/blob/master/.web/levels.png)
+![](https://github.com/PizzaPlanner/rabbasca-underground/blob/master/.web/levels.png?raw=true)
 
 ### Learn from forgotten archives
 Use a special new building to locate archives which contain rabbascan knowledge. If you can manage to decipher it, it may unlock powerful technologies. Or drive you insane. Handle with caution!
@@ -45,9 +45,6 @@ Put powerspikes into modules to supercharge them. These modules are extremely st
 #### Tinfoil hat
 Trying to understand rabbascan technologies has messed with your sanity. You start to see... things? Are they dangerous?
 This piece of equipment will help. They are your friends now!
-
-#### Short-range remote access point (Planned)
-Perfect for situations where building space is thight, these chests connect to a nearby crafting machine to put items in or out. 
 
 ## Credits
 - Assets for Pylons, Stabilizer and Underground locator by [Hurricane](https://mods.factorio.com/user/Hurricane046) 
