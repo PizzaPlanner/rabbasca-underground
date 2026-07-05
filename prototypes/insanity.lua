@@ -2,27 +2,36 @@ data:extend {
 Rabbasca.make_trigger_item({
   name = "rabbasca-sanity-loss",
   icons ={
-    { icon =  "__core__/graphics/icons/entity/character.png", icon_size = 64, shift = {6, 0} },
+    { icon =  "__space-age__/graphics/technology/health.png", icon_size = 256, shift = {6, 0} },
     { icon =  "__base__/graphics/icons/signal/signal-trash-bin.png", icon_size = 64, scale = 0.4, shift = {-6, 3} }
   },
 }, "rabbasca_on_sanity_loss"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-sanity-mote",
   spoil_ticks = 30 * second,
+  stack_size = 10,
   icons ={
     { icon =  "__core__/graphics/icons/entity/character.png", icon_size = 64, shift = {6, 0} },
     { icon =  "__base__/graphics/icons/signal/signal-recycle.png", icon_size = 64, scale = 0.4, shift = {-6, 3} }
   },
 }, "rabbasca_on_sanity_restore"),
 }
+data.raw["item"]["rabbasca-sanity-mote"].flags = { }
 data:extend {
 {
     type = "technology",
     name = "rabbasca-insanity-1",
-    icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-sanity-loss"]}}),
+    icons = Rabbasca.icons({
+      {proto = data.raw["item"]["rabbasca-sanity-loss"]}
+    }),
     prerequisites = { "rabbasca-archives" },
     effects = {
-      { type = "unlock-recipe", recipe = "rabbasca-embrace-insanity" }
+      { type = "unlock-recipe", recipe = "rabbasca-embrace-insanity" },
+      {
+        type = "change-recipe-productivity",
+        recipe = "rabbasca-restored-knowledge",
+        change = 0.25
+      },
     },
     research_trigger =
     {
@@ -37,7 +46,11 @@ data:extend {
     icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-sanity-loss"]}}),
     prerequisites = { "rabbasca-insanity-1" },
     effects = {
-    --   { type = "unlock-recipe", recipe = "rabbasca-tinfoil-hat" }
+      {
+        type = "change-recipe-productivity",
+        recipe = "rabbasca-restored-knowledge",
+        change = 0.25
+      },
     },
     research_trigger =
     {
@@ -52,7 +65,12 @@ data:extend {
     icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-sanity-loss"]}}),
     prerequisites = { "rabbasca-insanity-2" },
     effects = {
-      { type = "unlock-recipe", recipe = "rabbasca-tinfoil-hat" }
+      { type = "unlock-recipe", recipe = "rabbasca-tinfoil-hat" },
+      {
+        type = "change-recipe-productivity",
+        recipe = "rabbasca-restored-knowledge",
+        change = 0.5
+      },
     },
     research_trigger =
     {
@@ -73,7 +91,7 @@ data:extend {
         { type = "item", name = "rabbasca-sanity-mote", amount = 1 },
     },
     results = {
-        { type = "item", name = "rabbasca-sanity-loss", amount = 1 },
+        { type = "item", name = "rabbasca-sanity-loss", amount = 1, always_fresh = true },
     },
     categories = { "crafting" }
 },

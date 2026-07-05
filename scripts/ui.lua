@@ -305,28 +305,6 @@ function M.set_stabilizer_ui(player)
         bar2.style.horizontally_stretchable = true
         bar2.style.color = { 1, 1, 1 }
 
-        if storage.stabilizer.fuel.load then
-            local f1 = frame.add {
-                type = "frame",
-                name = "rabbasca_su_drain",
-                style = "entity_frame",
-                direction = "horizontal"
-            }
-            add_button(f1, "item/rabbasca-warp-cell", "transparent_slot", "icon", 24)
-            local bar2 = f1.add {
-                type = "progressbar",
-                name = "bar",
-                value = 0,
-                style = "production_progressbar",
-                caption = "0/0 MW",
-            }
-            bar2.style.minimal_width = 64
-            bar2.style.natural_width = 64
-            bar2.style.horizontal_align = "center"
-            bar2.style.horizontally_stretchable = true
-            bar2.style.color = { 1, 1, 1 }
-        end
-
         local subframe = frame.add {
             type = "frame",
             name = "rabbasca_su_content",
@@ -391,19 +369,6 @@ function M.set_stabilizer_ui(player)
         frame.rabbasca_su_progress_ps.bar.value = progress
         frame.rabbasca_su_progress_ps.bar.caption = { "rabbasca-extra.panel-progress-spike", level + 1, storage.stabilizer.powerspikes.next }
     end
-    if frame.rabbasca_su_drain then
-        local load = storage.stabilizer.fuel.load
-        local val = load.available / load.demand
-        frame.rabbasca_su_drain.bar.value = val
-        frame.rabbasca_su_drain.bar.style.color = (val >= 1 and { 0, 1, 0 }) or (val > 0.5 and { 1, 0.8, 0 }) or { 1, 0.2, 0 }
-        frame.rabbasca_su_drain.bar.caption = { "", string.format("%.1f MW / %.1f MW", load.available / 1000000 * 60, load.demand / 1000000 * 60) }
-    end
-
-    -- frame.rabbasca_su_fuel.rabbasca_su_fuel_left.caption = { "", string.format("[item=rabbasca-warp-anomaly]Anomalies left: %i", storage.stabilizer.anomalies.current) }
-    -- frame.rabbasca_su_fuel.rabbasca_su_repairs.caption =   { "", string.format("Stabilization:  %i%%", warp.get_repair_progress() * 100) }
-    -- frame.rabbasca_su_fuel.rabbasca_su_cost_fix.caption =   { "", string.format("[recipe=rabbasca-warp-trace]: %.2f%%[item=rabbasca-warp-cell]/s", 1 * warp.get_fuel_time_modifier()) }
-    -- frame.rabbasca_su_fuel.rabbasca_su_cost_warp.caption =   { "", string.format("[recipe=rabbasca-stabilizer-warp-sequence]: %.2f%%[item=rabbasca-warp-cell]/s", warp.get_warp_cost() * warp.get_fuel_time_modifier()) }
-    -- frame.rabbasca_su_fuel.rabbasca_su_battery_drain.caption = { "", string.format("Current: %s%.2f%%[item=rabbasca-warp-cell]/s", info.discharge_rate > 0 and "+" or "", info.discharge_rate) }
 end
 
 return M

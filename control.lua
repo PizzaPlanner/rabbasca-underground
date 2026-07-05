@@ -91,7 +91,8 @@ local function handle_script_events(event)
     sanity.remove_sanity(1, force)
   elseif effect_id == "rabbasca_on_sanity_restore" then
     local from = Rabbasca.get_spoiled_in(event)
-    if from and from.force then
+    if from and from.type == "character" and from.force then
+      if sanity.get_protection_level(from) > 0 then return end
       sanity.restore_sanity(1, from.force)
     end
   end
@@ -124,6 +125,20 @@ script.on_event(defines.events.on_gui_opened, function(event)
       if event.item.name:find("^rabbasca%-warp%-cell") then
         underground.ui.set_cell_ui(player, event.item)
       end
+    elseif event.gui_type == defines.gui_type.controller then
+      sanity.set_sanity_ui(player)
+    end
+end)
+
+script.on_event(defines.events.on_gui_closed, function(event)
+  local player = game.get_player(event.player_index)
+    if event.gui_type == defines.gui_type.entity then
+        if player then
+            underground.ui.set_stabilizer_ui(player)
+            underground.ui.set_relicary_remote_ui(player)
+        end
+    elseif event.gui_type == defines.gui_type.controller then
+      sanity.set_sanity_ui(player)
     end
 end)
 
@@ -181,22 +196,7 @@ script.on_event(defines.events.on_gui_switch_state_changed, function(event)
 
   if event.element.name == "rabbasca_su_autopilot" then
     storage.stabilizer.settings.autopilot = event.element.switch_state == "right"
-  elseif event.element.name == "rabbasca_su_fuel_signal_switch" then
-      storage.stabilizer.fuel.selector.read_from_network = event.element.switch_state == "right"
-      storage.assign_cell = storage.assign_cell or { }
-      storage.assign_cell[event.player_index] = { chest = player.opened }
-      player.opened = nil
   end
-end)
-
-script.on_event(defines.events.on_gui_closed, function(event)
-    if event.gui_type == defines.gui_type.entity then
-        local player = game.get_player(event.player_index)
-        if player then
-            underground.ui.set_stabilizer_ui(player)
-            underground.ui.set_relicary_remote_ui(player)
-        end
-    end
 end)
 
 script.on_event(defines.events.on_tick, underground.on_tick_underground)

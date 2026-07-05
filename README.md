@@ -12,7 +12,7 @@ This is a late-game challenge/puzzle mod that expands [Rabbasca](https://mods.fa
 | Yes if: | No if: |
 | ------- | ------ |
 | You like fresh experiences | You prefer a more vanilla-style experience |
-| You enjoy playing the summoner class | You don't like complexity |
+| You enjoy playing the summoner class | You are not a spaghetti enjoyer |
 | You like a challenge on restricted space | You don't read tooltips and tips, even if you are stuck |
 | You like the concept of [Warptorio](https://mods.factorio.com/mod/warptorio-space-age) (without enemies and time pressure) | You play with mods that alter a lot of vanilla recipes |
 
