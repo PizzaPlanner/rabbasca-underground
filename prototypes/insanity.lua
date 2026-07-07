@@ -112,11 +112,11 @@ data:extend {
     categories = { "crafting" }
 },
 {
-  type = "belt-immunity-equipment",
+  type = "night-vision-equipment",
   name = "rabbasca-tinfoil-hat",
   sprite =
   {
-    filename = "__base__/graphics/icons/belt-immunity-equipment.png",
+    filename = "__rabbasca-assets__/graphics/recolor/icons/tinfoil-hat.png",
     flags = { "icon" },
     size = 64,
     priority = "extra-high-no-scale",
@@ -128,12 +128,18 @@ data:extend {
     height = 1,
     type = "full"
   },
+  darkness_to_turn_on = 0,
+  color_lookup = {
+    {1.0, "identity"},
+  },
   take_result = "rabbasca-tinfoil-hat",
-  energy_source = { type = "electric", usage_priority = "primary-output" },
-  energy_consumption = "1kW",
+  energy_source = { type = "electric", usage_priority = "primary-input" }, -- primary-input deactivates equipment completely(?)
+  energy_input = "1kW",
   categories = {"armor"}
 },
-util.merge {
+}
+
+local wriggler = util.merge {
     data.raw["unit"]["small-wriggler-pentapod"],
     {
         name = "rabbasca-small-insanity-wriggler",
@@ -142,4 +148,16 @@ util.merge {
         has_belt_immunity = true,
     }
 }
+
+wriggler.attack_parameters.animation.layers = {
+    wriggler_spritesheet("attack-tint", 19, 0.48, 0.25, { 0.32, 0, 0.57, 0.6 }),
+    wriggler_spritesheet("attack-shadow", 19, 0.48, 0.25),
 }
+wriggler.run_animation.layers = {
+    wriggler_spritesheet("run-tint", 21, 0.48, 0.25, { 0.38, 0, 0.57, 0.6 }),
+    wriggler_spritesheet("run-shadow", 21, 0.48, 0.25),
+}
+wriggler.corpse = nil
+wriggler.dying_explosion = nil
+
+data:extend { wriggler }

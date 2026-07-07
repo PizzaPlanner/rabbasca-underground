@@ -76,7 +76,7 @@ Rabbasca.make_trigger_item({
   name = "rabbasca-relocate-floorthing",
   icons = Rabbasca.icons({
     { icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-3.png", icon_size = 64 },
-    { proto = data.raw["virtual-signal"]["signal-leftwards-rightwards-arrow"], scale = 0.5, shift = { 8, 8 } },
+    { proto = data.raw["virtual-signal"]["signal-shuffle"], scale = 0.5, shift = { 8, 8 } },
   }),
 }, "rabbasca_on_pylon_relocate"),
 Rabbasca.make_trigger_item({

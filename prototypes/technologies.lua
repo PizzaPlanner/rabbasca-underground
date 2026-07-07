@@ -72,7 +72,6 @@ data:extend{
         recipe = "rabbasca-warpfield-engine",
       },
     },
-    ignore_tech_cost_multiplier = true,
     research_trigger =
     {
         type = "mine-entity",
@@ -171,7 +170,6 @@ data:extend{
         recipe = "rabbasca-warpfield-science-pack-wi-upload"
       },
     },
-    ignore_tech_cost_multiplier = true,
     research_trigger =
     {
         type = "craft-item",
@@ -203,7 +201,6 @@ data:extend{
         recipe = "rabbasca-restored-knowledge"
       },
     },
-    ignore_tech_cost_multiplier = true,
     research_trigger =
     {
         type = "craft-item",
@@ -226,7 +223,6 @@ data:extend{
         recipe = "rabbasca-powershard"
       },
     },
-    ignore_tech_cost_multiplier = true,
     research_trigger =
     {
         type = "craft-item",
@@ -246,7 +242,6 @@ data:extend{
         recipe = "rabbasca-remote-access-chest"
       },
     },
-    ignore_tech_cost_multiplier = true,
     unit = {
       time = 60,
       count = 800,
@@ -266,7 +261,6 @@ data:extend{
         recipe = "rabbasca-quantum-device"
       },
     },
-    ignore_tech_cost_multiplier = true,
     research_trigger =
     {
         type = "craft-item",
@@ -351,6 +345,7 @@ data:extend{
         change = 0.25
       },
     },
+    ignore_tech_cost_multiplier = settings.startup["rabbasca-knowledge-efficiency-ignores-multiplier"].value,
     max_level = "infinite",
     unit = {
       time = 60,
