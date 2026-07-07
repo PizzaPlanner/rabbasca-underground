@@ -38,7 +38,7 @@ function Rabbasca.Stabilizer.add_location(config)
         autoplace_entities = { ["rabbasca-warp-anomaly"] = { } },
         anomaly_replace_entities = config.anomaly_replace_entities or { },
         unlock_on_first_arrival = config.unlock_on_first_arrival or { },
-        lut = config.lut or "identity",
+        lut = settings.startup["rabbasca-underground-lut-simple"].value and "__core__/graphics/color_luts/nightvision.png" or config.lut or "identity",
         tech = nil,
         -- tech_prep = nil,
         -- in final fixes for better change resilience

@@ -51,8 +51,8 @@ Rabbasca.make_trigger_item({
 }, "rabbasca_on_abandon"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-summon-ufo",
-  subgroup = "rabbasca-events",
-  order = "zz",
+  subgroup = "rabbasca-security",
+  order = "w[warpotron-call]",
   hidden = false,
   icons = Rabbasca.icons({
     { icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png", icon_size = 64, },
@@ -121,7 +121,9 @@ Rabbasca.make_trigger_item({
   stack_size = 50,
   category = "speed",
   tier = 10,
-  effect = { speed = 3 }
+  effect = { speed = 3 },
+  order = "a[speed]-r[rabbasca]",
+  subgroup = "module"
 },
 {
   type = "fuel-category",

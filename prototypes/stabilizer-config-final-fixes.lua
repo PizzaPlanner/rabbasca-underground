@@ -1,5 +1,4 @@
 local config = data.raw["mod-data"]["rabbasca-stabilizer-config"].data
-local planet = data.raw["planet"]["rabbasca-underground"]
 local planet_count = table_size(config.planets)
 local lut_table = { 
     { 0.0, "identity" } -- to make fog of war normal color
@@ -19,17 +18,15 @@ for planet, c in pairs(config.planets) do
     local water_tile = c.water or "hot-lava"
     c.fluid = data.raw["tile"][water_tile].fluid
 
-    log("Underground: added "..planet.. " with "..serpent.line(c))
+    log("added warp location "..planet.. " with "..serpent.line(c))
 end
 
 table.insert(lut_table, { current_lut_step + lut_step, "__rabbasca-assets__/graphics/recolor/textures/lut-white.png" })
 table.insert(lut_table, { current_lut_step + lut_step, "identity" })
+local planet = data.raw["planet"]["rabbasca-underground"]
 planet.surface_render_parameters.day_night_cycle_color_lookup = lut_table
 
-if planet_count < 2 then
-    log("ERROR: Underground planet count is too low: "..planet_count..". Game will now crash")
-    data.raw["crash"]["too-few-planets"] = 3
-end
+assert(planet_count >= 2, "at least two underground destinations required (found "..planet_count..")")
 
 for _, tech in pairs(data.raw["technology"]) do
     if tech.rabbasca_underground_temporary then

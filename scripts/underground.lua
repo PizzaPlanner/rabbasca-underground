@@ -253,6 +253,9 @@ if settings.global["rabbasca-debug-mode"] then
         game.print("[DEBUG] [planet=rabbasca-underground] warp initiated")
         local surface = game.surfaces["rabbasca-underground"]
         if not surface then return end
+        for _, e in pairs(surface.find_entities_filtered({name = "rabbasca-stability-pylon"})) do
+            e.health = math.max(e.health, 20)
+        end
         local to = command.parameter
         if to then
             M.warp.warp_to({ planet = to })

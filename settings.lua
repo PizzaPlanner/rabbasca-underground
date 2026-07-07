@@ -32,6 +32,14 @@ data:extend {
     allow_blank = false,
     order="a[balance]"
 },
+{
+    type = "bool-setting",
+    name = "rabbasca-underground-lut-simple",
+    setting_type = "startup",
+    default_value = false,
+    allow_blank = false,
+    order="u[ux]"
+},
 }
 
 if mods["lignumis"] then
