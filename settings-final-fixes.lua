@@ -1,1 +1,1 @@
-require("compatibility.auto-deconstruct")
+-- require("compatibility.auto-deconstruct") -- TODO: Does not work
