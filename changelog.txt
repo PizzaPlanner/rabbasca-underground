@@ -1,4 +1,18 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.1
+Date: 2026-07-08
+  Changes:
+    - Running out of fuel is now less punishing and recoverable with a spare powerspike
+    - Offshore pumps no longer get destroyed on warp when the onshore part is placed on lit safety flooring
+  Balancing:
+    - Emergency fuel recipe now also produces a recovering powerspike, but less warp traces (250 -> 150)
+    - Increased recovery time of recovering powerspike (30 min -> 1 hour)
+    - Powershard recipe produces recovering powerspike at 50% spoil rate (still 30 min to recover)
+    - Reduced warp stabilizer's fuel buffer (200MJ -> 100MJ)
+    - Increased crafting time of stabilizer unlocks that consume a powerspike (10s -> 20s)
+  Bugfixes:
+    - Fixed initial resources could sometimes be generated out of bounds
+---------------------------------------------------------------------------------------------------
 Version: 0.6.0
 Date: 2026-07-07
   Changes:
@@ -6,7 +20,7 @@ Date: 2026-07-07
     - Moved summon warpotron fleet and embrace insanity recipes to combat tab
     - Sanity loss and motes now show their sanity change in tooltip
     - Reworked insanity wriggler
-    - Insanity wrigglers now deal psychic damage. psychich damage scales with unit health
+    - Insanity wrigglers now deal psychic damage. psychic damage scales with unit health
     - Added setting to enable night vision filter underground (default off)
   Balancing:
     - Increased chance of crafting restored knowledge to cause sanity loss (0.1% -> 0.5%)

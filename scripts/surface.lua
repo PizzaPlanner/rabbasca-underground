@@ -121,6 +121,12 @@ function M.try_manifest(source, chance_mult, possible_anomalies, existing_pois)
     end
 end
 
+local function polar_to_xy(r, angle)
+    local x = r * math.cos(angle)
+    local y = r * math.sin(angle)
+    return { x = x, y = y }
+end
+
 function M.replace_entities(surface, config, planet)
     local autoplace = config[planet].autoplace_entities
     local anomalies = config[planet].anomaly_replace_entities
@@ -135,8 +141,8 @@ function M.replace_entities(surface, config, planet)
     for _, guaranteed in pairs(storage.stabilizer.warping.manifestations) do
         local success = 0
         while success < 50 do
-            local min = 10
-            guaranteed.position = guaranteed.position or { x = math.random(min, min + 64), y = math.random(min, min + 64) }
+            local center = guaranteed.position or polar_to_xy(math.random(42 + success / 2, 80 + success / 2), math.random(0, 2 * math.pi))
+            guaranteed.position = surface.find_non_colliding_position(guaranteed.name, center, 10, 0.5)
             guaranteed.surface  = surface
             guaranteed.quality  = guaranteed.quality or "normal"
             guaranteed.force    = guaranteed.force or "neutral"
@@ -145,7 +151,7 @@ function M.replace_entities(surface, config, planet)
             guaranteed.position = nil
         end
         if success < 100 then 
-            game.print("[color=red][Error][space-location=rabbasca-warp-stabilizer-site] Could not generate guaranteed POI '"..guaranteed.name.."'. Please report a bug to the mod author![/color]") 
+            game.print("[color=red][space-location=rabbasca-warp-stabilizer-site] Could not generate [entity="..guaranteed.name.."][/color]")
         end
     end
     for _, data in pairs(storage.stabilizer.selfmade_anomalies or { }) do

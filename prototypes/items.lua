@@ -152,7 +152,7 @@ Rabbasca.make_trigger_item({
     { icon = "__base__/graphics/icons/signal/signal-battery-low.png", icon_size = 64, shift = {-8, 8}, scale = 0.5 }
   }),
   stack_size = 20,
-  spoil_ticks = 30 * minute,
+  spoil_ticks = 60 * minute,
   spoil_result = "rabbasca-powerspike",
   subgroup = "rabbasca-events",
   order = "a[stabilizer]-o",

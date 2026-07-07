@@ -143,7 +143,7 @@ data:extend {
         type = "recipe",
         name ="rabbasca-stability-pylon",
         enabled = false,
-        energy_required = 10,
+        energy_required = 20,
         ingredients = {
             { type = "item", name = "rabbasca-powerspike", amount = 1 },
             { type = "item", name = "harenic-stabilizer",amount = 5 },
@@ -163,7 +163,7 @@ data:extend {
         type = "recipe",
         name = "rabbasca-collector-pylon",
         enabled = false,
-        energy_required = 10,
+        energy_required = 20,
         ingredients = {
             { type = "item", name = "rabbasca-powerspike",  amount = 1 },
             { type = "item", name = "superconductor", amount = 20 },
@@ -177,7 +177,7 @@ data:extend {
         type = "recipe",
         name = "rabbasca-warp-cell-recharging",
         enabled = false,
-        energy_required = 10,
+        energy_required = 20,
         ingredients = {
             { type = "item", name = "rabbasca-warp-anomaly", amount = 100 },
             { type = "item", name = "rabbasca-restored-knowledge", amount = 1 },
@@ -203,7 +203,7 @@ data:extend {
         },
         results = { 
             { type = "item", name = "rabbasca-powershard", amount = 5 },
-            { type = "item", name = "rabbasca-powerspike-weak", amount = 1, affected_by_quality = false, always_fresh = true, ignored_by_productivity = 1 },
+            { type = "item", name = "rabbasca-powerspike-weak", amount = 1, affected_by_quality = false, always_fresh = true, percent_spoiled = 0.5, ignored_by_productivity = 1 },
          },
         categories = { "rabbasca-warp-stabilizer" },
         main_product = "rabbasca-powershard",
@@ -323,8 +323,8 @@ data:extend {
         energy_required = 30,
         ingredients = { { type = "item", name = "rabbasca-powerspike", amount = 1 } },
         results = { 
-            { type = "item", name = "rabbasca-warp-trace", amount = 100, always_fresh = true, affected_by_quality = false },
-            { type = "item", name = "rabbasca-powerspike-weak", amount = 1, affected_by_quality = false, always_fresh = true, ignored_by_productivity = 1 },
+            { type = "item", name = "rabbasca-warp-trace", amount = 150, always_fresh = true, affected_by_quality = false },
+            { type = "item", name = "rabbasca-powerspike-weak", amount = 1, affected_by_quality = false, always_fresh = true, percent_spoiled = 0, ignored_by_productivity = 1 },
         },
         -- main_product = "rabbasca-warp-trace",
         allow_productivity = true,
