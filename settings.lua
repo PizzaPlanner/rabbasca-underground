@@ -24,4 +24,27 @@ data:extend {
     allow_blank = false,
     order="a[balance]"
 },
+{
+    type = "bool-setting",
+    name = "rabbasca-knowledge-efficiency-ignores-multiplier",
+    setting_type = "startup",
+    default_value = true,
+    allow_blank = false,
+    order="a[balance]"
+},
 }
+
+if mods["lignumis"] then
+    data:extend {
+        {
+            type = "bool-setting",
+            name = "rabbasca-ug-target-lignumis",
+            setting_type = "startup",
+            default_value = true,
+            allow_blank = false,
+            localised_name = { "mod-setting-name.rabbasca-ug-target", "lignumis" },
+            localised_description = { "", { "mod-setting-description.rabbasca-ug-target", "lignumis", }, "\n", "[item=wood]", "\n", "[item=peat]" },
+            order="a[balance]"
+        }
+    }
+end
