@@ -156,16 +156,6 @@ function M.update_crafting()
         for _, player in pairs(storage.stabilizer.entity.force.players) do
             player.add_custom_alert(storage.stabilizer.entity, { type = "entity", name = "rabbasca-warp-stabilizer" }, { "rabbasca-extra.alert-abandon" }, true)
         end
-    elseif recipe == "rabbasca-emergency-fuel" then
-        if storage.stabilizer.entity.is_crafting() and storage.stabilizer.entity.burner.remaining_burning_fuel > 1000000 then
-            local inputs = storage.stabilizer.entity.set_recipe("rabbasca-warp-trace") -- must set a valid recipe or we cant access trash inventory below
-            for _, item in pairs(inputs) do
-                storage.stabilizer.entity.get_inventory(defines.inventory.crafter_trash).insert(item)
-            end
-            for _, player in pairs(storage.stabilizer.entity.force.players) do
-                player.create_local_flying_text { text = {"rabbasca-extra.emergency-paused-has-traces" }, surface = storage.stabilizer.entity.surface, position = storage.stabilizer.entity.position }
-            end
-        end
     end
 end
 

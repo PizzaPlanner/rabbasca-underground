@@ -200,15 +200,15 @@ data:extend {
         energy_required = 15,
         ingredients = {
             { type = "item", name = "rabbasca-powerspike", amount = 1 },
-            { type = "item", name = "repair-pack", amount = 20 },
         },
         results = { 
             { type = "item", name = "rabbasca-powershard", amount = 5 },
             { type = "item", name = "rabbasca-powerspike-weak", amount = 1, affected_by_quality = false, always_fresh = true, ignored_by_productivity = 1 },
          },
-        categories = { "crafting" },
+        categories = { "rabbasca-warp-stabilizer" },
         main_product = "rabbasca-powershard",
-        order = "0",
+        subgroup = "rabbasca-events",
+        order = "a[stabilizer]-n",
         hide_from_player_crafting = true,
         allow_productivity = false,
         auto_recycle = false,
@@ -316,14 +316,15 @@ data:extend {
         name = "rabbasca-emergency-fuel",
         icons = Rabbasca.icons({
             { proto = data.raw["item"]["rabbasca-warp-trace"] },
-            { proto = data.raw["virtual-signal"]["signal-alert"], scale = 0.5, shift = {8, 8} },
+            { icon = "__base__/graphics/icons/signal/signal-battery-full.png", icon_size = 64, shift = { 8, 8 }, scale = 0.5 }
         }),
         enabled = false,
         hide_from_player_crafting = true,
         energy_required = 30,
         ingredients = { { type = "item", name = "rabbasca-powerspike", amount = 1 } },
         results = { 
-            { type = "item", name = "rabbasca-warp-trace", amount = 250, always_fresh = true, affected_by_quality = false }
+            { type = "item", name = "rabbasca-warp-trace", amount = 100, always_fresh = true, affected_by_quality = false },
+            { type = "item", name = "rabbasca-powerspike-weak", amount = 1, affected_by_quality = false, always_fresh = true, ignored_by_productivity = 1 },
         },
         -- main_product = "rabbasca-warp-trace",
         allow_productivity = true,

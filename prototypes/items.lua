@@ -1,5 +1,3 @@
-local item_sounds = require("__base__.prototypes.item_sounds")
-
 data:extend{
 {
   type = "fuel-category",
@@ -156,8 +154,8 @@ Rabbasca.make_trigger_item({
   stack_size = 20,
   spoil_ticks = 30 * minute,
   spoil_result = "rabbasca-powerspike",
-  subgroup = "rabbasca-warp-stabilizer",
-  order = "a[stabilizer]-a[upgrade-down]",
+  subgroup = "rabbasca-events",
+  order = "a[stabilizer]-o",
   weight = 250 * kg,
   auto_recycle = false,
 },
@@ -169,8 +167,8 @@ Rabbasca.make_trigger_item({
     { icon = "__base__/graphics/icons/signal/signal-battery-full.png", icon_size = 64, shift = { 8, 8 }, scale = 0.5 }
   }),
   stack_size = 200,
-  subgroup = "rabbasca-warp-stabilizer",
-  order = "a[stabilizer]-a[upgrade-broken]",
+  subgroup = "rabbasca-events",
+  order = "a[stabilizer]-n",
   weight = 25 * kg,
   fuel_value = "100J",
   fuel_category = "rabbasca-relicary",
@@ -437,7 +435,7 @@ data:extend {
     internal_cell,
     {
       name = "rabbasca-warp-cell-internal-big",
-      fuel_value = "200MJ",
+      fuel_value = "100MJ",
     }
   }
 }
