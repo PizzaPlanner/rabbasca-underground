@@ -26,3 +26,4 @@ end
 require("prototypes.stabilizer-config-final-fixes")
 
 require("compatibility.expand-warpfield-science-usage-final-fixes")
+require("compatibility.pickier-dollies-final-fixes")
