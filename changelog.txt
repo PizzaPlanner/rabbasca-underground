@@ -1,4 +1,19 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.0
+Date: 2026-07-07
+  Changes:
+    - Underground locator now requires machining assembler to craft
+    - Moved summon warpotron fleet and embrace insanity recipes to combat tab
+    - Sanity loss and motes now show their sanity change in tooltip
+    - Reworked insanity wriggler
+    - Insanity wrigglers now deal psychic damage. psychich damage scales with unit health
+    - Added setting to enable night vision filter underground (default off)
+  Balancing:
+    - Increased chance of crafting restored knowledge to cause sanity loss (0.1% -> 0.5%)
+  Bugfixes:
+    - Fixed sanity could go below 0%
+    - Fixed mad scientist's module being listed in unsorted tab
+---------------------------------------------------------------------------------------------------
 Version: 0.5.3
 Date: 2026-07-07
   Changes:
