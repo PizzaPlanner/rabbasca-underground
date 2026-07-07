@@ -173,7 +173,7 @@ function M.replace_entities(surface, config, planet)
         e.update_connections()
         if e.type == "offshore-pump" then
             local fluid = e.get_fluid_source_fluid()
-            e.fluidbox.set_filter(1, fluid and { name = fluid, force = true })
+            e.set_fluid_filter(1, fluid and { fluid = fluid, force = true })
         end
     end
 end
@@ -201,11 +201,27 @@ function M.is_box_safe(b)
     return true
 end
 
+function M.is_box_safe_for_pump(b, e)
+    local f_tile = e.get_fluid_source_tile()
+    for x = b.left_top.x, b.right_bottom.x do
+    for y = b.left_top.y, b.right_bottom.y do
+        if not (storage.stabilizer.flooring.safe_tiles[math.floor(x) + math.floor(y) * 1000] or f_tile) then 
+            return false
+        end
+    end
+    end
+    return true
+end
+
 function M.leave_unsafe(stabilizer)
     local surface = stabilizer.surface
     for _, e in pairs(surface.find_entities_filtered { force = stabilizer.force }) do
         if e.valid and not M.is_box_safe(e.bounding_box) then
-            e.die()
+            if e.type == "offshore-pump" and M.is_box_safe_for_pump(e.bounding_box, e) then
+                -- skip
+            else
+                e.die()
+            end
         end
     end
 end
