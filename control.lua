@@ -88,12 +88,12 @@ local function handle_script_events(event)
   elseif effect_id == "rabbasca_on_sanity_loss" then
     local from = Rabbasca.get_spoiled_in(event)
     local force = from and from.force or game.forces.player
-    sanity.remove_sanity(1, force)
+    sanity.remove_sanity(force, sanity.DEFAULT_DRAIN)
   elseif effect_id == "rabbasca_on_sanity_restore" then
     local from = Rabbasca.get_spoiled_in(event)
     if from and from.type == "character" and from.force then
       if sanity.get_protection_level(from) > 0 then return end
-      sanity.restore_sanity(1, from.force)
+      sanity.restore_sanity(from.force, sanity.DEFAULT_RESTORE)
     end
   end
 end

@@ -1,6 +1,10 @@
-local M = { }
+local INSANITY_LIMIT = 125
+local M = { 
+    DEFAULT_DRAIN = 0.005,
+    DEFAULT_RESTORE = 0.001
+}
 
-
+if data then return M end
 
 function M.set_sanity_ui(player)
     local frame = player.gui.relative.rabbasca_sanity_ui
@@ -27,17 +31,20 @@ function M.set_sanity_ui(player)
     end
 end
 
-function M.remove_sanity(count, force)
+function M.remove_sanity(force, count)
     storage.insanity = storage.insanity or { }
-    storage.insanity[force.name] = (storage.insanity[force.name] or 0) + (count or 1)
+    storage.insanity[force.name] = math.min(INSANITY_LIMIT, (storage.insanity[force.name] or 0) + (count or M.DEFAULT_DRAIN) * INSANITY_LIMIT)
     for _, player in pairs(force.connected_players) do
         M.set_sanity_ui(player)
     end
 end
 
-function M.restore_sanity(count, force)
+function M.restore_sanity(force, count)
     storage.insanity = storage.insanity or { }
-    storage.insanity[force.name] = math.max(0, (storage.insanity[force.name] or 0) - (count or 1))
+    storage.insanity[force.name] = math.max(0, (storage.insanity[force.name] or 0) - (count or M.DEFAULT_RESTORE) * INSANITY_LIMIT)
+    if storage.insanity[force.name] <= 0 then
+        storage.insanity[force.name] = nil
+    end
     for _, player in pairs(force.connected_players) do
         M.set_sanity_ui(player)
     end
@@ -54,7 +61,7 @@ function M.on_sanity_loss(level, force)
                 for i = 1, count do
                     character.surface.create_entity({
                         name = "rabbasca-small-insanity-wriggler",
-                        position = { character.position.x + math.random(-4, 4), character.position.y + math.random(-4, 4) },
+                        position = { character.position.x + math.random(-14, 14), character.position.y + math.random(-14, 14) },
                         force = hats > 0 and player.force or game.forces.rabbascans
                     })
                 end
@@ -64,8 +71,7 @@ function M.on_sanity_loss(level, force)
 end
 
 function M.current_insanity(player)
-    local base = storage.insanity and storage.insanity[player.force.name] or 0
-    return (storage.insanity and storage.insanity[player.force.name] or 0) / 125
+    return math.min(1, (storage.insanity and storage.insanity[player.force.name] or 0) / INSANITY_LIMIT)
 end
 
 function M.get_protection_level(character)

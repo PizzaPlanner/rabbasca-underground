@@ -1,22 +1,37 @@
+local sanity_settings = require("scripts.sanity")
 data:extend {
 Rabbasca.make_trigger_item({
   name = "rabbasca-sanity-loss",
+  stack_size = 200,
   icons ={
     { icon =  "__space-age__/graphics/technology/health.png", icon_size = 256, shift = {6, 0} },
     { icon =  "__base__/graphics/icons/signal/signal-trash-bin.png", icon_size = 64, scale = 0.4, shift = {-6, 3} }
   },
+  custom_tooltip_fields = {
+   { name = { "tooltip.rabbasca-sanity-decrease" }, value = { "tooltip-value.rabbasca-sanity-decrease", string.format("%.1f", sanity_settings.DEFAULT_DRAIN * 100)} }
+  },
+  subgroup = "rabbasca-security",
+  order = "x[sanity-loss]",
 }, "rabbasca_on_sanity_loss"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-sanity-mote",
+  hidden_in_factoriopedia = false,
+  hidden = false,
   spoil_ticks = 30 * second,
-  stack_size = 10,
+  stack_size = 200,
+  custom_tooltip_fields = {
+    { name = { "tooltip.rabbasca-sanity-increase" }, value = { "tooltip-value.rabbasca-sanity-increase", string.format("%.1f", sanity_settings.DEFAULT_RESTORE * 100)} }
+  },
   icons ={
     { icon =  "__core__/graphics/icons/entity/character.png", icon_size = 64, shift = {6, 0} },
     { icon =  "__base__/graphics/icons/signal/signal-recycle.png", icon_size = 64, scale = 0.4, shift = {-6, 3} }
   },
+  subgroup = "rabbasca-security",
+  order = "x[sanity-restore]",
 }, "rabbasca_on_sanity_restore"),
 }
 data.raw["item"]["rabbasca-sanity-mote"].flags = { }
+data.raw["item"]["rabbasca-sanity-loss"].flags = { "ignore-spoil-time-modifier" }
 data:extend {
 {
     type = "technology",
@@ -27,6 +42,7 @@ data:extend {
     prerequisites = { "rabbasca-archives" },
     effects = {
       { type = "unlock-recipe", recipe = "rabbasca-embrace-insanity" },
+      { type = "unlock-recipe", recipe = "rabbasca-sanity-mote", hidden = true },
       {
         type = "change-recipe-productivity",
         recipe = "rabbasca-restored-knowledge",
@@ -79,6 +95,25 @@ data:extend {
       count = 2000
     }
 },
+{
+        type = "recipe",
+        name = "rabbasca-sanity-mote",  -- for signal unlock
+        enabled = false,
+        hidden = true,
+        hidden_in_factoriopedia = true,
+        hide_from_player_crafting = true,
+        requires_ingredients_to_unlock_results = false,
+        energy_required = 0.5,
+        allow_productivity = false,
+        auto_recycle = false,
+        ingredients = {
+            { type = "item", name = "rabbasca-sanity-loss", amount = 1 },
+        },
+        results = { 
+            { type = "item", name = "rabbasca-sanity-mote", amount = 1, always_fresh = true },
+        },
+        categories = { "parameters" }
+    },
     {
     type = "recipe",
     name = "rabbasca-embrace-insanity",
@@ -139,25 +174,95 @@ data:extend {
 },
 }
 
+data:extend {
+  {
+    type = "damage-type",
+    name = "rabbasca-psychic"
+  }
+}
+
 local wriggler = util.merge {
     data.raw["unit"]["small-wriggler-pentapod"],
     {
         name = "rabbasca-small-insanity-wriggler",
-        healing_per_tick = -5 / second,
-        loot = { { type = "item", name = "rabbasca-sanity-mote", amount = 1, independent_probability = 0.22 } },
+        healing_per_tick = -10 / second,
         has_belt_immunity = true,
+        alert_when_damaged = false,
     }
 }
 
+wriggler.attack_parameters.ammo_type =
+{
+  target_type = "entity",
+  action =
+  {
+    type = "direct",
+    action_delivery =
+    {
+      type = "instant",
+      source_effects =
+      {
+        {
+          type = "damage",
+          damage = { amount = -20, type = "electric"}
+        },
+        {
+          type = "damage",
+          damage = { amount = 500, type = "electric"},
+          probability = 0.01, vaporize = true
+        },
+      },
+      target_effects =
+      {
+        {
+          type = "damage",
+          damage = { amount = 1, type = "rabbasca-psychic"}
+        },
+      }
+    }
+  }
+}
+wriggler.resistances = {
+  { type = "impact", percent = 100 },
+  { type = "poison", percent = 100 },
+  { type = "physical", percent = 100 },
+  { type = "fire", percent = 30 },
+}
 wriggler.attack_parameters.animation.layers = {
-    wriggler_spritesheet("attack-tint", 19, 0.48, 0.25, { 0.32, 0, 0.57, 0.6 }),
+    wriggler_spritesheet("attack-tint", 19, 0.48, 0.25, { 0.32, 0, 0.57, 0.5 }),
+    wriggler_spritesheet("attack-tint", 19, 0.48, 0.55, { 0.43, 0, 0.16, 0.1 }),
+    wriggler_spritesheet("attack-tint", 19, 0.48, 0.65, { 0.32, 0, 0.57, 0.1 }),
     wriggler_spritesheet("attack-shadow", 19, 0.48, 0.25),
 }
 wriggler.run_animation.layers = {
-    wriggler_spritesheet("run-tint", 21, 0.48, 0.25, { 0.38, 0, 0.57, 0.6 }),
+    wriggler_spritesheet("run-tint", 21, 0.48, 0.25, { 0.38, 0, 0.57, 0.5 }),
     wriggler_spritesheet("run-shadow", 21, 0.48, 0.25),
+}
+wriggler.attack_reaction =
+{
+  {
+    range = 30,
+    reaction_modifier = 0,
+    action =
+    {
+      type = "direct",
+      probability = 0.1,
+      force = "not-same",
+      action_delivery =
+      {
+        type = "instant",
+        target_effects =
+        {
+          type = "insert-item",
+          -- always use at least 0.1 damage
+          item = "rabbasca-sanity-mote"
+        }
+      }
+    },
+  }
 }
 wriggler.corpse = nil
 wriggler.dying_explosion = nil
+wriggler.collision_mask = { layers = { out_of_map = true }, colliding_with_tiles_only = true }
 
 data:extend { wriggler }
