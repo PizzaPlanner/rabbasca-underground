@@ -23,6 +23,7 @@ function M.on_tick_underground(event)
 
     if storage.stabilizer.warping then
         M.warp.on_warp_underground(event)
+        if not storage.stabilizer.entity.valid then return end -- might get destroyed here
     end
 
     if event.tick % 10 ~= 0 then return end
@@ -58,7 +59,12 @@ function M.on_config_changed(handler)
         storage.stabilizer.warping = nil
         M.warp.warp_to()
     elseif not storage.stabilizer.config.planets[storage.stabilizer.current_location] then
+        storage.stabilizer.current_location = "rabbasca-underground" -- fallback, mainly for logistic section
+        game.print("[entity=rabbasca-warp-stabilizer]'s current location was removed from this save, performing emergency warp...")
         M.warp.warp_to()
+    end
+    if game.surfaces[storage.stabilizer.surface] and not storage.stabilizer.warping then
+        M.warp.apply_lighting(game.surfaces[storage.stabilizer.surface])
     end
 end
 

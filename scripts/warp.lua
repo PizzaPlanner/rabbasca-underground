@@ -1,10 +1,14 @@
 local M = require("scripts.surface")
 
-local function post_warp_surface(surface)
+function M.apply_lighting(surface)
     local config = storage.stabilizer.config.planets[storage.stabilizer.current_location]
     surface.daytime = config.lut_index
     surface.freeze_daytime = true
     surface.min_brightness = 1
+end
+
+local function post_warp_surface(surface)
+    M.apply_lighting(surface)
     storage.stabilizer.warping = nil
     storage.stabilizer.entity.disabled_by_script = false
     storage.stabilizer.entity.custom_status = nil
@@ -133,7 +137,7 @@ function M.change_affinity(last_location)
         tech.researched = false
         tech.enabled    = false
     else -- fallback only after data change, migrations, etc., touching techs is performance heavy
-        for _, planet in storage.stabilizer.config.planets do
+        for _, planet in pairs(storage.stabilizer.config.planets) do
             local tech = techs[planet.tech]
             tech.researched = false
             tech.enabled    = false

@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.3
+Date: 2026-07-07
+  Changes:
+    - Added a setting for whether rabbascan knowledge efficiency tech should scale with science cost multiplier (default: not scaling)
+    - [with lignumis] Added setting to add lignumis as underground target, providing access to wood (default: on)
+    - [with even pickier dollies] warp stabilizer and related buildings can no longer be moved around
+    - Updated various icons
+    - Updated insanity wriggler graphics
+  Bugfixes:
+    - Fixed crash when combined with Auto Deconstruct mod
+    - Fixed potential crash when stabilizer got destroyed during warp
+---------------------------------------------------------------------------------------------------
 Version: 0.5.2
 Date: 2026-07-05
   Changes:
