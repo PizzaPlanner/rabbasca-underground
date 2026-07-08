@@ -4,7 +4,7 @@ local function make_psychic_weak(proto, mult)
         if r.type == "poison" and r.percent and r.percent > 95 then return end
         if r.type == "rabbasca-psychic" then return end
     end
-    table.insert(res, { type = "rabbasca-psychic", percent = -100 * math.floor(mult * math.sqrt(proto.max_health)) })
+    table.insert(res, { type = "rabbasca-psychic", percent = -100 * math.floor(mult * math.sqrt(proto.max_health or 10)) })
     proto.resistances = res
 end
 

@@ -2,9 +2,7 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-underground",
-    icons = Rabbasca.icons({
-      { icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png", icon_size = 640 },
-    }),
+    icons = PlanetsLib.technology_icon_planet("__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png", 640),
     prerequisites = { "interplanetary-construction-2", "rabbasca-ears-technology-2", "harene-synthesis", "foundation" },
     essential = true,
     effects = {

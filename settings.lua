@@ -40,6 +40,14 @@ data:extend {
     allow_blank = false,
     order="u[ux]"
 },
+{
+    type = "bool-setting",
+    name = "rabbasca-underground-full-spaghetti-mode",
+    setting_type = "startup",
+    default_value = false,
+    allow_blank = false,
+    order="a[balance]"
+},
 }
 
 if mods["lignumis"] then

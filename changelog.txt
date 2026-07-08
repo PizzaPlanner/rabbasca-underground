@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.2
+Date: 2026-07-08
+  Changes:
+    - Added ○ prefix to mod name so underground settings are right below rabbasca settings
+    - Added full spaghetti setting which bans logistic bots underground (default off)
+    - Added planet icon to underground discovery tech
+  Bugfixes:
+    - Fixed crash when other mods add entities missing max_health property
+---------------------------------------------------------------------------------------------------
 Version: 0.6.1
 Date: 2026-07-08
   Changes:
