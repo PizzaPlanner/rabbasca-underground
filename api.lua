@@ -45,14 +45,6 @@ function Rabbasca.Stabilizer.add_location(config)
         fluid = nil,
         lut_index = nil
     }
-    assert(data.raw["planet"][config.planet], "Not a valid planet: "..config.planet)
-    assert(data.raw["tile"][config.filler_tile], "Not a valid filler_tile for "..config.planet..": "..config.planet)
-    for _, e in pairs(config.anomaly_replace_entities) do
-        if e.type == "resource" then
-            assert(data.raw["tile"][e.floor], "not a valid floor tile for "..config.planet..": "..e.floor)
-            assert(data.raw["resource"][e.name], "not a valid resource for "..config.planet..": "..e.name)
-        end
-    end
     for _, e in pairs(config.autoplace_entities or { }) do
         mod_data.data.planets[config.planet].autoplace_entities[e] = { }
     end

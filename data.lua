@@ -1,3 +1,4 @@
+require("__planet-rabbasca__.api")
 require("api")
 
 require("prototypes.mod-data")
@@ -14,9 +15,5 @@ require("prototypes.tips-and-tricks")
 require("prototypes.warp-locations")
 require("prototypes.sounds")
 require("prototypes.insanity")
-
-data.raw["recipe"]["rabbasca-warp-pylon"].hidden = false
-data.raw["recipe"]["rabbasca-warp-pylon"].hidden_in_factoriopedia = false
-data.raw["recipe"]["rabbasca-warp-pylon"].factoriopedia_alternative = "rabbasca-warp-pylon"
 
 require("compatibility.lignumis")

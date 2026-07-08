@@ -16,9 +16,17 @@ for planet, c in pairs(config.planets) do
 
     -- Water
     local water_tile = c.water or "hot-lava"
+    assert(data.raw["tile"][water_tile], "Not a valid filler_tile for "..planet..": "..water_tile)
     c.fluid = data.raw["tile"][water_tile].fluid
 
     log("added warp location "..planet.. " with "..serpent.line(c))
+    assert(data.raw["planet"][planet], "Not a valid planet: "..planet)
+    for _, e in pairs(c.anomaly_replace_entities) do
+        if e.type == "resource" then
+            assert(data.raw["tile"][e.floor], "not a valid floor tile for "..planet..": "..e.floor)
+            assert(data.raw["resource"][e.name], "not a valid resource for "..planet..": "..e.name)
+        end
+    end
 end
 
 table.insert(lut_table, { current_lut_step + lut_step, "__rabbasca-assets__/graphics/recolor/textures/lut-white.png" })

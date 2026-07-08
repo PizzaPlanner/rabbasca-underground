@@ -113,11 +113,12 @@ lithium_amide.autoplace = nil
 
 local haronite_ore = util.merge {
   data.raw["resource"]["tungsten-ore"],
-  data.raw["item"]["haronite"],
   {
     name = "haronite",
     type = "resource",
-    categories = { "basic-solid" },
+    icon = "__rabbasca-assets__/graphics/recolor/icons/haronite.png",
+    icon_size = 64,
+    category = "basic-solid",
     factoriopedia_alternative = "haronite",
     localised_name = { "item-name.haronite" },
     -- stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/textures/haronite-ore.png" } },
@@ -134,7 +135,7 @@ local holmium_ore = util.merge {
   {
     name = "rabbasca-holmium-ore",
     type = "resource",
-    categories = { "basic-solid" },
+    category = "basic-solid",
     -- factoriopedia_alternative = "holmium-ore",
     localised_name = { "item-name.holmium-ore" },
     stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/textures/holmium-ore.png" } },

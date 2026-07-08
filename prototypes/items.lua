@@ -18,7 +18,7 @@ Rabbasca.make_trigger_item({
   name = "rabbasca-stabilizer-warp-sequence",
   subgroup = "rabbasca-events",
   order = "a",
-  icons = Rabbasca.icons({ proto = data.raw["virtual-signal"]["rabbasca-warp-inventory"], tint = { 0.83, 1, 0.15} })
+  icons = Rabbasca.icons({{ icon = "__rabbasca-assets__/graphics/icons/warp.png" }})
 }, "rabbasca_warp_progress_warp"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-amplify-anomaly",
@@ -54,7 +54,7 @@ Rabbasca.make_trigger_item({
   hidden = false,
   icons = Rabbasca.icons({
     { icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png", icon_size = 64, },
-    { proto = data.raw["virtual-signal"]["rabbasca-warp-inventory"], scale = 0.5, shift = {8,8} },
+    { icon = "__rabbasca-assets__/graphics/icons/warp.png", scale = 0.5, shift = {8,8} },
   })
 }, "rabbasca_on_summon_ufo"),
 Rabbasca.make_trigger_item({
