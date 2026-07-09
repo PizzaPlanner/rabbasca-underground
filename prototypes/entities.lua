@@ -307,8 +307,6 @@ local minelon = {
     collision_mask = {
         layers = { is_object = true, out_of_map = true }
     },
-    subgroup = data.raw["item"]["rabbasca-warp-pylon"].subgroup,
-    order = data.raw["item"]["rabbasca-warp-pylon"].order .. "-r[rabbasca-underground]",
     created_effect = {
         type = "direct",
         action_delivery = {
@@ -398,7 +396,7 @@ local floorion = {
     } },
     surface_conditions = { Rabbasca.only_underground(true) },
     collision_mask = {
-        layers = { is_object = true, out_of_map = true, resource = true }
+        layers = { is_object = true, out_of_map = true }
     },
     resistances = {},
     minable = nil,
