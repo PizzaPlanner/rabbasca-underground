@@ -10,6 +10,7 @@ function M.get_repair_progress()
 end
 
 function M.force_manifest(data, blocked_pois)
+    if not data.position then return false end
     if data.type == "resource" then
         local total_amount = data.amount
         local entities = { }
@@ -142,7 +143,7 @@ function M.replace_entities(surface, config, planet)
         local success = 0
         while success < 50 do
             local center = guaranteed.position or polar_to_xy(math.random(42 + success / 2, 80 + success / 2), math.random(0, 2 * math.pi))
-            guaranteed.position = surface.find_non_colliding_position(guaranteed.name, center, 10, 0.5)
+            guaranteed.position = center
             guaranteed.surface  = surface
             guaranteed.quality  = guaranteed.quality or "normal"
             guaranteed.force    = guaranteed.force or "neutral"
