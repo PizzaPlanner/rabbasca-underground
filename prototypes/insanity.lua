@@ -241,7 +241,8 @@ local wriggler = util.merge {
       icons = Rabbasca.icons({{ icon = "__space-age__/graphics/icons/small-wriggler.png", tint = {0,0,0} }}),
       name = "rabbasca-small-insanity-wriggler",
       flags = { "not-selectable-in-game" },
-      healing_per_tick = -1 / second,
+      max_health = 120,
+      healing_per_tick = -2 / second,
       has_belt_immunity = true,
       alert_when_damaged = false,
       order = "r[rabbasca]-u[underground]-a"

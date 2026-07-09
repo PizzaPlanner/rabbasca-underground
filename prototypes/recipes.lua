@@ -453,7 +453,7 @@ data:extend {
             { type = "item", name = "rabbasca-restored-knowledge", amount = 3 },
         },
         results = { 
-            { type = "item", name = "rabbasca-warp-core", amount = 5 },
+            { type = "item", name = "rabbasca-warp-core", amount = 5, always_fresh = true },
         },
         surface_conditions = { Rabbasca.only_underground(true) },
         categories = { "electromagnetics" },
