@@ -54,18 +54,16 @@ function M.spawn_crawler(surface, position, force)
 end
 
 function M.spawn_wriggler(surface, position, force)
-    surface.create_entity({
+    local w = surface.create_entity({
         name = "rabbasca-small-insanity-wriggler",
         position = { position.x + math.random(-14, 14), position.y + math.random(-14, 14) },
         force = force
     })
-end
-
-function M.spawn_egg(surface, position, force)
-    surface.create_entity({
-        name = "rabbasca-insanity-spawner",
-        position = { position.x + math.random(-19, 19), position.y + math.random(-19, 19) },
-        force = force
+    w.commandable.set_command({
+        type = defines.command.attack_area,
+        destination = position,
+        radius = 16,
+        distraction = defines.distraction.by_anything
     })
 end
 
@@ -82,22 +80,15 @@ function M.on_sanity_tick(character)
     local surface  = M.SPAWN_WHERE_LOOKING and character.player and character.player.surface or character.surface
     local position = M.SPAWN_WHERE_LOOKING and character.player and character.player.position or character.position
     if not character.force.is_chunk_visible(surface, { x = math.floor(position.x / 32), y = math.floor(position.y / 32) }) then return end
-    if math.random() < (value - 0.1)/11 + 0.02 then
-        M.spawn_egg(surface, position, force)
-    end
-    if math.random() < 1.3 * value - 0.6 then 
-        M.spawn_crawler(surface, position, force)
-    end
-    local l = math.log(value + 0.1, 10) / 2
+    local l = math.log(1.75* value + 0.33) / 3 + 0.4
     if math.random() < l then 
         M.spawn_wriggler(surface, position, force)
         M.spawn_wriggler(surface, position, force)
     end
-    if math.random() < l - 0.1 then 
-        M.spawn_wriggler(surface, position, force)
-        M.spawn_wriggler(surface, position, force)
+    if math.random() < 2.5 * l - 1 then 
+        M.spawn_crawler(surface, position, force)
     end
-    if math.random() < l - 0.2 then 
+    if math.random() < 1.5 * l - 0.3 then 
         M.spawn_wriggler(surface, position, force)
         M.spawn_wriggler(surface, position, force)
         M.spawn_wriggler(surface, position, force)

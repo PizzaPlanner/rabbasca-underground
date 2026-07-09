@@ -256,89 +256,6 @@ data:extend{
 }
 data:extend{ util.merge { data.raw["sticker"]["rabbasca-insanity-sticker-debuff"], { name = "rabbasca-insanity-sticker-buff", animation = { layers = { { tint = { 0, 0.83, 0.77 } },{} }} } } }
 
-local spawner = {
-    type = "unit-spawner",
-    name = "rabbasca-insanity-spawner",
-    icons = Rabbasca.icons({{ icon = "__space-age__/graphics/icons/gleba-spawner-small.png", tint = {0, 0, 0} }}),
-    flags = {"placeable-player", "placeable-enemy", "not-repairable", "placeable-off-grid", "not-selectable-in-game" },
-    max_health = 150,
-    order="r[rabbasca]-u[underground]-z[spawner]",
-    subgroup="enemies",
-    working_sound =
-    {
-      sound = {category = "enemy", filename = "__base__/sound/creatures/spawner-spitter.ogg", volume = 0.6, modifiers = volume_multiplier("main-menu", 0.7) },
-      max_sounds_per_prototype = 3,
-    },
-    dying_sound = sound_variations("__base__/sound/creatures/spawner-death", 5, 0.7, volume_multiplier("main-menu", 1.21) ),
-    impact_category = "organic",
-    resistances =
-    {
-      { type = "impact", percent = 100 },
-      { type = "poison", percent = 100 },
-      { type = "physical", percent = 100 },
-      { type = "laser", percent = 99 },
-    },
-    healing_per_tick = -10 / second,
-    collision_box = {{-0.5, -0.5}, {0.5, 0.5}},
-    collision_mask = { layers = { out_of_map = true }, colliding_with_tiles_only = true },
-    selection_box = {{-0.5, -0.5}, {0.5, 0.5}},
-    max_count_of_owned_units = 12,
-    max_count_of_owned_defensive_units = 1,
-    max_friends_around_to_spawn = 32,
-    max_defensive_friends_around_to_spawn = 1,
-    alert_when_damaged = false,
-    graphics_set =
-    {
-      animations =
-      {
-        {
-          layers =
-          {
-            util.sprite_load("__space-age__/graphics/entity/gleba-spawner/small/spawner-shadow-small-1",
-            {
-              frame_count = 16,
-              scale = 0.5,
-              animation_speed = 0.1,
-              run_mode = "forward-then-backward",
-              draw_as_shadow = true,
-              shift = util.by_pixel(8, 0)
-            })
-          }
-        },
-        {
-          layers =
-          {
-            util.sprite_load("__space-age__/graphics/entity/gleba-spawner/small/spawner-shadow-small-2",
-            {
-              frame_count = 16,
-              scale = 0.5,
-              animation_speed = 0.1,
-              run_mode = "forward-then-backward",
-              draw_as_shadow = true,
-            })
-          },
-        },
-      },
-    },
-    result_units =
-    {
-      {"rabbasca-small-insanity-wriggler", {{0.0, 0.9}, {1, 0.9}}}
-    },
-    spawning_cooldown = {6.25, 2.24},
-    spawning_radius = 24,
-    spawning_spacing = 3,
-    max_spawn_shift = 0,
-    max_richness_for_spawn_shift = 100,
-    call_for_help_radius = 16,
-    spawn_decorations_on_expansion = false,
-    autoplace = {
-      probability_expression = "0",
-      placement_density = 0,
-      force = "enemy",
-      default_enabled = false
-    }
-}
-
 local wriggler = util.merge {
     data.raw["unit"]["small-wriggler-pentapod"],
     {
@@ -351,7 +268,6 @@ local wriggler = util.merge {
       order = "r[rabbasca]-u[underground]-a"
     }
 }
-
 wriggler.attack_parameters.cooldown = second / 1.85
 wriggler.attack_parameters.health_penalty = 5
 wriggler.attack_parameters.ammo_type =
@@ -367,7 +283,7 @@ wriggler.attack_parameters.ammo_type =
       {
         {
           type = "damage",
-          damage = { amount = 20, type = "electric"}
+          damage = { amount = 8, type = "electric"}
         },
       },
       target_effects =
@@ -418,8 +334,10 @@ wriggler.attack_reaction =
     },
   }
 }
+wriggler.selection_box = {{0, 0}, {0, 0}}
 wriggler.corpse = nil
 wriggler.dying_explosion = nil
+wriggler.damaged_trigger_effect = nil
 wriggler.collision_mask = { layers = { out_of_map = true }, colliding_with_tiles_only = true }
 
 -- copied from space-age/prototypes/factoriopedia-simulations.lua
@@ -495,7 +413,7 @@ local function crawler_damage_effect(damage)
             {
               {
                 type = "damage",
-                damage = { amount = 3, type = "rabbasca-psychic" }
+                damage = { amount = damage, type = "rabbasca-psychic" }
               }
             }
           }
@@ -543,6 +461,7 @@ end
 
 local crawler = make_demolisher_head("rabbasca-small-insanity-crawler", "r[rabbasca]-u[underground]-b", crawler_scale, 0, 500, -10 / second, crawler_speed, { init = make_enemy("rabbasca-small-insanity-crawler", 1) }, crawler_sounds)
 table.insert(crawler.flags, "not-selectable-in-game")
+crawler.selection_box = {{0, 0}, {0, 0}}
 crawler.corpse = nil
 crawler.dying_explosion = nil
 -- crawler.collision_mask = { layers = { out_of_map = true }, colliding_with_tiles_only = true }
@@ -592,7 +511,7 @@ crawler.revenge_attack_parameters = {
     }
   }
 }
-crawler.update_effects =  { crawler_glow_effect(crawler_scale), crawler_damage_effect(2) } 
+crawler.update_effects =  { crawler_glow_effect(crawler_scale), crawler_damage_effect(1.5) } 
 crawler.update_effects_while_enraged = {
     {
       distance_cooldown = 0.1,
@@ -683,4 +602,4 @@ local c_particle_glow = {
   }
 }
 
-data:extend { wriggler, crawler, c_particle, c_particle_glow, spawner }
+data:extend { wriggler, crawler, c_particle, c_particle_glow }

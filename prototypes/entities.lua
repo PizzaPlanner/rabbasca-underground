@@ -34,6 +34,9 @@ stabilizer.effect_receiver = {
     uses_beacon_effects = false,
     uses_surface_effects = false
 }
+stabilizer.resistances = {
+    { type = "rabbasca-psychic", percent = 100 }
+}
 stabilizer.circuit_wire_max_distance = 120
 stabilizer.ignore_output_full = false
 stabilizer.minable = nil
@@ -270,6 +273,9 @@ local fuel_access_2 = util.merge {
 }
 fuel_access_2.placeable_by = nil
 fuel_access_2.minable = nil
+fuel_access_2.resistances = {
+    { type = "rabbasca-psychic", percent = 100 }
+}
 fuel_access_2.picture.layers[1].filename = "__rabbasca-assets__/graphics/recolor/entities/anomaly-access.png"
 for _, layer in pairs(fuel_access_2.picture.layers) do
     layer.scale = (layer.scale or 1) * 2
@@ -289,6 +295,9 @@ local minelon = {
     vector_to_place_result = { 0, 0 },
     uses_force_mining_productivity_bonus = false,
     quality_affects_mining_radius = false,
+    resistances = {
+        { type = "rabbasca-psychic", percent = 100 }
+    },
     energy_usage = "3MW",
     energy_source = {
         type = "burner",
@@ -398,7 +407,9 @@ local floorion = {
     collision_mask = {
         layers = { is_object = true, out_of_map = true }
     },
-    resistances = {},
+    resistances = {
+        { type = "rabbasca-psychic", percent = 100 }
+    },
     minable = nil,
     placeable_by = { item = "rabbasca-stability-pylon", count = 1 },
     allowed_effects = {},
