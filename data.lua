@@ -17,3 +17,4 @@ require("prototypes.sounds")
 require("prototypes.insanity")
 
 require("compatibility.lignumis")
+require("compatibility.auto-deconstruct")

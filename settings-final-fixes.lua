@@ -1,1 +1,0 @@
--- require("compatibility.auto-deconstruct") -- TODO: Does not work
