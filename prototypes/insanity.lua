@@ -187,7 +187,7 @@ data:extend{
 {
   type = "sticker",
   name = "rabbasca-insanity-sticker-debuff",
-  duration_in_ticks = sanity_settings.DEFAULT_CHECK_INTERVAL + 1 * second,
+  duration_in_ticks = sanity_settings.DEFAULT_CHECK_INTERVAL + 1,
   -- force_visibility = "ally",
   render_layer = "air-object",
   flags = {"not-on-map"},
@@ -195,31 +195,10 @@ data:extend{
   single_particle = true,
   animation = {
     layers = { 
-  { 
-    filename = "__rabbasca-assets__/graphics/textures/hack.png", 
-    width = 882 / 7,
-    height = 819 / 7,
-    line_length = 7,
-    frame_count = 48,
-    scale = 0.65,
-    shift = util.by_pixel(0,-42),
-    draw_as_glow = true, 
-    blend_mode = "additive",
-    tint = { 0.83, 0, 0.72 }
-  },{ 
-    filename = "__rabbasca-assets__/graphics/textures/hack.png", 
-    width = 882 / 7,
-    height = 819 / 7,
-    line_length = 7,
-    frame_count = 48,
-    scale = 0.5,
-    run_mode = "backward",
-    shift = util.by_pixel(0,-36),
-    draw_as_glow = true, 
-    blend_mode = "additive",
-    tint = { 0.33, 0, 1 }
+      Rabbasca.animation_layer("__rabbasca-assets__/graphics/recolor/textures/sani", { tint = { 0.83, 0, 0.72 }, scale = 0.16, draw_as_glow = true, blend_mode = "additive", shift = util.by_pixel(-8,-54) }),
+      Rabbasca.animation_layer("__rabbasca-assets__/graphics/recolor/textures/sani", { tint = { 0.33, 0, 1 },    scale = 0.14, draw_as_glow = true, blend_mode = "additive", shift = util.by_pixel(8,-56), frame_sequence = { 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 } })
+    }
   },
-  }},
   update_effects = {
     { 
       time_cooldown = sanity_settings.DEFAULT_BUFF_INTERVAL,

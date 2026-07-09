@@ -125,6 +125,7 @@ end
 
 function M.restore_sanity(force, count)
     storage.insanity = storage.insanity or { }
+    if not storage.insanity[force.name] then return end
     storage.insanity[force.name] = math.max(0, (storage.insanity[force.name] or 0) - (count or M.DEFAULT_RESTORE) * INSANITY_LIMIT)
     if storage.insanity[force.name] <= 0 then
         storage.insanity[force.name] = nil

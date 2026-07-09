@@ -10,6 +10,7 @@ Date: 2026-07-09
     - Added visual indicator on character when not fully sane
   Balancing:
     - Reduced cost of lost in transcription 3 tech (2000 -> 1000)
+    - Dying now restores some sanity
   Bugfixes:
     - Fixed anomaly extractor and structural integrity device ghosts required harenic floor to be placed
 ---------------------------------------------------------------------------------------------------

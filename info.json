@@ -7,7 +7,7 @@
     "author": "PizzaPlanner",    
     "dependencies": [
         "~ planet-rabbasca >= 0.20.0",
-        "rabbasca-assets >= 2.1.0",
+        "rabbasca-assets >= 2.2.0",
         "+ SpidertronPatrols"
     ]
 }

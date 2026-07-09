@@ -132,6 +132,14 @@ script.on_event(defines.events.on_gui_opened, function(event)
     end
 end)
 
+script.on_event(defines.events.on_player_died, function(event)
+  local player = game.players[event.player_index]
+  if player then
+    local current = sanity.current_insanity(player)
+    sanity.restore_sanity(player.force, 0.05 + 0.2 * current)
+  end
+end)
+
 script.on_event(defines.events.on_gui_closed, function(event)
   local player = game.get_player(event.player_index)
     if event.gui_type == defines.gui_type.entity then
