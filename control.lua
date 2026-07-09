@@ -4,7 +4,9 @@ local sanity = require("scripts.sanity")
 
 local function handle_script_events(event)
   local effect_id = event.effect_id
-  if effect_id == "rabbasca_make_floor_anomaly" then
+  if effect_id == "rabbasca_on_insanity_tick" then
+    if event.target_entity then sanity.on_sanity_tick(event.target_entity) end
+  elseif effect_id == "rabbasca_make_floor_anomaly" then
     local from = Rabbasca.get_spoiled_in(event)
     if from then
       underground.on_progress_floor_anomaly(from)
