@@ -334,7 +334,10 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-knowledge-efficiency",
-    icons = Rabbasca.icons({{ proto = data.raw["item"]["rabbasca-restored-knowledge"] }}),
+    icons = Rabbasca.icons({
+      { proto = data.raw["item"]["rabbasca-restored-knowledge"] },
+      { constant = "recipe-productivity" }
+    }, 256),
     prerequisites = { "rabbasca-warpfield-science-pack", "rabbasca-insanity-1" },
     effects = {
       {
@@ -357,7 +360,10 @@ data:extend{
 {
     type = "technology",
     name = "rabbasca-harene-efficiency",
-    icons = Rabbasca.icons({{ proto = data.raw["technology"]["harene-synthesis"]}}),
+    icons = Rabbasca.icons({
+      { icon = "__rabbasca-assets__/graphics/recolor/icons/harene.png" },
+      { constant = "recipe-productivity" }
+    }, 256),
     prerequisites = { "rabbasca-warpfield-science-pack" },
     effects = {
       {

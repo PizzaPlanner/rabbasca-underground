@@ -18,7 +18,7 @@ data:extend {
     {
         type = "item-subgroup",
         name = "rabbasca-warp-stabilizer",
-        group = data.raw["item-group"]["rabbasca-extensions"] and "rabbasca-extensions" or "intermediate-products",
+        group = "rabbasca-extensions" or "intermediate-products",
         order = "1[stabilizer]"
     },
     {
@@ -30,7 +30,7 @@ data:extend {
     {
         type = "item-subgroup",
         name = "rabbasca-events",
-        group = data.raw["item-group"]["rabbasca-extensions"] and "rabbasca-extensions" or nil,
+        group = "rabbasca-extensions",
         order = "2[stabilizer-functions]"
     },
     {
@@ -443,7 +443,6 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-warp-core",
-        icons = Rabbasca.icons({{ proto = data.raw["capsule"]["rabbasca-warp-core"] }}),
         enabled = false,
         auto_recycle = false,
         energy_required = 5,
@@ -597,11 +596,10 @@ Rabbasca.create_vault_recipe("rabbasca-warpfield-science-pack-wi-download", {
 })
 
 Rabbasca.create_vault_recipe("rabbasca-locate-stabilizer", {
-  icons = {
-    {icon = "__Krastorio2Assets__/icons/entities/stabilizer-charging-station.png", icon_size = 64},
-    {icon = data.raw["item"]["rabbasca-warp-pylon"].icon, icon_size = 64, shift = {-8, 8}, scale = 0.4},
-    {icon = data.raw["planet"]["rabbasca-underground"].icon, icon_size = 64, shift = {8, 8}, scale = 0.4},
-  },
+  icons = Rabbasca.icons({
+    { proto = data.raw["planet"]["rabbasca-underground"] },
+    { proto = data.raw["virtual-signal"]["signal-map-marker"], scale = 0.5, shift = {8, 8} },
+  }),
   ingredients = {
       { type = "item", name = "rabbasca-warp-pylon", amount = 1 },
       { type = "item", name = "rabbasca-spacetime-sensor", amount = 5 },
@@ -614,6 +612,7 @@ Rabbasca.create_vault_recipe("rabbasca-locate-stabilizer", {
   energy_required = 60,
   allow_quality = false,
   allow_productivity = false,
+  order = "z[effects]-s[stabilizer]"
 })
 
 data:extend {
