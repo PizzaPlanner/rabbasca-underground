@@ -74,9 +74,9 @@ function M.on_sanity_tick(character)
     local prot  = M.get_protection_level(character)
     if prot > 1 then return end
     local force = prot > 0 and character.force or game.forces.enemy
-    if value > 0.1 then
-        character.health = math.max(character.health - 50, (1 - value) * character.max_health + 1)
-    end
+    -- if value > 0.1 then
+    --     character.health = math.max(character.health - 50, (1 - value) * character.max_health + 1)
+    -- end
     local surface  = M.SPAWN_WHERE_LOOKING and character.player and character.player.surface or character.surface
     local position = M.SPAWN_WHERE_LOOKING and character.player and character.player.position or character.position
     if not character.force.is_chunk_visible(surface, { x = math.floor(position.x / 32), y = math.floor(position.y / 32) }) then return end
