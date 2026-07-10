@@ -1,12 +1,19 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.7.2
 Date: 2026-07-09
+  Changes:
+    - Added new infinity technology to increase warpfield trace recipe productivity
   Balancing:
     - Warp core will now always be fresh when crafted
     - Reduced shadow wriggler maximum lifetime (100s -> 60s)
     - Reduced chance of shadow crawlers to create sanity motes (12% -> 7%)
+    - Reduced output of warpfield science pack per craft (12 -> 8)
+    - The special underground logistic section no longer outputs the planet/progress signal during warp
   Bugfixes:
     - Fixed strafer and stomper pentapods not being weak to psychic damage
+    - Fixed anomaly extractors were drawn below anomalies
+    - Fixed anomaly extractors were drawn above stabilizer during warp
+    - Fixed some underground recipes not being available as signals in circuit network
 ---------------------------------------------------------------------------------------------------
 Version: 0.7.1
 Date: 2026-07-09

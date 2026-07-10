@@ -80,7 +80,7 @@ function M.update_logistic_section()
         l.filters = {
             {
                 value = { name = storage.stabilizer.current_location, type = "space-location", quality = "normal" },
-                min = M.warp.get_repair_progress() * 100,
+                min = storage.stabilizer.warping and 0 or M.warp.get_repair_progress() * 100,
             },
             {
                 value = { name = "rabbasca-warp-anomaly", type = "entity", quality = "normal" },

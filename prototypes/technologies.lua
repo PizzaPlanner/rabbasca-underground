@@ -359,6 +359,30 @@ data:extend{
 },
 {
     type = "technology",
+    name = "rabbasca-warp-trace-productivity",
+    icons = Rabbasca.icons({
+      { proto = data.raw["item"]["rabbasca-warp-trace"] },
+      { constant = "recipe-productivity" }
+    }, 256),
+    prerequisites = { "rabbasca-warpfield-science-pack", "rabbasca-insanity-2" },
+    effects = {
+      {
+        type = "change-recipe-productivity",
+        recipe = "rabbasca-warp-trace",
+        change = 0.1
+      },
+    },
+    max_level = "infinite",
+    unit = {
+      time = 60,
+      count_formula = "25 + 25 * L * (L + 3)",
+      ingredients = {
+        {"rabbasca-warpfield-science-pack", 1},
+      }
+    }
+},
+{
+    type = "technology",
     name = "rabbasca-harene-efficiency",
     icons = Rabbasca.icons({
       { icon = "__rabbasca-assets__/graphics/recolor/icons/harene.png" },

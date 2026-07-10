@@ -61,6 +61,7 @@ function Rabbasca.Stabilizer.make_atmospheric_recipe(planet, results)
             { proto = data.raw["planet"]["rabbasca-underground"], scale = 0.5, shift = {-8, -8} },
             { proto = data.raw["fluid"][name], scale = 0.8 },
         }),
+        hide_from_signal_gui = false,
         energy_required = 5,
         localised_name = { "recipe-name.rabbasca-underground-extract-atmosphere", { "fluid-name."..name } },
         ingredients = { },

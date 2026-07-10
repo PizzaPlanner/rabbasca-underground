@@ -41,6 +41,7 @@ data:extend {
             { proto = data.raw["fluid"]["petroleum-gas"], shift = {-8, 8}, scale = 0.5 },
         }),
         enabled = false,
+        hide_from_signal_gui = false,
         hide_from_player_crafting = true,
         energy_required = 1,
         ingredients = { { type = "fluid", name = "petroleum-gas", amount = 40 } },
@@ -81,6 +82,7 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-beta-carotene-from-yumako",
+        hide_from_signal_gui = false,
         icons = Rabbasca.icons({
             { proto = data.raw["capsule"]["yumako-mash"], scale = 0.7, shift = {-6, -8} },
             { proto = data.raw["fluid"]["beta-carotene"] },
@@ -301,6 +303,7 @@ data:extend {
             { type = "item", name = "rabbasca-progress-powerspike", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false, affected_by_quality = false },
             { type = "item", name = "rabbasca-warp-trace", amount = 10, always_fresh = true, affected_by_quality = false },
         },
+        maximum_productivity = 24,
         main_product = "rabbasca-warp-trace",
         allow_productivity = true,
         auto_recycle = false,
@@ -314,6 +317,7 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-emergency-fuel",
+        hide_from_signal_gui = false,
         icons = Rabbasca.icons({
             { proto = data.raw["item"]["rabbasca-warp-trace"] },
             { icon = "__base__/graphics/icons/signal/signal-battery-full.png", icon_size = 64, shift = { 8, 8 }, scale = 0.5 }
@@ -401,7 +405,7 @@ data:extend {
             { type = "item", name = "rabbasca-restored-knowledge", amount = 10 },
         },
         results = {
-            { type = "item", name = "rabbasca-warpfield-science-pack", amount = 12 },
+            { type = "item", name = "rabbasca-warpfield-science-pack", amount = 8 },
         },
         main_product = "rabbasca-warpfield-science-pack",
         allow_productivity = true,
