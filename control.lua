@@ -64,8 +64,6 @@ local function handle_script_events(event)
     end
   elseif effect_id == "rabbasca_register_anomaly_miner" then
     underground.mining.on_add_miner(event.source_entity)
-  elseif effect_id == "rabbasca_register_fuel_remote" then
-    underground.fuel.register_provider(event.source_entity)
   elseif effect_id == "rabbasca_on_pylon_relocate" then
     local from = Rabbasca.get_spoiled_in(event)
     if from then
@@ -121,6 +119,8 @@ script.on_event(defines.events.on_gui_opened, function(event)
           underground.ui.set_stabilizer_ui(player)
         elseif entity.name == "rabbasca-relicary-remote" and entity.force == player.force then
           underground.ui.set_relicary_remote_ui(player)
+        elseif entity.name == "rabbasca-remote-access-chest" and entity.force == player.force then
+          underground.ui.set_remote_access_ui(player)
         end
       end
     elseif event.gui_type == defines.gui_type.item and event.item then
@@ -146,6 +146,7 @@ script.on_event(defines.events.on_gui_closed, function(event)
         if player then
             underground.ui.set_stabilizer_ui(player)
             underground.ui.set_relicary_remote_ui(player)
+            underground.ui.set_remote_access_ui(player)
         end
     elseif event.gui_type == defines.gui_type.controller then
       sanity.set_sanity_ui(player)
@@ -161,6 +162,13 @@ script.on_event(defines.events.on_gui_selection_state_changed, function(event)
         or (event.element.selected_index == 2 and defines.inventory.crafter_output)
         or (event.element.selected_index == 3 and defines.inventory.fuel)
         or defines.inventory.burnt_result
+  elseif event.element.name == "rabbasca_remote_target_inventory" then
+    local player = game.players[event.player_index]
+    if not (player.opened and player.opened.name == "rabbasca-remote-access-chest") then return end
+    local selected = event.element.items[event.element.selected_index]
+    if selected and #selected == 2 and tonumber(selected[2]) then
+      player.opened.proxy_target_inventory = selected[2]
+    end
   end
 end)
 
@@ -178,16 +186,8 @@ script.on_event(defines.events.on_gui_click, function(event)
     elseif cell then
       underground.fuel.untether(cell)
     end
-  elseif event.element.name == "rabbasca_su_remote_select" then
-      storage.assign_cell = storage.assign_cell or { }
-      storage.assign_cell[event.player_index] = { chest = player.opened }
-      player.opened = nil
-  elseif event.element.name == "rabbasca_su_btn_repair_warpdrive" and storage.stabilizer then
-    storage.stabilizer.entity.set_recipe("rabbasca-repair-warpdrive")
-  elseif event.element.name == "rabbasca_su_btn_repair_extractor" and storage.stabilizer then
-    storage.stabilizer.entity.set_recipe("rabbasca-repair-extractor")
-  elseif event.element.name == "rabbasca_su_btn_repair_relichunter" and storage.stabilizer then
-    storage.stabilizer.entity.set_recipe("rabbasca-repair-relichunter")
+  elseif event.element.name == "rabbasca_remote_access_retarget" then
+      underground.ui.initiate_remote_assignment(player)
   elseif event.element.name == "rabbasca_relicary_reconnect" then
     local chest = game.players[event.player_index].opened
     if chest then

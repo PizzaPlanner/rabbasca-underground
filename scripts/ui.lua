@@ -19,8 +19,32 @@ function M.clear_stabilizer_ui(player)
     if frame then frame.destroy() end
 end
 
-local function update_remote_assignment()
+function M.initiate_remote_assignment(player)
+    storage.assign_remote_chest = storage.assign_remote_chest or { }
+    storage.assign_remote_chest[player.index] = { chest = player.opened }
+    player.opened = nil
+end
+
+local SUPPORTED_REMOTE_INVENTORY_TYPES = {
+    ["crafter_input"] = true, 
+    ["crafter_output"] = true, 
+    ["crafter_trash"] = true, 
+    ["fuel"] = true, 
+    ["burnt_result"] = true, 
+    ["rocket_silo_trash"] = true,
+    ["chest"] = true,
+    ["logistic_container_trash"] = true,
+}
+local SUPPORTED_REMOTE_TARGET_TYPES = {
+    ["container"] = true,
+    ["logistic-container"] = true,
+    ["assembling-machine"] = true,
+    ["rocket-silo"] = true,
+    ["furnace"] = true,
+}
+function M.update_remote_assignment()
     if not storage.assign_remote_chest then return end
+    local ticks_per_update = 10
     for player, data in pairs(storage.assign_remote_chest) do
         local p = game.get_player(player)
         if not (p and p.connected and data.chest and data.chest.valid and p.surface == data.chest.surface) then 
@@ -28,38 +52,38 @@ local function update_remote_assignment()
             return
         end
         local pos = data.chest.position
+        local range = data.chest.surface.name == "rabbasca-underground" and 32 or 10
         rendering.draw_rectangle({
             color = {0, 0.07, 0.25, 0.01},
             filled = true,
-            left_top = { x = pos.x - 10, y = pos.y - 10 },
-            right_bottom = { x = pos.x + 10, y = pos.y + 10 },
+            left_top = { x = pos.x - range, y = pos.y - range },
+            right_bottom = { x = pos.x + range, y = pos.y + range },
             surface = data.chest.surface,
-            time_to_live = 1,
+            time_to_live = ticks_per_update,
             players = { player }
         })
         if p.opened then
             if p.opened == data.selected then 
                 data.chest.proxy_target_entity = data.selected
-                data.chest.proxy_target_inventory = defines.inventory.burnt_result
                 p.opened = data.chest
             end
             storage.assign_remote_chest[player] = nil
-        elseif p.selected and p.selected.burner and p.selected.burner.fuel_categories["rabbasca-warp-anomaly"] then
-            local is_in_range = math.abs(data.chest.position.x - p.selected.position.x) < 10 and math.abs(data.chest.position.y - p.selected.position.y) < 10
+        elseif p.selected and p.selected.valid and SUPPORTED_REMOTE_TARGET_TYPES[p.selected.type] then
+            local is_in_range = math.abs(data.chest.position.x - p.selected.position.x) < range and math.abs(data.chest.position.y - p.selected.position.y) < range
             if is_in_range then
                 data.selected = p.selected
             end
             rendering.draw_line({
                 surface = data.chest.surface, 
                 players = { player }, 
-                time_to_live = 1, 
+                time_to_live = ticks_per_update, 
                 from = data.chest, to = p.selected, 
                 color = { 0, 0, 0 }, 
                 width = 5, gap_length = 0.25, dash_length = 0.75})
             rendering.draw_line({
                 surface = data.chest.surface, 
                 players = { player }, 
-                time_to_live = 1, 
+                time_to_live = ticks_per_update, 
                 from = data.chest, to = p.selected, 
                 color = is_in_range and {1, 1, 1} or { 1, 0, 0 }, 
                 width = 3, gap_length = 0.3, dash_length = 0.7, dash_offset = 0.025})
@@ -204,6 +228,49 @@ function M.set_cell_ui(player, item)
     if frame.cam0 then
         frame.cam0.target_cam.position = current and current.position or { 10000, 0 }
         frame.cam0.target_cam.surface_index = current and current.surface.index or storage.stabilizer.surface
+    end
+end
+
+function M.set_remote_access_ui(player)
+    local frame = player.gui.relative.rabbasca_remote_access
+    if (not player.opened) or player.opened.name ~= "rabbasca-remote-access-chest" then
+        if frame then frame.destroy() end
+        return
+    end
+    if not frame then
+        frame = player.gui.relative.add{
+            type = "frame",
+            name = "rabbasca_remote_access",
+            caption = "Target",
+            direction = "vertical",
+            anchor = {
+                gui = defines.relative_gui_type.proxy_container_gui,
+                position = defines.relative_gui_position.right
+            }
+        }
+        frame.add { type = "button", caption = {"", "Select target"}, name = "rabbasca_remote_access_retarget" }
+        local target = player.opened.proxy_target_entity
+        if target and target.valid then
+            local items = { }
+            local selected = 0
+            local count = 0
+            for i = 1, target.get_max_inventory_index() do
+                local inv = target.get_inventory(i)
+                if inv and SUPPORTED_REMOTE_INVENTORY_TYPES[inv.name] and #inv > 0 then
+                    table.insert(items, { "inventory-name."..inv.name, i })
+                    count = count + 1
+                    if player.opened.proxy_target_inventory == i then
+                        selected = count
+                    end
+                end
+            end
+            frame.add{ 
+                type = "list-box", 
+                name = "rabbasca_remote_target_inventory",
+                items = items,
+                selected_index = selected
+            }
+        end
     end
 end
 

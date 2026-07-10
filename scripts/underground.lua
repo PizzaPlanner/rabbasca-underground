@@ -30,6 +30,7 @@ function M.on_tick_underground(event)
     M.fuel.update_cells()
     M.warp.update_floorthings()
     M.ui.update_cell_assignment()
+    M.ui.update_remote_assignment()
 
     if event.tick % 60 == 0 then
         M.mining.on_mining_update()
