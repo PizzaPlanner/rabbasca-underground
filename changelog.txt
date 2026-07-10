@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.2
+Date: 2026-07-09
+  Balancing:
+    - Warp core will now always be fresh when crafted
+    - Reduced shadow wriggler maximum lifetime (100s -> 60s)
+    - Reduced chance of shadow crawlers to create sanity motes (12% -> 7%)
+  Bugfixes:
+    - Fixed strafer and stomper pentapods not being weak to psychic damage
+---------------------------------------------------------------------------------------------------
 Version: 0.7.1
 Date: 2026-07-09
   Balancing:

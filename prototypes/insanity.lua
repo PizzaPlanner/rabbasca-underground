@@ -534,7 +534,7 @@ crawler.attack_reaction =
     action =
     {
       type = "direct",
-      probability = 0.12,
+      probability = 0.07,
       force = "not-same",
       action_delivery =
       {
