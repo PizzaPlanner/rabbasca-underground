@@ -27,9 +27,8 @@ local st_anomaly = util.merge {
 st_anomaly.stateless_visualisation = {
   {
     count = 1,
-    render_layer = "object",
+    render_layer = "object-under",
     animation = {
-      -- priority = "extra-high",
       filename = "__rabbasca-assets__/graphics/entities/anomaly.png",
       line_length = 5,
       width = 412,

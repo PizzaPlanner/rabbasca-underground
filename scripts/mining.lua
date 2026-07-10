@@ -30,7 +30,7 @@ function M.on_mining_update()
             if e.chest.valid then e.chest.destroy { } end
             storage.stabilizer.miners.entities[i] = nil
         elseif storage.stabilizer.warping then
-            e.miner.teleport({0, 0})
+            e.miner.teleport({0, -1})
         elseif not (e.miner.mining_target and e.miner.mining_target.valid) then
             for _, anom in pairs(storage.stabilizer.anomalies.entities) do
                 if anom.valid and not anom.surface.find_entity("rabbasca-collector-pylon", anom.position) then

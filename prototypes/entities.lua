@@ -25,6 +25,7 @@ local stabilizer = util.merge { data.raw["assembling-machine"]["assembling-machi
         hidden = false,
         hidden_in_factoriopedia = false,
         tall = true,
+        selection_priority = 51, -- prio over safe collectors
         subgroup = "rabbasca-warp-stabilizer",
         order = "a[stabilizer]",
     } }
