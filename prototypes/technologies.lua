@@ -230,26 +230,6 @@ data:extend{
 },
 {
     type = "technology",
-    name = "rabbasca-nearby-access",
-    icons = Rabbasca.icons({ proto = data.raw["container"]["rabbasca-remote-access-chest"] }),
-    prerequisites = { "rabbasca-warpfield-science-pack" },
-    hidden = true, -- WIP
-    effects = {
-      {
-        type = "unlock-recipe",
-        recipe = "rabbasca-remote-access-chest"
-      },
-    },
-    unit = {
-      time = 60,
-      count = 800,
-      ingredients = {
-        {"rabbasca-warpfield-science-pack", 1},
-      }
-    },
-},
-{
-    type = "technology",
     name = "rabbasca-quantum-device",
     icons = Rabbasca.icons({ proto = data.raw["item"]["rabbasca-quantum-device"] }),
     prerequisites = { "rabbasca-archives" },

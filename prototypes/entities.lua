@@ -228,13 +228,11 @@ local miner_remote = {
     },
 }
 
-local fuel_access = {
+local remote_access = {
     name = "rabbasca-remote-access-chest",
     icon = "__rabbasca-assets__/graphics/recolor/icons/nearby-access.png",
     icon_size = 64,
-    type = "container",
-    inventory_type = "with_filters_and_bar",
-    inventory_size = 1,
+    type = "proxy-container",
     circuit_wire_max_distance = 90,
     minable = { result = "rabbasca-remote-access-chest", count = 1, mining_time = 1 },
     placeable_by = { item = "rabbasca-remote-access-chest", count = 1 },
@@ -246,39 +244,32 @@ local fuel_access = {
     picture = table.deepcopy(data.raw["linked-container"]["linked-chest"].picture),
     collision_box = { { -0.4, -0.4 }, { 0.4, 0.4 } },
     selection_box = { { -0.5, -0.5 }, { 0.5, 0.5 } },
-    surface_conditions = { Rabbasca.only_underground(true) },
-    created_effect = {
-        type = "direct",
-        action_delivery = {
-            type = "instant",
-            source_effects = {
-                {
-                    type = "script",
-                    effect_id = "rabbasca_register_fuel_remote",
-                },
-            }
-        }
-    }
+    surface_conditions = { { property = "gravity", min = 1 } },
 }
-fuel_access.picture.layers[1].filename = "__rabbasca-assets__/graphics/recolor/entities/nearby-access.png"
+remote_access.picture.layers[1].filename = "__rabbasca-assets__/graphics/recolor/entities/nearby-access.png"
 
-local fuel_access_2 = util.merge {
-    fuel_access,
-    {
-        name = "rabbasca-anomaly-storage",
-        max_health = 500,
-        inventory_size = 9,
-        collision_box = { { -0.8, -0.8 }, { 0.8, 0.8 } },
-        selection_box = { { -1, -1 }, { 1, 1 } },
+local anomaly_storage = {
+    type = "container",
+    name = "rabbasca-anomaly-storage",
+    icon = "__rabbasca-assets__/graphics/recolor/icons/nearby-access.png",
+    icon_size = 64,
+    circuit_wire_max_distance = 90,
+    flags = { "placeable-player", "player-creation" },
+    next_upgrade = nil,
+    deconstruction_alternative = nil,
+    draw_inventory_content = true,
+    max_health = 500,
+    inventory_size = 9,
+    picture = table.deepcopy(data.raw["linked-container"]["linked-chest"].picture),
+    collision_box = { { -0.8, -0.8 }, { 0.8, 0.8 } },
+    selection_box = { { -1, -1 }, { 1, 1 } },
+    surface_conditions = { Rabbasca.only_underground(true) },
+    resistances = {
+        { type = "rabbasca-psychic", percent = 100 }
     }
 }
-fuel_access_2.placeable_by = nil
-fuel_access_2.minable = nil
-fuel_access_2.resistances = {
-    { type = "rabbasca-psychic", percent = 100 }
-}
-fuel_access_2.picture.layers[1].filename = "__rabbasca-assets__/graphics/recolor/entities/anomaly-access.png"
-for _, layer in pairs(fuel_access_2.picture.layers) do
+anomaly_storage.picture.layers[1].filename = "__rabbasca-assets__/graphics/recolor/entities/anomaly-access.png"
+for _, layer in pairs(anomaly_storage.picture.layers) do
     layer.scale = (layer.scale or 1) * 2
 end
 
@@ -544,7 +535,7 @@ ufo_leg.graphics_set = nil
 data:extend {
     stabilizer,
     ufo, ufo_leg,
-    fuel_access, fuel_access_2,
+    remote_access, anomaly_storage,
     relicary,
     relicary_access,
     relichunter,

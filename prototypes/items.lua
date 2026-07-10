@@ -58,14 +58,6 @@ Rabbasca.make_trigger_item({
   })
 }, "rabbasca_on_summon_ufo"),
 Rabbasca.make_trigger_item({
-  name = "rabbasca-floor-stability-upkeep",
-  subgroup = "rabbasca-events",
-  order = "zz",
-  icons = Rabbasca.icons({
-    { proto = data.raw["virtual-signal"]["signal-radioactivity"] }
-  })
-}, "rabbasca_on_floor_stability"),
-Rabbasca.make_trigger_item({
   name = "rabbasca-progress-hunt",
   icon = "__base__/graphics/icons/signal/signal-map-marker.png",
   icon_size = 64,

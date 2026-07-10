@@ -88,13 +88,6 @@ function M.on_consumer_died(id)
     end
 end
 
-function M.register_provider(e)
-    if not (storage.stabilizer and storage.stabilizer.entity.valid) then return end
-    local inv = e.get_inventory(defines.inventory.chest)
-    if not (inv and #inv > 0) then return end
-    storage.stabilizer.fuel.providers[e.unit_number] = { entity = e, target = nil, inventory = inv }
-end
-
 function M.register_consumer(e)
     if not (storage.stabilizer and storage.stabilizer.entity.valid) then return end
     local id, _, _ = script.register_on_object_destroyed(e)

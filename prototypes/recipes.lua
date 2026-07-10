@@ -85,7 +85,7 @@ data:extend {
         hide_from_signal_gui = false,
         icons = Rabbasca.icons({
             { proto = data.raw["capsule"]["yumako-mash"], scale = 0.7, shift = {-6, -8} },
-            { proto = data.raw["fluid"]["beta-carotene"] },
+            { icon = "__rabbasca-assets__/graphics/recolor/icons/beta-carotene.png" },
         }),
         enabled = false,
         energy_required = 6,
@@ -382,7 +382,7 @@ data:extend {
         enabled = false,
         energy_required = 12,
         ingredients = {
-            { type = "fluid", name = "harene-gas", amount = 150 },
+            { type = "fluid", name = "harene", amount = 5 },
             { type = "fluid", name = "fluorine", amount = 75 },
             { type = "item", name = "carbon-fiber", amount = 5 },
             { type = "item", name = "display-panel", amount = 1 },
