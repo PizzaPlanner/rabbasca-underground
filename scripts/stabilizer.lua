@@ -28,7 +28,7 @@ function M.progress_powerspike(num)
 end
 
 function M.get_powerspike_required(level)
-    return math.floor(35 + level * (11.5 + level * 8.5))
+    return math.floor(35 + level * (11.5 + level * 7.5))
 end
 
 function M.get_fuel_percentage()

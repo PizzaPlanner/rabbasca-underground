@@ -77,7 +77,7 @@ data:extend {
       count = 100
     }
 },
-  {
+{
     type = "technology",
     name = "rabbasca-insanity-3",
     icons = Rabbasca.icons({{proto = data.raw["item"]["rabbasca-sanity-loss"]}}),
@@ -98,25 +98,25 @@ data:extend {
     }
 },
 {
-        type = "recipe",
-        name = "rabbasca-sanity-mote",  -- for signal unlock
-        enabled = false,
-        hidden = true,
-        hidden_in_factoriopedia = true,
-        hide_from_player_crafting = true,
-        requires_ingredients_to_unlock_results = false,
-        energy_required = 0.5,
-        allow_productivity = false,
-        auto_recycle = false,
-        ingredients = {
-            { type = "item", name = "rabbasca-sanity-loss", amount = 1 },
-        },
-        results = { 
-            { type = "item", name = "rabbasca-sanity-mote", amount = 1, always_fresh = true },
-        },
-        categories = { "parameters" }
+    type = "recipe",
+    name = "rabbasca-sanity-mote",  -- for signal unlock
+    enabled = false,
+    hidden = true,
+    hidden_in_factoriopedia = true,
+    hide_from_player_crafting = true,
+    requires_ingredients_to_unlock_results = false,
+    energy_required = 0.5,
+    allow_productivity = false,
+    auto_recycle = false,
+    ingredients = {
+        { type = "item", name = "rabbasca-sanity-loss", amount = 1 },
     },
-    {
+    results = { 
+        { type = "item", name = "rabbasca-sanity-mote", amount = 1, always_fresh = true },
+    },
+    categories = { "parameters" }
+},
+{
     type = "recipe",
     name = "rabbasca-embrace-insanity",
     auto_recycle = false,
@@ -250,6 +250,7 @@ local wriggler = util.merge {
 }
 wriggler.attack_parameters.cooldown = second / 1.85
 wriggler.attack_parameters.health_penalty = 5
+wriggler.attack_parameters.ammo_category = "seismic"
 wriggler.attack_parameters.ammo_type =
 {
   target_type = "entity",
@@ -444,9 +445,10 @@ table.insert(crawler.flags, "not-selectable-in-game")
 crawler.selection_box = {{0, 0}, {0, 0}}
 crawler.corpse = nil
 crawler.dying_explosion = nil
--- crawler.collision_mask = { layers = { out_of_map = true }, colliding_with_tiles_only = true }
+-- crawler.collision_mask = { layers = { out_of_map = true }, colliding_with_tiles_only = true } -- cant set: Will dodge character if not colliding with it
 crawler.dying_trigger_effect = nil
-crawler.revenge_attack_parameters = {
+crawler.revenge_attack_parameters = nil
+crawler.attack_parameters = {
   type = "projectile",
   ammo_category = "seismic",
   min_attack_distance = 0,

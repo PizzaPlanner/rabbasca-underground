@@ -97,6 +97,7 @@ local relichunter = {
       not_producing = -0.1 / hour, -- required to resume crafting after running out of fuel and being refuelled
       producing = 1 / second
     },
+    circuit_wire_max_distance = 90,
     collision_box = { { -1.8, -1.8 }, { 1.8, 1.8 } },
     selection_box = { { -2, -2 }, { 2, 2 } },
     crafting_speed = 1,
@@ -180,6 +181,7 @@ local relicary = {
     },
     module_slots = 0,
     crafting_categories = { "rabbasca-relics" },
+    surface_conditions = { Rabbasca.only_underground(true) },
     -- cant_insert_at_source_message_key = "inventory-restriction.not-a-vault-key",
     graphics_set = { 
         working_visualisations = { {

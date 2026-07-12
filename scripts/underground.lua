@@ -36,8 +36,11 @@ function M.on_tick_underground(event)
         M.mining.on_mining_update()
         if storage.stabilizer.anomalies then
             storage.stabilizer.anomalies.current = 0
-            for _, e in pairs(storage.stabilizer.anomalies.entities) do
-                if e.valid then
+            for i = #storage.stabilizer.anomalies.entities, 1, -1 do
+                local e = storage.stabilizer.anomalies.entities[i]
+                if not (e and e.valid) then
+                    table.remove(storage.stabilizer.anomalies.entities, i)
+                else
                     storage.stabilizer.anomalies.current = storage.stabilizer.anomalies.current + e.amount
                 end
             end

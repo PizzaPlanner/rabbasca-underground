@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.3
+Date: 2026-07-12
+  Changes:
+    - Underground now plays space soundtrack instead of nauvis soundtrack
+    - Underground locator can now connect to circuit network
+    - Anomaly extractors now move in random patterns
+  Balancing:
+    - Spacetime fluctuation sensor now takes purified harene instead of harene gas, so a harene crafting chain is required before going underground
+    - Warpfield science pack now takes a spacetime fluctuation sensor instead of purified harene
+    - Slightly reduced the powerspike cost ramping
+  Bugfixes:
+    - Fixed icon for beta carotene from yumako
+---------------------------------------------------------------------------------------------------
 Version: 0.7.2
 Date: 2026-07-09
   Changes:

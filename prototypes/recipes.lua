@@ -399,7 +399,7 @@ data:extend {
         enabled = false,
         energy_required = 35,
         ingredients = {
-            { type = "fluid", name = "harene", amount = 5 },
+            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1 },
             { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 4 },
             { type = "item", name = "rabbasca-warp-core", amount = 1 },
             { type = "item", name = "rabbasca-restored-knowledge", amount = 10 },

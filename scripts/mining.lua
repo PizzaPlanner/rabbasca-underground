@@ -31,9 +31,11 @@ function M.on_mining_update()
             storage.stabilizer.miners.entities[i] = nil
         elseif storage.stabilizer.warping then
             e.miner.teleport({0, -1})
-        elseif not (e.miner.mining_target and e.miner.mining_target.valid) then
-            for _, anom in pairs(storage.stabilizer.anomalies.entities) do
-                if anom.valid and not anom.surface.find_entity("rabbasca-collector-pylon", anom.position) then
+        elseif #storage.stabilizer.anomalies.entities > 0 and not (e.miner.mining_target and e.miner.mining_target.valid) then
+            local r = math.random(1, #storage.stabilizer.anomalies.entities)
+            for i = r, r+3 do
+                local anom = storage.stabilizer.anomalies.entities[(i - 1) % (#storage.stabilizer.anomalies.entities + 1)]
+                if anom and anom.valid and not anom.surface.find_entity("rabbasca-collector-pylon", anom.position) then
                     e.miner.teleport(anom.position)
                     e.chest.teleport(anom.position)
                     break
