@@ -25,8 +25,17 @@ function M.tether(item, target)
     storage.stabilizer.fuel.cells[stack.item_number] = { item = stack.item, tether = target, tether_capacity = burner.currently_burning.name.fuel_value }
 end
 
-function M.untether(item)
-    local stack = item.item_stack
+function M.untether(item, force_relocation)
+    local stack = (not force_relocation) and item.item_stack
+    if not stack then
+        for i = 1, #storage.stabilizer.fuel.inventory do
+            local maybe_stack = storage.stabilizer.fuel.inventory[i]
+            if not maybe_stack.valid_for_read then
+                stack = maybe_stack
+                break
+            end
+        end
+    end
     if not stack then return end
     storage.stabilizer.fuel.cells[item.item_number] = nil
     local label = item.label
@@ -34,12 +43,14 @@ function M.untether(item)
     stack.set_stack(empty_cell)
     stack.label = label or ""
     storage.stabilizer.fuel.cells[stack.item_number] = { item = stack.item, tether = nil, tether_capacity = 0 }
+    if force_relocation and item.item_stack and item.item_stack ~= stack then
+        item.item_stack.clear()
+    end
+    return storage.stabilizer.fuel.cells[stack.item_number]
 end
 
 function M.update_cells()
     local ticks_per_second = 6
-    local is_recalling = storage.stabilizer.entity.is_crafting() and storage.stabilizer.entity.get_recipe().name == "rabbasca-stabilizer-recharge"
-    local stab_inv = storage.stabilizer.entity.get_inventory(defines.inventory.burnt_result)
     local can_fuel = storage.stabilizer.entity.burner.remaining_burning_fuel > 0
     local refuelled = 0
     local refuel_spoilage_per_tick = 0.025 / ticks_per_second
@@ -49,8 +60,8 @@ function M.update_cells()
             storage.stabilizer.fuel.cells[n] = nil
             break
         else
-            local stack = cell.item_stack or stab_inv.find_empty_stack()
-            if (not cell.item_stack) or cell.item_stack.spoil_percent >= 0.995 then
+            local stack = cell.item_stack
+            if (not stack) or cell.item_stack.spoil_percent >= 0.995 then
                 M.untether(cell)
                 break
             else
@@ -68,11 +79,7 @@ function M.update_cells()
                         M.untether(cell)
                     end
                 end
-                local is_in_stab = cell.owner_location.entity == storage.stabilizer.entity
-                if is_recalling and not is_in_stab then
-                        local swap, _ = stab_inv.find_empty_stack()
-                        stack.swap_stack(swap)
-                elseif is_in_stab and can_fuel and data.tether and cell.item_stack.spoil_percent > refuel_spoilage_per_tick then
+                if can_fuel and data.tether and cell.item_stack.spoil_percent > refuel_spoilage_per_tick then
                     refuelled = refuelled + 1
                     cell.item_stack.spoil_percent = math.max(0, cell.item_stack.spoil_percent - refuel_spoilage_per_tick)
                 end
@@ -96,6 +103,10 @@ function M.register_consumer(e)
         e.burner.currently_burning = "rabbasca-warp-cell-internal"
     end
     -- game.print("Registered fuel consumer: "..e.gps_tag..", now have "..table_size(storage.stabilizer.fuel.consumers))
+end
+
+function M.create_inventory()
+    return game.create_inventory(80, { "rabbasca-extra.warp-cell-inventory-title" })
 end
 
 return M

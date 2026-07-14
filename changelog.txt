@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.8.0
+Date: 2026-07-14
+  Changes:
+    - Warp cells are now stored inside a dedicated warp cell storage, viewable in the stabilizer's control panel
+    - Removed recall warp cells recipe. Opening a warp cell will now move it to warp cell storage and cells placed inside can not be taken out
+  Bugfixes:
+    - Fixed messages for unlocking new stabilizer recipes would play even if recipes were already unlocked
+---------------------------------------------------------------------------------------------------
 Version: 0.7.3
 Date: 2026-07-12
   Changes:

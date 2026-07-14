@@ -134,6 +134,10 @@ function M.on_stabilizer_died(id)
             game.forces.player.technologies[tech].researched = false
             -- game.forces.player.technologies[tech].enabled    = false
         end
+        if storage.stabilizer.fuel.inventory then
+            storage.stabilizer.fuel.inventory.destroy()
+        end
+        
         storage.stabilizer = nil
         M.update_logistic_section()
 

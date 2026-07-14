@@ -184,9 +184,10 @@ function M.set_cell_ui(player, item)
     end
 
     local data = item.item_number and storage.stabilizer.fuel.cells[item.item_number]
-    if not data then 
-        fuel.untether(item.item)
-        data = storage.stabilizer.fuel.cells[item.item_number]
+    if (not data) or (item.owner_location and item.owner_location.surface) then
+        data = fuel.untether(item.item, true)
+        item = data.item.item_stack
+        storage.assign_cell[player.index] = item
     end
 
     local selected_number = player.selected and player.selected.valid and player.selected.unit_number
@@ -422,6 +423,18 @@ function M.set_stabilizer_ui(player)
             type = "label",
             caption = { "rabbasca-extra.ui-find-relicary-chance", string.format("%.1f", warp.get_relic_chance() * 100) }
         }
+
+        local inv = frame.add{
+            type = "inventory",
+            slots_per_row = 5,
+            handle_cursor_transfer = false,
+            handle_cursor_split = false,
+            handle_open_item = true,
+            handle_open_mod_item = true,
+            handle_send_stack_to_trash = false,
+            handle_send_stacks_to_trash = false,
+        }
+        inv.inventory = storage.stabilizer.fuel.inventory
     end
     local t = frame.rabbasca_su_content.rabbasca_su_table
     t.rabbasca_su_autopilot.switch_state = storage.stabilizer.settings.autopilot and "right" or "left"

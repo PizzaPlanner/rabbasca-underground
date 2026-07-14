@@ -12,7 +12,7 @@ function M.progress_powerspike(num)
         local techs = storage.stabilizer.entity.force.technologies
         local tech = techs["rabbasca-warp-stabilizer-powerspike-"..storage.stabilizer.powerspikes.created.."-unlock"]
         storage.stabilizer.entity.force.print({ "rabbasca-extra.generated-powerspike", storage.stabilizer.powerspikes.created, storage.stabilizer.powerspikes.required }, { sound_path = "utility/achievement_unlocked" })
-        if tech then
+        if tech and not tech.researched then
             tech.research_recursive()
             if tech.prototype.effects then
                 for _, e in pairs(tech.prototype.effects) do
@@ -54,7 +54,7 @@ function M.register_stabilizer(s)
             autopilot = true,
         },
         relics = { pity = 0 },
-        fuel = { providers = { }, consumers = { }, cells = { } },
+        fuel = { consumers = { }, cells = { }, inventory = fuel.create_inventory() },
         miners = { entities = { } },
         powerspikes = { next = M.get_powerspike_required(0), required = M.get_powerspike_required(0), created = 0 },
         flooring = {
@@ -66,8 +66,6 @@ function M.register_stabilizer(s)
         config = prototypes.mod_data["rabbasca-stabilizer-config"].data, -- accessing prototypes is expensive, so cache it here too
         is_booted = false
     }
-    -- M.fuel.register_consumer(s, 1)
-    -- s.get_inventory(defines.inventory.burnt_result).insert({name = "rabbasca-warp-cell-recharging", count = 2})
     s.force.set_script_visible({ type = "tile", name = "rabbasca-underground-rubble-powered" }, true)
     s.force.set_script_visible({ type = "entity", name = "rabbasca-warp-stabilizer" }, true)
     s.force.set_script_visible({ type = "entity", name = "rabbasca-stability-pylon" }, true)
@@ -91,8 +89,13 @@ function M.register_stabilizer(s)
     }
     -- chest.health = 127
     storage.stabilizer.miners.chest = chest
+    local temp = game.create_inventory(4)
+    temp.insert({name = "rabbasca-warp-cell-recharging", count = 4})
+    for i = 1, #temp do
+        fuel.untether(temp[i].item, true)
+    end
+    temp.destroy()
     local inv = chest.get_inventory(defines.inventory.chest)
-    inv.insert({name = "rabbasca-warp-cell-recharging", count = 4})
     inv.insert({name = "rabbasca-powerspike", count = 1})
     inv.insert({name = "spoilage", count = 367})
     inv.insert({name = "ice", count = 114})
@@ -155,6 +158,14 @@ function M.update_crafting()
     elseif recipe == "rabbasca-abandon-stabilizer" then
         for _, player in pairs(storage.stabilizer.entity.force.players) do
             player.add_custom_alert(storage.stabilizer.entity, { type = "entity", name = "rabbasca-warp-stabilizer" }, { "rabbasca-extra.alert-abandon" }, true)
+        end
+    elseif recipe == "rabbasca-warp-cell-recharging" then
+        local prog = storage.stabilizer.entity.crafting_progress
+        if prog < 0.1 or prog >= 1 then
+            local new_cell = storage.stabilizer.entity.get_inventory(defines.inventory.crafter_output).find_item_stack("rabbasca-warp-cell-recharging")
+            if new_cell then
+                fuel.untether(new_cell, true)
+            end
         end
     end
 end

@@ -32,11 +32,6 @@ data:extend{
       {
         type = "unlock-recipe",
         hidden = true,
-        recipe = "rabbasca-stabilizer-recharge"
-      },
-      {
-        type = "unlock-recipe",
-        hidden = true,
         recipe = "rabbasca-abandon-stabilizer"
       },
     },

@@ -269,29 +269,6 @@ data:extend {
     },
     {
         type = "recipe",
-        name = "rabbasca-stabilizer-recharge",
-        hide_from_player_crafting = true,
-        icons = Rabbasca.icons({
-            { proto = data.raw["item-with-inventory"]["rabbasca-warp-cell-recharging"], scale = 0.75, shift = {-8, -8} },
-            { proto = data.raw["assembling-machine"]["rabbasca-warp-stabilizer"], scale = 0.75, shift = {8, 8} },
-            { proto = data.raw["virtual-signal"]["down-right-arrow"], scale = 0.5 },
-        }),
-        enabled = false,
-        energy_required = 2,
-        -- ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
-        results = { },
-        allow_productivity = false,
-        crafting_machine_tint =
-        {
-            primary = { 1, 0.85, 0.75 }
-        },
-        categories = { "rabbasca-warp-stabilizer" },
-        subgroup = "rabbasca-events",
-        order = "a[stabilizer]-c",
-        hide_from_signal_gui = false
-    },
-    {
-        type = "recipe",
         name = "rabbasca-warp-trace",
         enabled = false,
         hidden_in_factoriopedia = false,
