@@ -182,7 +182,7 @@ script.on_event(defines.events.on_gui_click, function(event)
     local cell = storage.assign_cell[event.player_index].item
     local e = game.get_entity_by_unit_number(enum or 0)
     if cell and e then
-      underground.fuel.tether(cell, e)
+      underground.fuel.tether(cell, e, player)
     elseif cell then
       underground.fuel.untether(cell)
     end

@@ -324,17 +324,6 @@ util.merge {
 },
 {
   type = "item",
-  name = "rabbasca-remote-access-chest",
-  icon = "__rabbasca-assets__/graphics/recolor/icons/nearby-access.png",
-  icon_size = 64,
-  place_result = "rabbasca-remote-access-chest",
-  stack_size = 50,
-  weight = 100 * kg,
-  subgroup = "storage",
-  order = "a[items]-x[remote-access]",
-},
-{
-  type = "item",
   name = "rabbasca-relichunter",
   icon = "__rabbasca-assets__/graphics/by-hurricane/research-center-icon.png",
   icon_size = 64,

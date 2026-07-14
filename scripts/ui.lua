@@ -209,19 +209,13 @@ function M.set_cell_ui(player, item)
             if is_hovered then
                 cam_target = target
             end
-            if is_open then
-                fuel.tether(item.item, player.opened)
+            if is_open then -- selected a target by opening it in the world
+                fuel.tether(item.item, player.opened, player)
             end
         end
     end
     frame.cam0.target_cam.position = cam_target and cam_target.position or { 10000, 0 }
     frame.cam0.target_cam.surface_index = cam_target and cam_target.surface.index or storage.stabilizer.surface
-
-    -- if player.opened and player.opened_gui_type == defines.gui_type.entity then
-    --     storage.assign_remote[player.index] = nil
-    --     frame.destroy()
-    --     return
-    -- end
 
     if frame.current_target then
         frame.current_target.caption = { "", "Current Target: ", current and ("[entity="..current.name.."]") or "None" }
@@ -424,7 +418,7 @@ function M.set_stabilizer_ui(player)
             caption = { "rabbasca-extra.ui-find-relicary-chance", string.format("%.1f", warp.get_relic_chance() * 100) }
         }
 
-        local inv = frame.add{
+        local inv = frame.add{ type = "frame", style = "inside_shallow_frame_with_padding" }.add{
             type = "inventory",
             slots_per_row = 5,
             handle_cursor_transfer = false,

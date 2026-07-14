@@ -164,7 +164,7 @@ function M.update_crafting()
         if prog < 0.1 or prog >= 1 then
             local new_cell = storage.stabilizer.entity.get_inventory(defines.inventory.crafter_output).find_item_stack("rabbasca-warp-cell-recharging")
             if new_cell then
-                fuel.untether(new_cell, true)
+                fuel.untether(new_cell.item, true)
             end
         end
     end

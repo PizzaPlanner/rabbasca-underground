@@ -3,16 +3,20 @@ local M = {
     ENERGY_PER_STAB_CELL = prototypes.item["rabbasca-warp-cell-internal-big"].fuel_value,
 }
 
-function M.tether(item, target)
+function M.tether(item, target, player)
     local stack = item.item_stack
     if not stack then return end
     local burner = target and target.valid and target.burner
     if not burner then return end
     local cell_name = prototypes.item["rabbasca-warp-cell-indicator-"..target.name] and "rabbasca-warp-cell-indicator-"..target.name or "rabbasca-warp-cell"
-    local new_cell = { name = cell_name, count = 1, quality = item.quality, spoil_percent = math.min(stack.spoil_percent + 0.5, 0.95) }
+    local new_spoil_percent = item.name == "rabbasca-warp-cell-recharging" and 1 or 1 - (1 - stack.spoil_percent) / 2
+    local new_cell = { name = cell_name, count = 1, quality = item.quality, spoil_percent = math.min(0.95, new_spoil_percent) }
     if not stack.can_set_stack(new_cell) then return end
-    if stack.spoil_percent < 0.1 then
+    if new_spoil_percent >= 1 then
         if storage.stabilizer.entity.burner.remaining_burning_fuel < M.ENERGY_PER_CELL * 0.1 then
+            if player then 
+                player.print({ "rabbasca-extra.not-enough-charge-to-tether" })
+            end
             return
         end
         storage.stabilizer.entity.burner.remaining_burning_fuel = storage.stabilizer.entity.burner.remaining_burning_fuel - M.ENERGY_PER_CELL * 0.1

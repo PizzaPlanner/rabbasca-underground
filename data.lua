@@ -15,6 +15,7 @@ require("prototypes.tips-and-tricks")
 require("prototypes.warp-locations")
 require("prototypes.sounds")
 require("prototypes.insanity")
+-- require("prototypes.remote-access")
 
 require("compatibility.lignumis")
 -- require("compatibility.auto-deconstruct") TODO
