@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.8.1
+Date: 2026-07-16
+  Bugfixes:
+    - Fixed crash when deconstructing a warp cell target while warp cell is not fully charged
+---------------------------------------------------------------------------------------------------
 Version: 0.8.0
 Date: 2026-07-14
   Changes:

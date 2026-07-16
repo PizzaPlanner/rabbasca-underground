@@ -68,24 +68,23 @@ function M.update_cells()
             if (not stack) or cell.item_stack.spoil_percent >= 0.995 then
                 M.untether(cell)
                 break
-            else
-                if data.tether then
-                    if data.tether.valid and data.tether.burner then
-                        local delta = (1 - cell.item_stack.spoil_percent) * M.ENERGY_PER_CELL / ticks_per_second
-                        if not data.tether.burner.currently_burning then
-                            data.tether.burner.currently_burning = "rabbasca-warp-cell-internal"
-                            data.tether.burner.remaining_burning_fuel = delta
-                        else
-                            data.tether.burner.remaining_burning_fuel = data.tether.burner.remaining_burning_fuel + delta
-                        end
-                        stack.health = math.max(0, math.min(1, data.tether.burner.remaining_burning_fuel / (data.tether_capacity or 1)))
+            elseif data.tether then
+                if data.tether.valid and data.tether.burner then
+                    local delta = (1 - cell.item_stack.spoil_percent) * M.ENERGY_PER_CELL / ticks_per_second
+                    if not data.tether.burner.currently_burning then
+                        data.tether.burner.currently_burning = "rabbasca-warp-cell-internal"
+                        data.tether.burner.remaining_burning_fuel = delta
                     else
-                        M.untether(cell)
+                        data.tether.burner.remaining_burning_fuel = data.tether.burner.remaining_burning_fuel + delta
                     end
-                end
-                if can_fuel and data.tether and cell.item_stack.spoil_percent > refuel_spoilage_per_tick then
-                    refuelled = refuelled + 1
-                    cell.item_stack.spoil_percent = math.max(0, cell.item_stack.spoil_percent - refuel_spoilage_per_tick)
+                    stack.health = math.max(0, math.min(1, data.tether.burner.remaining_burning_fuel / (data.tether_capacity or 1)))
+                    if can_fuel and cell.item_stack.spoil_percent > refuel_spoilage_per_tick then
+                        refuelled = refuelled + 1
+                        cell.item_stack.spoil_percent = math.max(0, cell.item_stack.spoil_percent - refuel_spoilage_per_tick)
+                    end
+                else
+                    M.untether(cell)
+                    break
                 end
             end
         end
