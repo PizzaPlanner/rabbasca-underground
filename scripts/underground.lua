@@ -256,7 +256,7 @@ function M.initiate_warp()
     storage.stabilizer.entity.set_recipe("rabbasca-stabilizer-warp-sequence")
 end
 
-if settings.global["rabbasca-debug-mode"] then
+if settings.global["rabbasca-debug-mode"].value then
     commands.add_command("rabbasca_ug_warp", nil, function(command)
         game.print("[DEBUG] [planet=rabbasca-underground] warp initiated")
         local surface = game.surfaces["rabbasca-underground"]

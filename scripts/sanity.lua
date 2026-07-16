@@ -171,7 +171,7 @@ script.on_nth_tick(M.DEFAULT_CHECK_INTERVAL, function(_)
     end
 end)
 
-if settings.global["rabbasca-debug-mode"] then
+if settings.global["rabbasca-debug-mode"].value then
     commands.add_command("rabbasca_ug_sani", nil, function(command)
         local to = tonumber(command.parameter) or 1
         M.set_insanity(to, game.players[command.player_index])
