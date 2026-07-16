@@ -87,11 +87,11 @@ function M.update_logistic_section()
                 min = storage.stabilizer.warping and 0 or M.warp.get_repair_progress() * 100,
             },
             {
-                value = { name = "rabbasca-warp-anomaly", type = "entity", quality = "normal" },
+                value = { name = "rabbasca-warp-anomaly", type = "item", quality = "normal" },
                 min = storage.stabilizer.anomalies.current
             },
             {
-                value = { name = "rabbasca-stability-pylon", type = "entity", quality = "normal" },
+                value = { name = "rabbasca-stability-pylon", type = "item", quality = "normal" },
                 min = M.warp.get_pylon_off_count()
             },
             {

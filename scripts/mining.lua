@@ -29,6 +29,7 @@ function M.on_mining_update()
         if not e.miner.valid then
             if e.chest.valid then e.chest.destroy { } end
             storage.stabilizer.miners.entities[i] = nil
+            break
         elseif storage.stabilizer.warping then
             e.miner.teleport({0, -1})
         elseif #storage.stabilizer.anomalies.entities > 0 and not (e.miner.mining_target and e.miner.mining_target.valid) then
@@ -44,6 +45,7 @@ function M.on_mining_update()
         elseif not (e.chest.valid and e.chest.proxy_target_entity and e.chest.proxy_target_entity.valid) then
             if e.chest.valid then e.chest.destroy { } end
             M.on_add_miner(e.miner)
+            break
         end
     end
 end
