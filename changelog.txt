@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.8.2
-Date: ??????
+Date: 2026-07-17
   Bugfixes:
     - Fixed some signals in the stabilizer readings group always had a value of 0 when used in signal conditions
     - Fixed some debug commands were always available
