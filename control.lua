@@ -88,12 +88,14 @@ local function handle_script_events(event)
   elseif effect_id == "rabbasca_on_sanity_loss" then
     local from = Rabbasca.get_spoiled_in(event)
     local force = from and from.force or game.forces.player
-    sanity.remove_sanity(force, sanity.DEFAULT_DRAIN)
+    for _, player in pairs(force.connected_players) do
+      sanity.remove_sanity(player, sanity.DEFAULT_DRAIN)
+    end
   elseif effect_id == "rabbasca_on_sanity_restore" then
     local from = Rabbasca.get_spoiled_in(event)
     if from and from.type == "character" and from.force then
       if sanity.get_protection_level(from) > 0 then return end
-      sanity.restore_sanity(from.force, sanity.DEFAULT_RESTORE)
+      sanity.restore_sanity(from.player, sanity.DEFAULT_RESTORE)
     end
   end
 end
@@ -135,8 +137,7 @@ end)
 script.on_event(defines.events.on_player_died, function(event)
   local player = game.players[event.player_index]
   if player then
-    local current = sanity.current_insanity(player)
-    sanity.restore_sanity(player.force, 0.05 + 0.2 * current)
+    sanity.on_player_died(player)
   end
 end)
 
@@ -206,7 +207,16 @@ script.on_event(defines.events.on_gui_switch_state_changed, function(event)
 
   if event.element.name == "rabbasca_su_autopilot" then
     storage.stabilizer.settings.autopilot = event.element.switch_state == "right"
+  elseif event.element.name == "rabbasca_su_warpcell_freeze" then
+    storage.stabilizer.fuel.is_frozen = event.element.switch_state == "right"
   end
+end)
+
+script.on_event(defines.events.on_player_changed_surface, function(event)
+    local player = game.players[event.player_index]
+    if player.physical_surface and player.physical_surface.name == "rabbasca" then
+      sanity.on_unlock_sanity(player)
+    end
 end)
 
 script.on_event(defines.events.on_tick, underground.on_tick_underground)

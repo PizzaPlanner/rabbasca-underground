@@ -1,6 +1,7 @@
 local M = { 
     ENERGY_PER_CELL      = prototypes.item["rabbasca-warp-cell"].fuel_value,
     ENERGY_PER_STAB_CELL = prototypes.item["rabbasca-warp-cell-internal-big"].fuel_value,
+    WARP_CELL_SPOIL_PERCENT_PER_TICK = 1 / prototypes.item["rabbasca-warp-cell"].get_spoil_ticks()
 }
 
 function M.tether(item, target, player)
@@ -55,6 +56,7 @@ end
 
 function M.update_cells()
     local ticks_per_second = 6
+    local is_frozen = storage.stabilizer.fuel.is_frozen
     local can_fuel = storage.stabilizer.entity.burner.remaining_burning_fuel > 0
     local refuelled = 0
     local refuel_spoilage_per_tick = 0.025 / ticks_per_second
@@ -70,17 +72,21 @@ function M.update_cells()
                 break
             elseif data.tether then
                 if data.tether.valid and data.tether.burner then
-                    local delta = (1 - cell.item_stack.spoil_percent) * M.ENERGY_PER_CELL / ticks_per_second
-                    if not data.tether.burner.currently_burning then
-                        data.tether.burner.currently_burning = "rabbasca-warp-cell-internal"
-                        data.tether.burner.remaining_burning_fuel = delta
-                    else
-                        data.tether.burner.remaining_burning_fuel = data.tether.burner.remaining_burning_fuel + delta
-                    end
                     stack.health = math.max(0, math.min(1, data.tether.burner.remaining_burning_fuel / (data.tether_capacity or 1)))
-                    if can_fuel and cell.item_stack.spoil_percent > refuel_spoilage_per_tick then
-                        refuelled = refuelled + 1
-                        cell.item_stack.spoil_percent = math.max(0, cell.item_stack.spoil_percent - refuel_spoilage_per_tick)
+                    if is_frozen then
+                        stack.spoil_percent = stack.spoil_percent - M.WARP_CELL_SPOIL_PERCENT_PER_TICK * 60 / ticks_per_second
+                    else
+                        local delta = (1 - cell.item_stack.spoil_percent) * M.ENERGY_PER_CELL / ticks_per_second
+                        if not data.tether.burner.currently_burning then
+                            data.tether.burner.currently_burning = "rabbasca-warp-cell-internal"
+                            data.tether.burner.remaining_burning_fuel = delta
+                        else
+                            data.tether.burner.remaining_burning_fuel = data.tether.burner.remaining_burning_fuel + delta
+                        end
+                        if can_fuel and cell.item_stack.spoil_percent > refuel_spoilage_per_tick then
+                            refuelled = refuelled + 1
+                            cell.item_stack.spoil_percent = math.max(0, cell.item_stack.spoil_percent - refuel_spoilage_per_tick)
+                        end
                     end
                 else
                     M.untether(cell)

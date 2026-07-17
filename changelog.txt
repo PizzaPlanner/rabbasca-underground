@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.0
+Date: 2026-07-17
+  Changes:
+    - Sanity is now handled per player instead of per force
+    - Sanity loss now only affects players that have visited rabbasca at least once or were part of the save before this update
+    - Players are now protected from sanity effects for 2 minutes after death. Reduced sanity restoration on death to 5% flat
+    - Added chat messages when crossing certain sanity thresholds for the first time
+    - Added a toggle to pause warp cell activity. They will not charge/discharge and not power their targets while paused
+---------------------------------------------------------------------------------------------------
 Version: 0.8.2
 Date: 2026-07-17
   Bugfixes:

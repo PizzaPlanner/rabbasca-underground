@@ -369,7 +369,7 @@ function M.set_stabilizer_ui(player)
 
         local subframe = frame.add {
             type = "frame",
-            name = "rabbasca_su_content",
+            name = "rabbasca_su_stats_warp",
             style = "entity_frame",
             direction = "vertical"
         }
@@ -385,13 +385,6 @@ function M.set_stabilizer_ui(player)
             name = "rabbasca_su_autopilot",
             left_label_caption = "",
             right_label_caption = { "", "Enabled" }
-        }
-
-        local subframe = frame.add {
-            type = "frame",
-            name = "rabbasca_su_stats_warp",
-            style = "entity_frame",
-            direction = "vertical"
         }
         subframe.add {
             type = "label",
@@ -418,7 +411,15 @@ function M.set_stabilizer_ui(player)
             caption = { "rabbasca-extra.ui-find-relicary-chance", string.format("%.1f", warp.get_relic_chance() * 100) }
         }
 
-        local inv = frame.add{ type = "frame", style = "inside_shallow_frame_with_padding" }.add{
+        local inv_frame = frame.add{ type = "frame", style = "entity_frame", name = "rabbasca_su_warpcell_frame", direction = "vertical" }
+        inv_frame.add {
+            type = "switch",
+            name = "rabbasca_su_warpcell_freeze",
+            left_label_caption = { "", "[virtual-signal=signal-fuel] On" },
+            right_label_caption = { "", "Paused [virtual-signal=signal-moon]" },
+            tooltip = { "", "When paused, [item=rabbasca-warp-cell] will not power their targets, but also not lose or restore charge (freshness)" }
+        }
+        local inv = inv_frame.add{
             type = "inventory",
             slots_per_row = 5,
             handle_cursor_transfer = false,
@@ -430,8 +431,13 @@ function M.set_stabilizer_ui(player)
         }
         inv.inventory = storage.stabilizer.fuel.inventory
     end
-    local t = frame.rabbasca_su_content.rabbasca_su_table
+    local t = frame.rabbasca_su_stats_warp.rabbasca_su_table
     t.rabbasca_su_autopilot.switch_state = storage.stabilizer.settings.autopilot and "right" or "left"
+    
+    local t2 = frame.rabbasca_su_warpcell_frame
+    if t2 and t2.rabbasca_su_warpcell_freeze then
+        t2.rabbasca_su_warpcell_freeze.switch_state = storage.stabilizer.fuel.is_frozen and "right" or "left"
+    end
 
     if frame.rabbasca_su_progress then
         frame.rabbasca_su_progress.bar.value = warp.get_repair_progress()

@@ -1,9 +1,9 @@
-local INSANITY_LIMIT = 125
 local M = { 
     DEFAULT_DRAIN = 0.005,
     DEFAULT_RESTORE = 0.001,
     DEFAULT_CHECK_INTERVAL = 15 * 60,
     DEFAULT_BUFF_INTERVAL = 90,
+    DEFAULT_RESPAWN_PROTECTION = 120 * 60,
     SPAWN_WHERE_LOOKING = true,
 }
 
@@ -69,7 +69,7 @@ end
 
 function M.on_sanity_tick(character)
     if not character.valid then return end
-    local value = M.current_insanity(character)
+    local value = M.current_insanity(character.player)
     if value <= 0 then return end
     local prot  = M.get_protection_level(character)
     if prot > 1 then return end
@@ -115,40 +115,53 @@ function M.on_sanity_loss(level, player)
     end
 end
 
-function M.remove_sanity(force, count)
-    storage.insanity = storage.insanity or { }
-    storage.insanity[force.name] = math.min(INSANITY_LIMIT, (storage.insanity[force.name] or 0) + (count or M.DEFAULT_DRAIN) * INSANITY_LIMIT)
-    for _, player in pairs(force.connected_players) do
-        M.set_sanity_ui(player)
-    end
+function M.on_player_died(player)
+    if not (storage.insanity and storage.insanity[player.index]) then return end
+    storage.insanity[player.index].respawn_protection = game.tick + M.DEFAULT_RESPAWN_PROTECTION
+    M.restore_sanity(player, 0.05)
 end
 
-function M.restore_sanity(force, count)
-    storage.insanity = storage.insanity or { }
-    if not storage.insanity[force.name] then return end
-    storage.insanity[force.name] = math.max(0, (storage.insanity[force.name] or 0) - (count or M.DEFAULT_RESTORE) * INSANITY_LIMIT)
-    if storage.insanity[force.name] <= 0 then
-        storage.insanity[force.name] = nil
-    end
-    for _, player in pairs(force.connected_players) do
-        M.set_sanity_ui(player)
-    end
+function M.remove_sanity(player, count)
+    if not player then return end
+    M.set_insanity(M.current_insanity(player) + (count or M.DEFAULT_DRAIN), player)
+end
+
+function M.restore_sanity(player, count)
+    if not (player and storage.insanity[player.index]) then return end
+    M.set_insanity(M.current_insanity(player) - (count or M.DEFAULT_RESTORE), player)
 end
 
 function M.set_insanity(level, player)
-    local force = player.force
     storage.insanity = storage.insanity or { }
-    storage.insanity[force.name] = math.max(0, math.min(INSANITY_LIMIT, level * INSANITY_LIMIT))
-    if storage.insanity[force.name] <= 0 then
-        storage.insanity[force.name] = nil
+    local data = storage.insanity[player.index]
+    if not data then return end
+    data.value = math.max(0, math.min(1, level))
+    if data.value > (data.highest_value or 0) then
+        M.on_new_sanity_record(player, data.value, (data.highest_value or 0))
+        data.highest_value = data.value
     end
-    for _, p in pairs(force.connected_players) do
-        M.set_sanity_ui(p)
-    end
+    storage.insanity[player.index] = data
+    M.set_sanity_ui(player)
 end
 
 function M.current_insanity(player)
-    return math.min(1, (storage.insanity and storage.insanity[player.force.name] or 0) / INSANITY_LIMIT)
+    return math.min(1, (storage.insanity and storage.insanity[player.index] or { value = 0 }).value)
+end
+
+function M.on_new_sanity_record(player, new_value, prev_record)
+    if prev_record <= 0 then
+        player.print({"rabbasca-extra.sanity-notice-0"})
+    end
+    for i = 1,10 do
+        if new_value * 10 >= i and prev_record * 10 < i then
+            player.print({"rabbasca-extra.sanity-notice-"..i})
+        end
+    end
+end
+
+function M.on_unlock_sanity(player)
+    storage.insanity = storage.insanity or { }
+    storage.insanity[player.index] = storage.insanity[player.index] or { value = 0, respawn_protection = 0, highest_value = 0 }
 end
 
 function M.get_protection_level(character)
@@ -159,14 +172,20 @@ end
 
 script.on_nth_tick(M.DEFAULT_CHECK_INTERVAL, function(_)
     if not storage.insanity then return end
-    for f, level in pairs(storage.insanity) do
-        local force = game.forces[f]
-        if force then
-            for _, player in pairs(force.connected_players) do
-                M.on_sanity_loss(level, player)
+    local tick = game.tick
+    for id, data in pairs(storage.insanity) do
+        if data.value > 0 and (data.respawn_protection or 0) < tick then
+            local player = game.players[id]
+            if not player then
+                -- TODO: player.index can be reused
+                -- if time between removal and reuse can be < DEFAULT_CHECK_INTERVAL, also need cleanup via on_player_removed
+                storage.insanity[id] = nil
+                break
             end
-        else
-            storage.insanity[f] = nil
+            if player.connected then
+                data.respawn_protection = nil
+                M.on_sanity_loss(data.value, player)
+            end
         end
     end
 end)
@@ -175,6 +194,7 @@ if settings.global["rabbasca-debug-mode"].value then
     commands.add_command("rabbasca_ug_sani", nil, function(command)
         local to = tonumber(command.parameter) or 1
         M.set_insanity(to, game.players[command.player_index])
+        game.players[command.player_index].print(serpent.line(storage.insanity))
     end)
 end
 
