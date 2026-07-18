@@ -132,9 +132,9 @@ function M.restore_sanity(player, count)
 end
 
 function M.set_insanity(level, player)
+    if not (storage.access_whitelist or { })[player.index] then return end
     storage.insanity = storage.insanity or { }
-    local data = storage.insanity[player.index]
-    if not data then return end
+    local data = storage.insanity[player.index] or { value = 0, respawn_protection = 0, highest_value = 0 }
     data.value = math.max(0, math.min(1, level))
     if data.value > (data.highest_value or 0) then
         M.on_new_sanity_record(player, data.value, (data.highest_value or 0))
@@ -159,11 +159,6 @@ function M.on_new_sanity_record(player, new_value, prev_record)
     end
 end
 
-function M.on_unlock_sanity(player)
-    storage.insanity = storage.insanity or { }
-    storage.insanity[player.index] = storage.insanity[player.index] or { value = 0, respawn_protection = 0, highest_value = 0 }
-end
-
 function M.get_protection_level(character)
     return character and character.grid and (
         character.grid.count("rabbasca-tinfoil-hat")
@@ -176,13 +171,7 @@ script.on_nth_tick(M.DEFAULT_CHECK_INTERVAL, function(_)
     for id, data in pairs(storage.insanity) do
         if data.value > 0 and (data.respawn_protection or 0) < tick then
             local player = game.players[id]
-            if not player then
-                -- TODO: player.index can be reused
-                -- if time between removal and reuse can be < DEFAULT_CHECK_INTERVAL, also need cleanup via on_player_removed
-                storage.insanity[id] = nil
-                break
-            end
-            if player.connected then
+            if player and player.connected then
                 data.respawn_protection = nil
                 M.on_sanity_loss(data.value, player)
             end

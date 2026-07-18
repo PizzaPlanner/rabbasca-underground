@@ -213,10 +213,30 @@ script.on_event(defines.events.on_gui_switch_state_changed, function(event)
 end)
 
 script.on_event(defines.events.on_player_changed_surface, function(event)
-    local player = game.players[event.player_index]
-    if player.physical_surface and player.physical_surface.name == "rabbasca" then
-      sanity.on_unlock_sanity(player)
+  local player = game.players[event.player_index]
+  storage.access_whitelist = storage.access_whitelist or { }
+  if player.surface.name == "rabbasca-underground"
+  and not storage.access_whitelist[player.index] then
+    local character = player.character
+    if not character then return end
+    if character.remove_item({ name = "rabbasca-warp-core", count = 1 }) > 0 then
+      storage.access_whitelist[player.index] = true
+      player.print({"rabbasca-extra.underground-access-granted"})
+    else
+      player.exit_remote_view()
+      if player.controller_type == defines.controllers.remote then
+        if character then
+          player.teleport(character.position, character.surface, false, false, defines.build_check_type.script)
+        end
+      end
+      player.print({"rabbasca-extra.underground-access-denied"})
     end
+  end
+end)
+
+script.on_event(defines.events.on_player_removed, function(event)
+  if storage.insanity then storage.insanity[event.player_index] = nil end
+  if storage.access_whitelist then storage.access_whitelist[event.player_index] = nil end
 end)
 
 script.on_event(defines.events.on_tick, underground.on_tick_underground)
