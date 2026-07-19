@@ -359,7 +359,7 @@ util.merge {
 },
 {
   name = "rabbasca-ufo",
-  type = "item",
+  type = "item-with-entity-data",
   icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
   icon_size = 64,
   place_result = "rabbasca-ufo",

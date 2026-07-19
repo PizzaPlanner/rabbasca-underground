@@ -32,15 +32,6 @@ local function handle_script_events(event)
     elseif recipe and recipe.name == "rabbasca-hunt-relicaries" then
       underground.on_hunt_relicaries()
     end
-  elseif effect_id == "rabbasca_on_spawn_ufo" then
-    local from = Rabbasca.get_spoiled_in(event)
-    if from then
-      from.surface.create_entity({
-        name = "rabbasca-ufo",
-        position = from.position,
-        force = from.force
-      })
-    end
   elseif effect_id == "rabbasca_on_spawn_floorpylon" then
     local from = Rabbasca.get_spoiled_in(event)
     if from then
@@ -225,9 +216,7 @@ script.on_event(defines.events.on_player_changed_surface, function(event)
     else
       player.exit_remote_view()
       if player.controller_type == defines.controllers.remote then
-        if character then
-          player.teleport(character.position, character.surface, false, false, defines.build_check_type.script)
-        end
+        player.teleport(character.position, character.surface, false, false, defines.build_check_type.script)
       end
       player.print({"rabbasca-extra.underground-access-denied"})
     end

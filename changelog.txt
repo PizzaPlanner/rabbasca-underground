@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.1
+Date: 2026-07-19
+  Changes:
+    - Players now need to authorize themselves once to view the underground in remote view
+    - Sanity loss now affects authorized players instead of all players that have visited rabbasca
+    - Improved wording on various tooltips and tips and tricks
+  Bugfixes:
+    - Fixed offshore pumps not getting destroyed on warp when completely outside the safe zone
+    - Fixed warpotrons losing their equipment grid when picked up
+---------------------------------------------------------------------------------------------------
 Version: 0.9.0
 Date: 2026-07-17
   Changes:
