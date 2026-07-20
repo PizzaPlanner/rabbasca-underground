@@ -34,12 +34,13 @@ function M.set_sanity_ui(player)
     end
 end
 
-function M.spawn_crawler(surface, position, force)
+function M.spawn_crawler(surface, position, force, quality)
     local c = surface.create_segmented_unit({
         name = "rabbasca-small-insanity-crawler",
         position = { position.x + math.random(-36, 36), position.y + math.random(-36, 36) },
         force = force,
         extended = false,
+        quality = quality
     })
     if c then
         c.set_ai_state({
@@ -53,11 +54,12 @@ function M.spawn_crawler(surface, position, force)
     end
 end
 
-function M.spawn_wriggler(surface, position, force)
+function M.spawn_wriggler(surface, position, force, quality)
     local w = surface.create_entity({
         name = "rabbasca-small-insanity-wriggler",
         position = { position.x + math.random(-14, 14), position.y + math.random(-14, 14) },
-        force = force
+        force = force,
+        quality = quality
     })
     w.commandable.set_command({
         type = defines.command.attack_area,
@@ -82,16 +84,16 @@ function M.on_sanity_tick(character)
     if not character.force.is_chunk_visible(surface, { x = math.floor(position.x / 32), y = math.floor(position.y / 32) }) then return end
     local l = math.log(1.75* value + 0.33) / 3 + 0.4
     if math.random() < l then 
-        M.spawn_wriggler(surface, position, force)
-        M.spawn_wriggler(surface, position, force)
+        M.spawn_wriggler(surface, position, force, character.quality)
+        M.spawn_wriggler(surface, position, force, character.quality)
     end
     if math.random() < 2.5 * l - 1 then 
-        M.spawn_crawler(surface, position, force)
+        M.spawn_crawler(surface, position, force, character.quality)
     end
     if math.random() < 1.5 * l - 0.3 then 
-        M.spawn_wriggler(surface, position, force)
-        M.spawn_wriggler(surface, position, force)
-        M.spawn_wriggler(surface, position, force)
+        M.spawn_wriggler(surface, position, force, character.quality)
+        M.spawn_wriggler(surface, position, force, character.quality)
+        M.spawn_wriggler(surface, position, force, character.quality)
     end
 end
 
