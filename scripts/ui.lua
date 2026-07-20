@@ -132,7 +132,7 @@ function M.set_cell_ui(player, item)
         frame = player.gui.screen.add{
             type = "frame",
             name = "rabbasca_cell_assignment",
-            caption = { "", "Cell" },
+            caption = { "item-name.rabbasca-warp-cell" },
             direction = "vertical"
         }
         frame.auto_center = true
@@ -140,12 +140,12 @@ function M.set_cell_ui(player, item)
         storage.assign_cell = storage.assign_cell or { }
         storage.assign_cell[player.index] = item
         local name = frame.add{ type = "textfield", name = "rabbasca_cell_name", caption = { "", "Cell Name" }, text = item and item.label or "", icon_selector = true, tooltip = {"", "Give the cell a custom name"} }
-        local ok = frame.add{ type = "button", name = "rabbasca_cell_confirm", caption = { "", "Close" }, style = "confirm_button" }
+        local ok = frame.add{ type = "button", name = "rabbasca_cell_confirm", caption = { "rabbasca-extra.ui-button-close" }, style = "confirm_button" }
         local scroll = frame.add { type = "scroll-pane", name = "rabbasca_cell_targets" }
         local all_targets = { }
         all_targets["empty"] = add_table(scroll)
         local btn = add_button(all_targets["empty"], nil, "inventory_slot", nil, 32)
-        btn.tooltip = { "", "Remove tether, turn back into [item=rabbasca-warp-cell-recharging]"}
+        btn.tooltip = { "rabbasca-extra.ui-cell-untether-toolip"}
         btn.tags = { entity = 0 }
         for _, e in pairs(storage.stabilizer.fuel.consumers) do
             if e.entity.valid then
@@ -287,12 +287,12 @@ function M.set_relicary_remote_ui(player)
             }
         }
         if not (player.opened.proxy_target_entity and player.opened.proxy_target_entity.valid) then
-            frame.add { type = "button", caption = {"", "Attempt link"}, name = "rabbasca_relicary_reconnect" }
+            frame.add { type = "button", caption = {"rabbasca-extra.ui-archiveremote-button"}, tooltip = {"rabbasca-extra.ui-archiveremote-button-tooltip"}, name = "rabbasca_relicary_reconnect" }
         end
         local list = frame.add{ 
             type = "list-box", 
             name = "rabbasca_relicary_target_inventory",
-            items = { {"", "Input"}, {"", "Output"}, {"", "Fuel"} }
+            items = { {"inventory-name.crafter_input"}, {"inventory-name.crafter_output"}, {"inventory-name.fuel"} }
         }
         list.selected_index = (player.opened.proxy_target_inventory == defines.inventory.crafter_input and 1) 
                            or (player.opened.proxy_target_inventory == defines.inventory.crafter_output and 2) 
@@ -378,13 +378,14 @@ function M.set_stabilizer_ui(player)
         -- Settings
         f1.add {
             type = "label",
-            caption = { "", "[virtual-signal=rabbasca-warp-inventory] Autopilot" },
+            caption = { "rabbasca-extra.ui-autopilot-label" },
         }
         f1.add {
             type = "switch",
             name = "rabbasca_su_autopilot",
             left_label_caption = "",
-            right_label_caption = { "", "Enabled" }
+            right_label_caption = { "rabbasca-extra.ui-autopilot-right" },
+            tooltip = { "rabbasca-extra.ui-autopilot-toolip" }
         }
         subframe.add {
             type = "label",
@@ -415,9 +416,9 @@ function M.set_stabilizer_ui(player)
         inv_frame.add {
             type = "switch",
             name = "rabbasca_su_warpcell_freeze",
-            left_label_caption = { "", "[virtual-signal=signal-fuel] On" },
-            right_label_caption = { "", "Paused [virtual-signal=signal-moon]" },
-            tooltip = { "", "When paused, [item=rabbasca-warp-cell] will not power their targets, but also not lose or restore charge (freshness)" }
+            left_label_caption = { "rabbasca-extra.ui-cellfreeze-left" },
+            right_label_caption = { "rabbasca-extra.ui-cellfreeze-right" },
+            tooltip = { "rabbasca-extra.ui-cellfreeze-tooltip" },
         }
         local inv = inv_frame.add{
             type = "inventory",
