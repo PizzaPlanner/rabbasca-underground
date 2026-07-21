@@ -145,7 +145,7 @@ function M.set_cell_ui(player, item)
         local all_targets = { }
         all_targets["empty"] = add_table(scroll)
         local btn = add_button(all_targets["empty"], nil, "inventory_slot", nil, 32)
-        btn.tooltip = { "rabbasca-extra.ui-cell-untether-toolip"}
+        btn.tooltip = { "rabbasca-extra.ui-cell-untether-tooltip"}
         btn.tags = { entity = 0 }
         for _, e in pairs(storage.stabilizer.fuel.consumers) do
             if e.entity.valid then
@@ -385,7 +385,7 @@ function M.set_stabilizer_ui(player)
             name = "rabbasca_su_autopilot",
             left_label_caption = "",
             right_label_caption = { "rabbasca-extra.ui-autopilot-right" },
-            tooltip = { "rabbasca-extra.ui-autopilot-toolip" }
+            tooltip = { "rabbasca-extra.ui-autopilot-tooltip" }
         }
         subframe.add {
             type = "label",

@@ -196,21 +196,27 @@ function M.on_hunt_relicaries()
     storage.stabilizer.relics.pity = storage.stabilizer.relics.pity + 0.004
 end
 
-function M.download_science(caller)
+function M.download_science(caller, quality)
     if not storage.vault_items then return end
-    local inv = caller.get_inventory(defines.inventory.crafter_trash)
+    local inv = caller.get_inventory(defines.inventory.crafter_output)
     if not inv then return end
-    for quality, count in pairs(storage.vault_items["rabbasca-warpfield-science-pack"] or { }) do
-        if count <= 0 then return end
-        local inserted = inv.insert({ name = "rabbasca-warpfield-science-pack", quality = quality, count = math.min(100, count) })
-        storage.vault_items["rabbasca-warpfield-science-pack"][quality] = count - inserted
-    end
+    if not storage.vault_items["rabbasca-warpfield-science-pack"] then return end
+    local count =  storage.vault_items["rabbasca-warpfield-science-pack"][quality] or 0
+    if count <= 0 then return end
+    local inserted = inv.insert({ name = "rabbasca-warpfield-science-pack", quality = quality, count = math.min(100, count) })
+    storage.vault_items["rabbasca-warpfield-science-pack"][quality] = count - inserted
 end
 
-function M.upload_science(num, quality)
+function M.upload_science(caller, quality)
+    local inv = caller.get_inventory(defines.inventory.crafter_input)
+    local count = 10
+    if inv then
+        local removed = inv.remove({name = "rabbasca-warpfield-science-pack", count = 90, quality = quality})
+        count = count + removed
+    end
     storage.vault_items = storage.vault_items or { }
     storage.vault_items["rabbasca-warpfield-science-pack"] = storage.vault_items["rabbasca-warpfield-science-pack"] or { }
-    storage.vault_items["rabbasca-warpfield-science-pack"][quality] = (storage.vault_items["rabbasca-warpfield-science-pack"][quality] or 0) + num
+    storage.vault_items["rabbasca-warpfield-science-pack"][quality] = (storage.vault_items["rabbasca-warpfield-science-pack"][quality] or 0) + count
 end
 
 function M.on_locate_progress(vault)
@@ -255,6 +261,18 @@ function M.initiate_warp()
     if not (storage.stabilizer and storage.stabilizer.entity) then return end
     storage.stabilizer.entity.set_recipe("rabbasca-stabilizer-warp-sequence")
 end
+
+script.on_event(prototypes.recipe["rabbasca-warpfield-science-pack-wi-download"].on_crafted_event, function(event)
+    if event.entity then
+        M.download_science(event.entity, event.recipe_quality or "normal")
+    end
+end)
+
+script.on_event(prototypes.recipe["rabbasca-warpfield-science-pack-wi-upload"].on_crafted_event, function(event)
+    if event.entity then
+        M.upload_science(event.entity, event.recipe_quality or "normal")
+    end
+end)
 
 if settings.global["rabbasca-debug-mode"].value then
     commands.add_command("rabbasca_ug_warp", nil, function(command)

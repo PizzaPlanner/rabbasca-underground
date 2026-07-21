@@ -203,4 +203,8 @@ function M.warp_to(data)
     storage.stabilizer.entity.custom_status = { diode = defines.entity_status_diode.yellow, label = {"", "Warping"} }
 end
 
+script.on_event(prototypes.recipe["rabbasca-stabilizer-warp-sequence"].on_crafted_event, function(_)
+    M.warp_to()
+end)
+
 return M

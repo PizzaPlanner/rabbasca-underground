@@ -243,15 +243,18 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-abandon-stabilizer",
+        icons = Rabbasca.icons({
+            { proto = data.raw["virtual-signal"]["signal-explosion"] }
+        }),
         enabled = false,
         hide_from_player_crafting = true,
         energy_required = 45,
-        ingredients = { },
-        results = { { type = "item", name = "rabbasca-abandon-stabilizer", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false } },
+        raise_on_crafted = true,
         categories = { "rabbasca-warp-stabilizer" },
         subgroup = "rabbasca-events",
         order = "a[stabilizer]-x",
         allow_productivity = false,
+        allow_speed = false,
         auto_recycle = false,
         crafting_machine_tint = {
             primary = { 1, 0, 0 }
@@ -260,11 +263,11 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-stabilizer-warp-sequence",
+        icons = Rabbasca.icons({{ icon = "__rabbasca-assets__/graphics/icons/warp.png" }}),
         enabled = false,
         hide_from_player_crafting = true,
+        raise_on_crafted = true,
         energy_required = 10,
-        -- ingredients = { { type = "item", name = "rabbasca-warp-cell", amount = 5 } },
-        results = { { type = "item", name = "rabbasca-stabilizer-warp-sequence", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false } },
         allow_productivity = false,
         crafting_machine_tint =
         {
@@ -401,16 +404,23 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-warpfield-science-pack-wi-upload",
+        icons = Rabbasca.icons({
+            { icon = "__rabbasca-assets__/graphics/recolor/icons/item-upload-slot.png", icon_size = 64 },
+            { icon = "__rabbasca-assets__/graphics/recolor/icons/warp-science-pack.png", icon_size = 64, scale = 0.5, shift = {0, 3} }
+        }),
         enabled = false,
         hide_from_player_crafting = true,
         energy_required = 2,
         ingredients = {
             { type = "item", name = "rabbasca-warpfield-science-pack", amount = 10 },
         },
-        results = {
-            { type = "item", name = "rabbasca-warpfield-science-pack-wi-upload", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false },
-        },
+        raise_on_crafted = true,
+        overload_multiplier = 10,
+        results = { },
         allow_productivity = false,
+        can_set_quality = true,
+        order = "z[upload]",
+        subgroup = "rabbasca-remote-warping",
         categories = { "rabbasca-remote" },
     },          
     {
@@ -564,12 +574,19 @@ data:extend {
 }
 
 Rabbasca.create_vault_recipe("rabbasca-warpfield-science-pack-wi-download", {
+  icons = Rabbasca.icons({
+    { icon = "__Krastorio2Assets__/icons/entities/stabilizer-charging-station.png", icon_size = 64 },
+    { icon = "__rabbasca-assets__/graphics/recolor/icons/warp-science-pack.png", icon_size = 64, shift = {8, 8}, scale = 0.75 },
+  }),
   ingredients = { },
-  results = { 
-      { type = "item", name = "rabbasca-warpfield-science-pack-wi-download", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false },
-  },
+  results = { { type = "item", name = "rabbasca-warpfield-science-pack", amount = 0 } },
+  raise_on_crafted = true,
   energy_required = 10,
   allow_productivity = false,
+  allow_quality = false,
+  can_set_quality = true,
+  subgroup = "rabbasca-vault-extraction",
+  order = "v[vault]-f[warpfield-science]",
 })
 
 Rabbasca.create_vault_recipe("rabbasca-locate-stabilizer", {

@@ -15,12 +15,6 @@ Rabbasca.make_trigger_item({
   icon_size = 640,
 }, "rabbasca_on_send_pylon_underground"),
 Rabbasca.make_trigger_item({
-  name = "rabbasca-stabilizer-warp-sequence",
-  subgroup = "rabbasca-events",
-  order = "a",
-  icons = Rabbasca.icons({{ icon = "__rabbasca-assets__/graphics/icons/warp.png" }})
-}, "rabbasca_warp_progress_warp"),
-Rabbasca.make_trigger_item({
   name = "rabbasca-amplify-anomaly",
   subgroup = "rabbasca-remote-warping",
   order = "z[destabilize]",
@@ -39,14 +33,6 @@ Rabbasca.make_trigger_item({
     { icon = "__rabbasca-assets__/graphics/recolor/icons/powerspike-overlay.png", icon_size = 96 }
   })
 }, "rabbasca_on_powerspike_progress"),
-Rabbasca.make_trigger_item({
-  name = "rabbasca-abandon-stabilizer",
-  subgroup = "rabbasca-events",
-  order = "zz",
-  icons = Rabbasca.icons({
-    { proto = data.raw["virtual-signal"]["signal-explosion"] }
-  })
-}, "rabbasca_on_abandon"),
 Rabbasca.make_trigger_item({
   name = "rabbasca-summon-ufo",
   subgroup = "rabbasca-security",
@@ -69,28 +55,6 @@ Rabbasca.make_trigger_item({
     { proto = data.raw["virtual-signal"]["signal-shuffle"], scale = 0.5, shift = { 8, 8 } },
   }),
 }, "rabbasca_on_pylon_relocate"),
-Rabbasca.make_trigger_item({
-  name = "rabbasca-warpfield-science-pack-wi-download",
-  icons = Rabbasca.icons({
-    { icon = "__Krastorio2Assets__/icons/entities/stabilizer-charging-station.png", icon_size = 64 },
-    { icon = "__rabbasca-assets__/graphics/recolor/icons/warp-science-pack.png", icon_size = 64, shift = {8, 8}, scale = 0.75 },
-  }),
-  subgroup = "rabbasca-vault-extraction",
-  order = "v[vault]-f[warpfield-science]",
-  hidden = false,
-  hidden_in_factoriopedia = false,
-}, "rabbasca_on_download_warp_science"),
-Rabbasca.make_trigger_item({
-  name = "rabbasca-warpfield-science-pack-wi-upload",
-  icons = Rabbasca.icons({
-    { icon = "__rabbasca-assets__/graphics/recolor/icons/item-upload-slot.png", icon_size = 64 },
-    { icon = "__rabbasca-assets__/graphics/recolor/icons/warp-science-pack.png", icon_size = 64, scale = 0.5, shift = {0, 3} }
-  }),
-  hidden = false,
-  hidden_in_factoriopedia = false,
-  order = "z[upload]",
-  subgroup = "rabbasca-remote-warping"
-}, "rabbasca_on_upload_warp_science"),
 {
   name = "rabbasca-warp-trace",
   type = "item",

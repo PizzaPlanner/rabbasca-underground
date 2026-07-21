@@ -1,8 +1,12 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.2
-Date: ????
+Date: 2026-07-21
   Changes:
+    - Raised minimum factorio version to 2.1.12
     - Sanity creatures now scale with character quality
+    - Warpfield science pack upload now uploads up to 100 packs at once
+    - Warpfield science pack download now only downloads packs of the quality the recipe was crafted with
+    - Stabilizer's initiate self destruction crafting speed is no longer affected by modules
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.1
 Date: 2026-07-19

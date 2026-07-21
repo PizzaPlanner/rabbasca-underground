@@ -197,4 +197,8 @@ function M.trace_stasis()
     saved.spoil_percent = 0
 end
 
+script.on_event(prototypes.recipe["rabbasca-abandon-stabilizer"].on_crafted_event, function(_)
+    M.abandon()
+end)
+
 return M

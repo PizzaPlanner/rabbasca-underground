@@ -13,17 +13,6 @@ local function handle_script_events(event)
     end
   elseif effect_id == "rabbasca_on_powerspike_progress" then
     underground.stab.progress_powerspike(1)
-  elseif effect_id == "rabbasca_on_download_warp_science" then
-    local from = Rabbasca.get_spoiled_in(event)
-    if from then
-      underground.download_science(from)
-    end
-  elseif effect_id == "rabbasca_on_upload_warp_science" then
-    local from = Rabbasca.get_spoiled_in(event)
-    local _, quality = from and from.get_recipe()
-    if from then
-      underground.upload_science(10, quality and quality.name or "normal")
-    end
   elseif effect_id == "rabbasca_on_relichunter_progress" then
     local from = Rabbasca.get_spoiled_in(event)
     local recipe = from and from.type == "assembling-machine" and from.get_recipe()
@@ -31,27 +20,6 @@ local function handle_script_events(event)
       underground.on_hunt_anomalies()
     elseif recipe and recipe.name == "rabbasca-hunt-relicaries" then
       underground.on_hunt_relicaries()
-    end
-  elseif effect_id == "rabbasca_on_spawn_floorpylon" then
-    local from = Rabbasca.get_spoiled_in(event)
-    if from then
-      local pos = from.surface.find_non_colliding_position("rabbasca-stability-pylon", from.position, 10, 0.5)
-      for _, ghost in pairs(from.surface.find_entities_filtered { name = "entity-ghost", ghost_name = "rabbasca-stability-pylon" }) do
-        pos = ghost.position
-        ghost.destroy { }
-        if from.surface.create_entity({
-          name = "rabbasca-stability-pylon",
-          position = pos,
-          force = from.force,
-        }) then return end
-      end
-      if not from.surface.create_entity({
-        name = "rabbasca-stability-pylon",
-        position = pos,
-        force = from.force
-      }) then 
-        game.print("Could not find a valid position to spawn [entity=rabbasca-stability-pylon]")
-      end
     end
   elseif effect_id == "rabbasca_register_anomaly_miner" then
     underground.mining.on_add_miner(event.source_entity)
@@ -65,10 +33,6 @@ local function handle_script_events(event)
     if from then
       underground.summon_fleet(from.surface, from.position)
     end
-  elseif effect_id == "rabbasca_warp_progress_warp" then
-    underground.warp.warp_to()
-  elseif effect_id == "rabbasca_on_abandon" then
-    underground.stab.abandon()
   elseif effect_id == "rabbasca_on_send_pylon_underground" then
     local from = Rabbasca.get_spoiled_in(event)
     underground.on_locate_progress(from)
