@@ -24,16 +24,6 @@ Rabbasca.make_trigger_item({
   })
 }, "rabbasca_make_floor_anomaly"),
 Rabbasca.make_trigger_item({
-  name = "rabbasca-progress-powerspike",
-  subgroup = "rabbasca-events",
-  order = "z[destabilize]",
-  hidden_in_factoriopedia = true,
-  hidden = false,
-  icons = Rabbasca.icons({
-    { icon = "__rabbasca-assets__/graphics/recolor/icons/powerspike-overlay.png", icon_size = 96 }
-  })
-}, "rabbasca_on_powerspike_progress"),
-Rabbasca.make_trigger_item({
   name = "rabbasca-summon-ufo",
   subgroup = "rabbasca-security",
   order = "w[warpotron-call]",
@@ -97,6 +87,18 @@ Rabbasca.make_trigger_item({
   subgroup = "rabbasca-warp-stabilizer",
   order = "a[stabilizer]-a[upgrade]",
   weight = 250 * kg,
+  auto_recycle = false,
+},
+{
+  name = "rabbasca-progress-powerspike",
+  type = "item",
+  icons = Rabbasca.icons({ { icon = "__rabbasca-assets__/graphics/recolor/icons/powerspike-overlay.png", icon_size = 96 } }),
+  subgroup = "rabbasca-events",
+  order = "z[destabilize]",
+  hidden_in_factoriopedia = true,
+  hidden = false,
+  stack_size = 100,
+  spoil_ticks = 1,
   auto_recycle = false,
 },
 {

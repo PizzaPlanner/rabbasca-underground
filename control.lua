@@ -11,8 +11,6 @@ local function handle_script_events(event)
     if from then
       underground.on_progress_floor_anomaly(from)
     end
-  elseif effect_id == "rabbasca_on_powerspike_progress" then
-    underground.stab.progress_powerspike(1)
   elseif effect_id == "rabbasca_on_relichunter_progress" then
     local from = Rabbasca.get_spoiled_in(event)
     local recipe = from and from.type == "assembling-machine" and from.get_recipe()

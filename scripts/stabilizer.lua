@@ -201,4 +201,9 @@ script.on_event(prototypes.recipe["rabbasca-abandon-stabilizer"].on_crafted_even
     M.abandon()
 end)
 
+script.on_event(prototypes.recipe["rabbasca-warp-trace"].on_crafted_event, function(_)
+    M.progress_powerspike(1)
+end)
+
+
 return M

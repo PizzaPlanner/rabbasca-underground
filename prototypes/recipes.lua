@@ -288,9 +288,10 @@ data:extend {
         ingredients = { { type = "item", name = "rabbasca-warp-anomaly", amount = 25 } },
         results = { 
              -- Separate item to prevent wrong progress calculation when traces get removed early
-            { type = "item", name = "rabbasca-progress-powerspike", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false, affected_by_quality = false },
+            { type = "item", name = "rabbasca-progress-powerspike", amount = 1, always_fresh = false --[[just for informational purposes]], show_details_in_recipe_tooltip = false, affected_by_quality = false },
             { type = "item", name = "rabbasca-warp-trace", amount = 10, always_fresh = true, affected_by_quality = false },
         },
+        raise_on_crafted = true,
         maximum_productivity = 24,
         main_product = "rabbasca-warp-trace",
         allow_productivity = true,

@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.3
+Date: ????
+  Changes:
+    - Increased stack size of powerspike progress dummy to avoid warp trace recipe getting stuck at high productivity levels
+---------------------------------------------------------------------------------------------------
 Version: 0.9.2
 Date: 2026-07-21
   Changes:
