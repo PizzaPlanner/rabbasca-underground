@@ -109,7 +109,7 @@ data:extend {
             { type = "item", name = "engine-unit", amount = 1 }, 
             { type = "item", name = "electronic-circuit", amount = 10 }, 
             { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 4 },
-            { type = "item", name = "rabbasca-warp-anomaly", amount = 25 },
+            { type = "item", name = "rabbasca-warp-anomaly", amount = 45 },
             { type = "fluid", name = "fluoroketone-hot", amount = 60 },
         },
         results = { 
@@ -129,7 +129,7 @@ data:extend {
         enabled = false,
         energy_required = 8,
         ingredients = { 
-            { type = "item", name = "rabbasca-warp-trace", amount = 20 },
+            { type = "item", name = "rabbasca-warp-trace", amount = 25 },
             { type = "item", name = "rabbasca-lithium-amide", amount = 25 },
             { type = "fluid", name = "fluorine", amount = 100 } },
         results = { { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 4 } },
@@ -450,7 +450,7 @@ data:extend {
         energy_required = 12,
         ingredients = {
             { type = "item", name = "rabbasca-quantum-device", amount = 1 },
-            { type = "item", name = "superconductor", amount = 10 },
+            { type = "item", name = "superconductor", amount = 21 },
             { type = "item", name = "rabbasca-warp-anomaly", amount = 50 },
             { type = "item", name = "rabbasca-restored-knowledge", amount = 3 },
         },

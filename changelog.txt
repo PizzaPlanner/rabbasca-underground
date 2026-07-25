@@ -1,6 +1,19 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.4
+Date: 2026-07-26
+  Balancing:
+    - Increased crafting time of warp cores (5s -> 12s)
+    - Decreased yield of warp cores per craft (5 -> 2)
+    - Increased superconductor cost of warp core recipe (4 -> 21)
+    - Increased crafting time of anomaly containment unit (7s -> 9s)
+    - Increased haronite plate cost of anomaly containment unit (3 -> 6)
+    - Increased yield of warpfield excitement rods per craft (1 -> 4)
+    - Increased warp trace cost of warpfield excitement rods (10 -> 25)
+    - Increased spacetime anomaly cost of warpfield engine (25 -> 45)
+    - Increased yield and display panel cost of spacetime fluctuation sensor (both 1 -> 2)
+---------------------------------------------------------------------------------------------------
 Version: 0.9.3
-Date: ????
+Date: 2026-07-25
   Changes:
     - Increased stack size of powerspike progress dummy to avoid warp trace recipe getting stuck at high productivity levels
   Bugfixes:
