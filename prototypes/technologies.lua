@@ -405,7 +405,7 @@ data:extend{
     type = "technology",
     name = "rabbasca-warp-stabilizer-powerspike-1-unlock",
     icons = Rabbasca.icons({
-      {proto = data.raw["item"]["rabbasca-stabilizer-warp-sequence"]},
+      {proto = data.raw["recipe"]["rabbasca-stabilizer-warp-sequence"]},
       {proto = data.raw["item"]["rabbasca-progress-powerspike"]},
     }, 256),
     prerequisites = { "rabbasca-anomaly-studies-1" },
@@ -415,7 +415,7 @@ data:extend{
         recipe = "rabbasca-stabilizer-warp-sequence"
       },
     },
-    localised_name = { "item-name.rabbasca-stabilizer-warp-sequence" },
+    localised_name = { "recipe-name.rabbasca-stabilizer-warp-sequence" },
     research_trigger =
     {
       type = "scripted",
