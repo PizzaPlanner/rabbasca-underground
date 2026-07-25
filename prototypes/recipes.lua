@@ -358,7 +358,7 @@ data:extend {
             { type = "item", name = "lithium-plate", amount = 4 },
             { type = "item", name = "rabbasca-warp-trace", amount = 5 },
             { type = "item", name = "rabbasca-warpfield-engine", amount = 2 },
-            { type = "item", name = "haronite-plate", amount = 3 },
+            { type = "item", name = "haronite-plate", amount = 4 },
         },
         results = {
             { type = "item", name = "rabbasca-quantum-device", amount = 1 },
@@ -376,10 +376,10 @@ data:extend {
             { type = "fluid", name = "harene", amount = 5 },
             { type = "fluid", name = "fluorine", amount = 75 },
             { type = "item", name = "carbon-fiber", amount = 5 },
-            { type = "item", name = "display-panel", amount = 1 },
+            { type = "item", name = "display-panel", amount = 2 },
         },
         results = {
-            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1 },
+            { type = "item", name = "rabbasca-spacetime-sensor", amount = 2 },
         },
         allow_productivity = true,
         categories = { "electromagnetics" },
