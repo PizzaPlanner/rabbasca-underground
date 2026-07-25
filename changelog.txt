@@ -1,3 +1,4 @@
+    - Polished the experience of paying stuff to get viewing access to the underground
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.3
 Date: ????
