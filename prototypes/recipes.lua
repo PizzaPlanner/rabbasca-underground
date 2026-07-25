@@ -129,10 +129,10 @@ data:extend {
         enabled = false,
         energy_required = 8,
         ingredients = { 
-            { type = "item", name = "rabbasca-warp-trace", amount = 10 },
+            { type = "item", name = "rabbasca-warp-trace", amount = 20 },
             { type = "item", name = "rabbasca-lithium-amide", amount = 25 },
             { type = "fluid", name = "fluorine", amount = 100 } },
-        results = { { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 1 } },
+        results = { { type = "item", name = "rabbasca-warpfield-excitement-rod", amount = 4 } },
         auto_recycle = false,
         allow_productivity = true,
         crafting_machine_tint =
@@ -353,7 +353,7 @@ data:extend {
         type = "recipe",
         name = "rabbasca-quantum-device",
         enabled = false,
-        energy_required = 7,
+        energy_required = 12,
         ingredients = {
             { type = "item", name = "lithium-plate", amount = 4 },
             { type = "item", name = "rabbasca-warp-trace", amount = 5 },
@@ -447,7 +447,7 @@ data:extend {
         name = "rabbasca-warp-core",
         enabled = false,
         auto_recycle = false,
-        energy_required = 5,
+        energy_required = 12,
         ingredients = {
             { type = "item", name = "rabbasca-quantum-device", amount = 1 },
             { type = "item", name = "superconductor", amount = 4 },
@@ -455,7 +455,7 @@ data:extend {
             { type = "item", name = "rabbasca-restored-knowledge", amount = 3 },
         },
         results = { 
-            { type = "item", name = "rabbasca-warp-core", amount = 5, always_fresh = true },
+            { type = "item", name = "rabbasca-warp-core", amount = 2, always_fresh = true },
         },
         surface_conditions = { Rabbasca.only_underground(true) },
         categories = { "electromagnetics" },
