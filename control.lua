@@ -172,16 +172,29 @@ script.on_event(defines.events.on_player_changed_surface, function(event)
   and not storage.access_whitelist[player.index] then
     local character = player.character
     if not character then return end
-    if character.remove_item({ name = "rabbasca-warp-core", count = 1 }) > 0 then
-      storage.access_whitelist[player.index] = true
-      player.print({"rabbasca-extra.underground-access-granted"})
-    else
-      player.exit_remote_view()
-      if player.controller_type == defines.controllers.remote then
-        player.teleport(character.position, character.surface, false, false, defines.build_check_type.script)
-      end
-      player.print({"rabbasca-extra.underground-access-denied"})
+    player.exit_remote_view()
+    if player.controller_type == defines.controllers.remote then
+      player.teleport(character.position, character.surface, false, false, defines.build_check_type.script)
     end
+    player.print({"rabbasca-extra.underground-access-denied"})
+  end
+end)
+
+script.on_event(defines.events.on_lua_shortcut, function(event)
+  if event.prototype_name ~= "rabbasca-underground-worker-agreement" then return end
+  local player = game.players[event.player_index]
+  local character = player.character
+  storage.access_whitelist = storage.access_whitelist or { }
+  if storage.access_whitelist[player.index] then 
+    player.print({"rabbasca-extra.underground-access-signing-again"})
+    return
+  end
+  player.close_factoriopedia_gui()
+  if storage.stabilizer and character.remove_item({ name = "rabbasca-warp-core", count = 1 }) > 0 then
+    storage.access_whitelist[player.index] = true
+    player.print({"rabbasca-extra.underground-access-granted"})
+  else 
+    player.print({"rabbasca-extra.underground-access-signing-failed"})
   end
 end)
 
