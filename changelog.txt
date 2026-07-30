@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.5
+Date: 2026-07-30
+  Changes:
+    - [with autodeconstruct] miners underground will no longer be cleaned up by autodeconstruct
+---------------------------------------------------------------------------------------------------
 Version: 0.9.4
 Date: 2026-07-26
   Balancing:

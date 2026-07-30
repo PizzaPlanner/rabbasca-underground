@@ -18,4 +18,4 @@ require("prototypes.insanity")
 -- require("prototypes.remote-access")
 
 require("compatibility.lignumis")
--- require("compatibility.auto-deconstruct") TODO
+require("compatibility.auto-deconstruct")
