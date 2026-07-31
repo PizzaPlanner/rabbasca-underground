@@ -1,4 +1,5 @@
     - Polished the experience of paying stuff to get viewing access to the underground
+    - Raised minimum factorio version to 2.1.13
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.3
 Date: ????

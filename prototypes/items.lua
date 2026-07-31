@@ -368,8 +368,7 @@ data:extend {
   {
     type = "shortcut",
     name = "rabbasca-underground-worker-agreement",
-    -- TODO: Remove dummy tech and set hidden = true when possible (https://forums.factorio.com/viewtopic.php?t=135273)
-    hidden = false, 
+    hidden = true, 
     action = "lua",
     unavailable_until_unlocked = false,
     toggleable = false,
