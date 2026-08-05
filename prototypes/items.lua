@@ -364,6 +364,32 @@ util.merge {
 -- },
 }
 
+data:extend {
+  {
+    type = "shortcut",
+    name = "rabbasca-underground-worker-agreement",
+    hidden = true, 
+    action = "lua",
+    unavailable_until_unlocked = false,
+    toggleable = false,
+    icon = "__base__/graphics/icons/signal/signal-checked-green.png",
+    small_icon = "__base__/graphics/icons/signal/signal-checked-green.png",
+    icon_size = 64,
+    small_icon_size = 64,
+  },
+  {
+    type = "item",
+    name = "rabbasca-underground-worker-agreement",
+    hidden = true,
+    hidden_in_factoriopedia = true,
+    icon = "__base__/graphics/icons/upgrade-planner.png",
+    icon_size = 64,
+    weight = 0,
+    stack_size = 1,
+    auto_recycle = false
+  },
+}
+
 local internal_cell = util.merge { 
     data.raw["item-with-inventory"]["rabbasca-warp-cell"],
     {
