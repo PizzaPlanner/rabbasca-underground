@@ -1,5 +1,10 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.9.7
+Date: 2026-08-06
+  Changes:
     - Polished the experience of paying stuff to get viewing access to the underground
-    - Raised minimum factorio version to 2.1.13
+    - Added factorio 2.1.13 compatibility and raised minimum factorio version to 2.1.13
+
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.6
 Date: 2026-08-05

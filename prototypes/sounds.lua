@@ -11,7 +11,7 @@ data:extend {
     type = "ambient-sound",
     name = "rabbasca-underground",
     title = "Rabbasca Underground",
-    planet = "rabbasca-underground",
+    planets = { "rabbasca-underground" },
     track_type = "main-track",
     sound = {filename = "__space-age__/sound/ambient/space/space-2-hero.ogg", volume = 1,},
     weight = 10
