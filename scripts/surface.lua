@@ -306,6 +306,7 @@ function M.recalc_tiles()
         end
     end
     end
+    storage.stabilizer.flooring.dirty = false
 end
 
 function M.relocate_floorthing(e)
