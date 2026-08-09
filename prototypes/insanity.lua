@@ -99,7 +99,7 @@ data:extend {
 },
 {
     type = "recipe",
-    name = "rabbasca-sanity-mote",  -- for signal unlock
+    name = "rabbasca-sanity-mote", -- for unlocking filters and factoriopedia entries
     enabled = false,
     hidden = true,
     hidden_in_factoriopedia = true,
@@ -108,11 +108,12 @@ data:extend {
     energy_required = 0.5,
     allow_productivity = false,
     auto_recycle = false,
+    -- hidden but potentially craftable via "set recipe" to one of the results. Set all amounts to 0 to prevent
     ingredients = {
         { type = "item", name = "rabbasca-sanity-loss", amount = 1 },
     },
     results = { 
-        { type = "item", name = "rabbasca-sanity-mote", amount = 1, always_fresh = true },
+        { type = "item", name = "rabbasca-sanity-mote", amount = 0 },
     },
     categories = { "parameters" }
 },
