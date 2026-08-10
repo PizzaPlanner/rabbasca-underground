@@ -18,6 +18,14 @@ data:extend {
 },
 {
     type = "bool-setting",
+    name = "rabbasca-insanity-where-looking",
+    setting_type = "startup",
+    default_value = true,
+    allow_blank = false,
+    order="a[balance]"
+},
+{
+    type = "bool-setting",
     name = "rabbasca-interplanetary-construction-3-requires-warpfield-science",
     setting_type = "startup",
     default_value = false,

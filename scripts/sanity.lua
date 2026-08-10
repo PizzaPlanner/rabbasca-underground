@@ -4,7 +4,7 @@ local M = {
     DEFAULT_CHECK_INTERVAL = 15 * 60,
     DEFAULT_BUFF_INTERVAL = 90,
     DEFAULT_RESPAWN_PROTECTION = 120 * 60,
-    SPAWN_WHERE_LOOKING = true,
+    SPAWN_WHERE_LOOKING = settings.startup["rabbasca-insanity-where-looking"].value,
 }
 
 if data then return M end
@@ -54,6 +54,15 @@ function M.spawn_crawler(surface, position, force, quality)
     end
 end
 
+function M.spawn_snagger(surface, position, force, quality)
+    local c = surface.create_entity({
+        name = "rabbasca-insanity-logistic-robot",
+        position = { position.x + math.random(-8, 8), position.y + math.random(-8, 8) },
+        force = force,
+        quality = quality
+    })
+end
+
 function M.spawn_wriggler(surface, position, force, quality)
     local w = surface.create_entity({
         name = "rabbasca-small-insanity-wriggler",
@@ -76,9 +85,6 @@ function M.on_sanity_tick(character)
     local prot  = M.get_protection_level(character)
     if prot > 1 then return end
     local force = prot > 0 and character.force or game.forces.enemy
-    -- if value > 0.1 then
-    --     character.health = math.max(character.health - 50, (1 - value) * character.max_health + 1)
-    -- end
     local surface  = M.SPAWN_WHERE_LOOKING and character.player and character.player.surface or character.surface
     local position = M.SPAWN_WHERE_LOOKING and character.player and character.player.position or character.position
     if not character.force.is_chunk_visible(surface, { x = math.floor(position.x / 32), y = math.floor(position.y / 32) }) then return end
@@ -94,6 +100,13 @@ function M.on_sanity_tick(character)
         M.spawn_wriggler(surface, position, force, character.quality)
         M.spawn_wriggler(surface, position, force, character.quality)
         M.spawn_wriggler(surface, position, force, character.quality)
+    end
+    if prot == 0 then return end
+    if math.random() < 1.5 * l - 0.4 then 
+        if surface.find_logistic_network_by_position(position, force) then
+            M.spawn_snagger(surface, position, force, character.quality)
+            M.spawn_snagger(surface, position, force, character.quality)
+        end
     end
 end
 
@@ -177,6 +190,15 @@ script.on_nth_tick(M.DEFAULT_CHECK_INTERVAL, function(_)
                 data.respawn_protection = nil
                 M.on_sanity_loss(data.value, player)
             end
+        end
+    end
+end)
+
+script.on_event(defines.events.on_worker_robot_expired, function(event)
+    if event.robot.name == "rabbasca-insanity-logistic-robot" then
+        local inv = event.robot.get_inventory(defines.inventory.robot_cargo)
+        if inv then
+            event.robot.surface.spill_inventory{ position = event.robot.position, inventory = inv, enable_looted = true, force = event.robot.force, drop_full_stack = true }
         end
     end
 end)

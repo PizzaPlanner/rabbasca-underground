@@ -31,6 +31,21 @@ Rabbasca.make_trigger_item({
   subgroup = "rabbasca-security",
   order = "x[sanity-restore]",
 }, "rabbasca_on_sanity_restore"),
+{
+  type = "item",
+  icons = Rabbasca.icons{{proto = data.raw["item"]["logistic-robot"], tint = {0,0,0}}},
+  name = "rabbasca-insanity-logistic-robot",
+  flags = { "ignore-spoil-time-modifier" },
+  auto_recycle = false,
+  -- hidden = true,
+  -- hidden_in_factoriopedia = false,
+  subgroup = "enemies",
+  order = "r[rabbasca]-u[underground]-l",
+  weight = 0,
+  stack_size = 200,
+  spoil_ticks = 2 * second,
+  place_result = "rabbasca-insanity-logistic-robot"
+}
 }
 data.raw["item"]["rabbasca-sanity-mote"].flags = { }
 data.raw["item"]["rabbasca-sanity-loss"].flags = { "ignore-spoil-time-modifier" }
@@ -585,4 +600,28 @@ local c_particle_glow = {
   }
 }
 
-data:extend { wriggler, crawler, c_particle, c_particle_glow }
+local snagger = {
+  type = "logistic-robot",
+  name = "rabbasca-insanity-logistic-robot",
+  shadow_idle_with_cargo = table.deepcopy(data.raw["logistic-robot"]["logistic-robot"].shadow_idle_with_cargo),
+  shadow_idle = table.deepcopy(data.raw["logistic-robot"]["logistic-robot"].shadow_idle),
+  shadow_in_motion_with_cargo = table.deepcopy(data.raw["logistic-robot"]["logistic-robot"].shadow_in_motion_with_cargo),
+  shadow_in_motion = table.deepcopy(data.raw["logistic-robot"]["logistic-robot"].shadow_in_motion),
+  placeable_by = { item = "rabbasca-insanity-logistic-robot", count = 1 },
+  max_payload_size = 20,
+  max_payload_size_after_bonus = 100,
+  speed_multiplier_when_out_of_energy = 0,
+  draw_cargo = true,
+  speed = 10 / second,
+  max_speed = 100 / second,
+  energy_per_tick = "1W",
+  -- energy_per_move = "5W",
+  max_energy = "60J",
+  min_to_charge = 0,
+  max_to_charge = 0,
+  alert_when_damaged = false,
+  subgroup = "enemies",
+  order = "r[rabbasca]-u[underground]-l"
+}
+
+data:extend { wriggler, crawler, snagger, c_particle, c_particle_glow }
