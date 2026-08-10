@@ -2,7 +2,6 @@
 Version: 0.9.9
 Date: 2026-08-09
   Changes:
-    - Added setting to reduce insanity effects in multiplayer (default: Off)
     - Added setting to switch whether insanity effects affect remote view (default: On)
     - Added snaggy shadow (requires tinfoil hat)
 ---------------------------------------------------------------------------------------------------
