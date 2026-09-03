@@ -1,38 +1,61 @@
 local M = { 
-    DEFAULT_DRAIN = 0.005,
-    DEFAULT_RESTORE = 0.001,
-    DEFAULT_CHECK_INTERVAL = 15 * 60,
-    DEFAULT_BUFF_INTERVAL = 90,
-    DEFAULT_RESPAWN_PROTECTION = 120 * 60,
+    EXTEND_PANIC_DURATION = 15 * 60,
+    MAX_PANIC_DURATION = 300 * 60,
+    INITIAL_PANIC_DURATION = 25 * 60,
+    DURATION_MULT_HAT = 0.5,
+    DEFAULT_BUFF_INTERVAL = 4 * 60,
     SPAWN_WHERE_LOOKING = settings.startup["rabbasca-insanity-where-looking"].value,
 }
 
 if data then return M end
 
-function M.set_sanity_ui(player)
-    local frame = player.gui.relative.rabbasca_sanity_ui
-    local value = M.current_insanity(player)
-    if value <= 0 or not player.opened_self then
-        if frame then frame.destroy() end
-        return
-    else
-        if not frame then
-            frame = player.gui.relative.add{
-                type = "frame",
-                name = "rabbasca_sanity_ui",
-                direction = "vertical",
-                -- caption = "Sanity",
-                anchor = {
-                    gui = defines.relative_gui_type.controller_gui,
-                    position = defines.relative_gui_position.top
-                }
-            }
-            frame.add { type = "label", name = "sanity_value" }
-        end
-        local prot = M.get_protection_level(player.character)
-        frame.sanity_value.caption = string.format("[item=rabbasca-sanity-loss] Sanity: %.1f%% | [item=rabbasca-tinfoil-hat]: %i", (1- value) * 100, prot)
-    end
+function M.insert_fuel(from, quality)
+    if not (from and from.valid) then return end
+    local player = from.is_entity_with_owner and from.last_user
+    if not (player and player.connected and player.character) then return end
+    local items = {name = "rabbasca-sanity-mote", count = 1, quality = quality}
+    player.character.insert(items)
 end
+
+function M.do_panic_attack(event, quality)
+    local from = event.source_entity
+    local player = nil
+    if from and from.valid then
+        player = from.is_entity_with_owner and from.last_user
+    end
+    if not (player and player.connected and player.character and storage.access_whitelist[player.index]) then
+        local surface = from and from.surface or game.surfaces[event.surface_index]
+        local pos = from and from.position or event.source_position
+        if surface and pos then
+            for _ = 1,math.random(3,7) do
+                M.spawn_wriggler(surface, pos, game.forces.enemy, quality)
+            end
+        end
+        return
+    end
+    local target = player.character
+    local has_hat = M.get_protection_level(target) > 0
+    local sticker = has_hat and "rabbasca-insanity-sticker-buff" or "rabbasca-insanity-sticker-debuff"
+    local time_mult = has_hat and M.DURATION_MULT_HAT or 1
+    for _, e in pairs(target.stickers or { }) do
+        if e.name == sticker then
+            local quality_mult = (quality and prototypes.quality[quality] or prototypes.quality.normal).default_multiplier
+            local added = M.EXTEND_PANIC_DURATION * time_mult * quality_mult * quality_mult
+            e.time_to_live = e.time_to_live + added
+        return
+      end
+    end
+    target.surface.create_entity {
+        name = sticker,
+        position = target.position,
+        target = target
+    }.time_to_live = M.INITIAL_PANIC_DURATION * time_mult
+end
+
+function M.get_insanity_stage(sticker)
+    return sticker.time_to_live / M.MAX_PANIC_DURATION
+end
+
 
 function M.spawn_crawler(surface, position, force, quality)
     local c = surface.create_segmented_unit({
@@ -78,16 +101,22 @@ function M.spawn_wriggler(surface, position, force, quality)
     })
 end
 
-function M.on_sanity_tick(character)
+function M.on_sanity_tick(sticker)
+    if not sticker.valid then return end
+    local character = sticker.sticked_to
     if not character.valid then return end
-    local value = M.current_insanity(character.player)
+    
+    local value = M.get_insanity_stage(sticker)
     if value <= 0 then return end
-    local prot  = M.get_protection_level(character)
-    if prot > 1 then return end
-    local force = prot > 0 and character.force or game.forces.enemy
+    character.player.create_local_flying_text { text = { "rabbasca-extra.i-feel-insane", string.format("%i", value * 100) }, position = { x = character.position.x, y = character.position.y - 2 }, surface = character.surface }
+    local is_friend = sticker.name == "rabbasca-insanity-sticker-buff"
+    local force = is_friend and character.force or game.forces.enemy
     local surface  = M.SPAWN_WHERE_LOOKING and character.player and character.player.surface or character.surface
     local position = M.SPAWN_WHERE_LOOKING and character.player and character.player.position or character.position
     if not character.force.is_chunk_visible(surface, { x = math.floor(position.x / 32), y = math.floor(position.y / 32) }) then return end
+    if math.random() / 2 < value then
+        M.insert_fuel(sticker.sticked_to)
+    end
     local l = math.log(1.75* value + 0.33) / 3 + 0.4
     if math.random() < l then 
         M.spawn_wriggler(surface, position, force, character.quality)
@@ -101,76 +130,15 @@ function M.on_sanity_tick(character)
         M.spawn_wriggler(surface, position, force, character.quality)
         M.spawn_wriggler(surface, position, force, character.quality)
     end
-    if prot == 0 then return end
     if math.random() < 1.5 * l - 0.4 then 
-        if surface.find_logistic_network_by_position(position, force) then
-            M.spawn_snagger(surface, position, force, character.quality)
-            M.spawn_snagger(surface, position, force, character.quality)
-        end
-    end
-end
-
-function M.on_sanity_loss(level, player)
-    local character = player.character
-    if not (character and character.valid) then return end
-    local hats = M.get_protection_level(character)
-    if hats > 1 then return end
-    if hats > 0 then
-        character.surface.create_entity {
-            name = "rabbasca-insanity-sticker-buff",
-            position = character.position,
-            target = character
-        }
-    else
-        character.surface.create_entity {
-            name = "rabbasca-insanity-sticker-debuff",
-            position = character.position,
-            target = character
-        }
-    end
-end
-
-function M.on_player_died(player)
-    if not (storage.insanity and storage.insanity[player.index]) then return end
-    storage.insanity[player.index].respawn_protection = game.tick + M.DEFAULT_RESPAWN_PROTECTION
-    M.restore_sanity(player, 0.05)
-end
-
-function M.remove_sanity(player, count)
-    if not player then return end
-    M.set_insanity(M.current_insanity(player) + (count or M.DEFAULT_DRAIN), player)
-end
-
-function M.restore_sanity(player, count)
-    if not (player and storage.insanity[player.index]) then return end
-    M.set_insanity(M.current_insanity(player) - (count or M.DEFAULT_RESTORE), player)
-end
-
-function M.set_insanity(level, player)
-    if not (storage.access_whitelist or { })[player.index] then return end
-    storage.insanity = storage.insanity or { }
-    local data = storage.insanity[player.index] or { value = 0, respawn_protection = 0, highest_value = 0 }
-    data.value = math.max(0, math.min(1, level))
-    if data.value > (data.highest_value or 0) then
-        M.on_new_sanity_record(player, data.value, (data.highest_value or 0))
-        data.highest_value = data.value
-    end
-    storage.insanity[player.index] = data
-    M.set_sanity_ui(player)
-end
-
-function M.current_insanity(player)
-    return math.min(1, (storage.insanity and storage.insanity[player.index] or { value = 0 }).value)
-end
-
-function M.on_new_sanity_record(player, new_value, prev_record)
-    if prev_record <= 0 then
-        player.print({"rabbasca-extra.sanity-notice-0"})
-    end
-    for i = 1,10 do
-        if new_value * 10 >= i and prev_record * 10 < i then
-            player.print({"rabbasca-extra.sanity-notice-"..i})
-        end
+        if is_friend then
+            if surface.find_logistic_network_by_position(position, force) then
+                M.spawn_snagger(surface, position, force, character.quality)
+                M.spawn_snagger(surface, position, force, character.quality)
+            end
+        else
+            character.begin_crafting{ count = 1, recipe = "rabbasca-imaginary-creation-autocraft", silent = true }
+        end        
     end
 end
 
@@ -179,20 +147,6 @@ function M.get_protection_level(character)
         character.grid.count("rabbasca-tinfoil-hat")
     ) or 0
 end
-
-script.on_nth_tick(M.DEFAULT_CHECK_INTERVAL, function(_)
-    if not storage.insanity then return end
-    local tick = game.tick
-    for id, data in pairs(storage.insanity) do
-        if data.value > 0 and (data.respawn_protection or 0) < tick then
-            local player = game.players[id]
-            if player and player.connected then
-                data.respawn_protection = nil
-                M.on_sanity_loss(data.value, player)
-            end
-        end
-    end
-end)
 
 script.on_event(defines.events.on_worker_robot_expired, function(event)
     if event.robot.name == "rabbasca-insanity-logistic-robot" then
@@ -203,12 +157,22 @@ script.on_event(defines.events.on_worker_robot_expired, function(event)
     end
 end)
 
+-- script.on_event(defines.events.on_player_armor_inventory_changed, function(event)
+-- end)
+
+-- script.on_event({defines.events.on_equipment_inserted, defines.events.on_equipment_removed}, function(event)
+-- end)
+
 if settings.global["rabbasca-debug-mode"].value then
     commands.add_command("rabbasca_ug_sani", nil, function(command)
         local to = tonumber(command.parameter) or 1
         M.set_insanity(to, game.players[command.player_index])
         game.players[command.player_index].print(serpent.line(storage.insanity))
     end)
+
+    -- commands.add_command("rabbasca_ug_imagine", nil, function(command)
+    --     M.do_sanity_craft(game.players[command.player_index])
+    -- end)
 end
 
 return M

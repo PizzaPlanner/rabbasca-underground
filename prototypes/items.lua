@@ -3,10 +3,6 @@ data:extend{
   type = "fuel-category",
   name = "rabbasca-warp-anomaly",
 },
-{
-  type = "module-category",
-  name = "rabbasca-stabilizer-module",
-},
 Rabbasca.make_trigger_item({
   name = "rabbasca-locate-stabilizer",
   subgroup = "rabbasca-warp-stabilizer",
@@ -324,6 +320,18 @@ util.merge {
   order = "a[stabilizer]-b[stability]",
 },
 {
+  name ="rabbasca-imagination-altar",
+  type = "item",
+  icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-3.png",
+  icon_size = 64,
+  stack_size = 10,
+  weight = 500 * kg,
+  auto_recycle = false,
+  place_result = "rabbasca-imagination-altar",
+  subgroup = "rabbasca-warp-stabilizer",
+  order = "a[stabilizer]-b[stability]",
+},
+{
   name = "rabbasca-ufo",
   type = "item-with-entity-data",
   icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
@@ -333,17 +341,6 @@ util.merge {
   weight = 5000 * kg,
   subgroup = "transport",
   order = "b[personal-transport]-c[spidertron]-r[warpotron]",
-},
-{
-  name = "rabbasca-tinfoil-hat",
-  type = "item",
-  place_as_equipment_result = "rabbasca-tinfoil-hat",
-  icon = "__rabbasca-assets__/graphics/recolor/icons/tinfoil-hat.png",
-  icon_size = 64,
-  stack_size = 10,
-  weight = 1 * kg,
-  subgroup = "utility-equipment",
-  order = "h[tinfoil-hat]",
 },
 -- {
 --     type = "ammo",

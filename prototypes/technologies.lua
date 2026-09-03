@@ -285,7 +285,7 @@ data:extend{
     name = "rabbasca-ufo",
     icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
     icon_size = 64,
-    prerequisites = { "rabbasca-warpfield-science-pack", "tesla-weapons", "spidertron", "rabbasca-insanity-2" },
+    prerequisites = { "rabbasca-warpfield-science-pack", "tesla-weapons", "spidertron", "rabbasca-imaginary-science-pack" },
     effects = {
       {
         type = "unlock-recipe",
@@ -300,9 +300,12 @@ data:extend{
       time = 60,
       count = 1000,
       ingredients = {
+        {"space-science-pack", 1},
         {"military-science-pack", 1},
-        {"athletic-science-pack", 1},
+        {"utility-science-pack", 1},
+        {"production-science-pack", 1},
         {"rabbasca-warpfield-science-pack", 1},
+        {"rabbasca-imaginary-science-pack", 1},
       }
     },
 },
@@ -313,7 +316,7 @@ data:extend{
       { proto = data.raw["item"]["rabbasca-restored-knowledge"] },
       { constant = "recipe-productivity" }
     }, 256),
-    prerequisites = { "rabbasca-warpfield-science-pack", "rabbasca-insanity-1" },
+    prerequisites = { "rabbasca-warpfield-science-pack", "rabbasca-imaginary-science-pack" },
     effects = {
       {
         type = "change-recipe-productivity",
@@ -327,7 +330,7 @@ data:extend{
       time = 60,
       count_formula = "25 * L * L",
       ingredients = {
-        {"athletic-science-pack", 1},
+        {"rabbasca-imaginary-science-pack", 1},
         {"rabbasca-warpfield-science-pack", 1},
       }
     }
@@ -385,7 +388,7 @@ data:extend{
     type = "technology",
     name = "rabbasca-supercharged-module",
     icons = Rabbasca.icons({proto = data.raw["technology"]["modules"]}),
-    prerequisites = { "rabbasca-warpfield-science-pack", "interplanetary-construction-3", "speed-module-3", "rabbasca-insanity-2" },
+    prerequisites = { "rabbasca-warpfield-science-pack", "interplanetary-construction-3", "speed-module-3", "rabbasca-imaginary-science-pack" },
     effects = {
       {
         type = "unlock-recipe",
@@ -397,6 +400,7 @@ data:extend{
       count = 1000,
       ingredients = {
         {"athletic-science-pack", 1},
+        {"rabbasca-imaginary-science-pack", 1},
         {"rabbasca-warpfield-science-pack", 1},
       }
     },

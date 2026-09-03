@@ -1,4 +1,21 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.0
+Date: ????
+  Changes:
+    - Replaced sanity loss item by psychosis
+    - Psychosis now causes and extends the sanity effect
+    - Current sanity is now determined by the remaining duration of the sanity effect
+    - Sanity effect now has a chance on tick to create rampant imagination
+    - Added Imaginary "science" pack and other imaginary items
+    - Added Imaginative explorator, which turns rampant imagination into imaginary items
+    - Reordered and added some technologies in order to make use of the new science pack
+    - Psychosis now only apply to the "Last user" of the entity the causing item was created in
+    - Insanity creatures no longer affects nature (trees/rocks/etc.)
+    - Warpotron now uses a variety of different weapons
+    - Unfuelled anomaly extractors will now retreat to free their anomalies for fuelled extractors
+  Bugfixes:
+    - Fixed summon warpotron fleet could summon warpotrons with non-empty inventory or a driver
+---------------------------------------------------------------------------------------------------
 Version: 0.9.9
 Date: 2026-08-09
   Changes:

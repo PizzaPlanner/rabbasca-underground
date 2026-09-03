@@ -7,3 +7,5 @@ require("compatibility.interplanetary-construction-3-final-fixes")
 require("compatibility.expand-warpfield-science-usage-final-fixes")
 
 require("compatibility.pickier-dollies-final-fixes")
+
+require("compatibility.purge-lab-inputs-final-fixes")

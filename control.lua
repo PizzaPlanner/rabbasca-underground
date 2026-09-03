@@ -5,7 +5,7 @@ local sanity = require("scripts.sanity")
 local function handle_script_events(event)
   local effect_id = event.effect_id
   if effect_id == "rabbasca_on_insanity_tick" then
-    if event.target_entity then sanity.on_sanity_tick(event.target_entity) end
+    if event.source_entity then sanity.on_sanity_tick(event.source_entity) end
   elseif effect_id == "rabbasca_make_floor_anomaly" then
     local from = Rabbasca.get_spoiled_in(event)
     if from then
@@ -38,18 +38,8 @@ local function handle_script_events(event)
     if event.source_entity then underground.fuel.register_consumer(event.source_entity) end
   elseif effect_id == "rabbasca_register_floorthing" then
     if event.source_entity then underground.warp.register_floorthing(event.source_entity) end
-  elseif effect_id == "rabbasca_on_sanity_loss" then
-    local from = Rabbasca.get_spoiled_in(event)
-    local force = from and from.force or game.forces.player
-    for _, player in pairs(force.connected_players) do
-      sanity.remove_sanity(player, sanity.DEFAULT_DRAIN)
-    end
-  elseif effect_id == "rabbasca_on_sanity_restore" then
-    local from = Rabbasca.get_spoiled_in(event)
-    if from and from.type == "character" and from.force then
-      if sanity.get_protection_level(from) > 0 then return end
-      sanity.restore_sanity(from.player, sanity.DEFAULT_RESTORE)
-    end
+  elseif effect_id == "rabbasca_on_sanity_attack" then
+    sanity.do_panic_attack(event)
   end
 end
 
@@ -82,16 +72,7 @@ script.on_event(defines.events.on_gui_opened, function(event)
       if event.item.name:find("^rabbasca%-warp%-cell") then
         underground.ui.set_cell_ui(player, event.item)
       end
-    elseif event.gui_type == defines.gui_type.controller then
-      sanity.set_sanity_ui(player)
     end
-end)
-
-script.on_event(defines.events.on_player_died, function(event)
-  local player = game.players[event.player_index]
-  if player then
-    sanity.on_player_died(player)
-  end
 end)
 
 script.on_event(defines.events.on_gui_closed, function(event)
@@ -102,8 +83,6 @@ script.on_event(defines.events.on_gui_closed, function(event)
             underground.ui.set_relicary_remote_ui(player)
             underground.ui.set_remote_access_ui(player)
         end
-    elseif event.gui_type == defines.gui_type.controller then
-      sanity.set_sanity_ui(player)
     end
 end)
 

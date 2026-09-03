@@ -635,7 +635,7 @@ data:extend {
             { type = "item", name = "rabbasca-obscure-theories",  amount = 4, ignored_by_stats = 4 },
         },
         results = { 
-            { type = "item", name = "rabbasca-sanity-loss", amount = 1, independent_probability = 0.005, always_fresh = true },
+            { type = "item", name = "rabbasca-psychosis", amount = 2, independent_probability = 0.005, always_fresh = true },
             { type = "item", name = "rabbasca-restored-knowledge", amount = 1, shared_probability = { min = 0, max = 0.1 } },
             { type = "item", name = "rabbasca-obscure-theories",  amount = 4, shared_probability = { min = 0.1, max = 1 }, ignored_by_productivity = 4, ignored_by_stats = 4 },
         },

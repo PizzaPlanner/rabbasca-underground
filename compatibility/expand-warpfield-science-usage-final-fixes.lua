@@ -15,7 +15,9 @@ for _, tech in pairs(techs) do
         end
         if has_cryo_science > 0 and not has_ath_science then
             table.insert(t.unit.ingredients, { "rabbasca-warpfield-science-pack", has_cryo_science })
+            table.insert(t.unit.ingredients, { "rabbasca-imaginary-science-pack", has_cryo_science })
             table.insert(t.prerequisites, "rabbasca-warpfield-science-pack")
+            table.insert(t.prerequisites, "rabbasca-imaginary-science-pack")
         end
     end
 end
