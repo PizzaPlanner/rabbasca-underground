@@ -451,72 +451,8 @@ local floorion = {
     },
 }
 
-local ufo = util.merge {
-    data.raw["spider-vehicle"]["spidertron"],
-    {
-        name = "rabbasca-ufo",
-        icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
-        icon_size = 64,
-        movement_energy_consumption = "9MW",
-        has_belt_immunity = true,
-        inventory_size = 20,
-        trash_inventory_size = 20,
-        allow_remote_driving = true,
-        torso_rotation_speed = 0.05,
-        torso_bob_speed = 0.07,
-        radar_range = 3,
-        height = 2,
-        allow_passengers = true,
-        energy_source = {
-            type                 = "burner",
-            fuel_inventory_size  = 0,
-            burnt_inventory_size = 0,
-            initial_fuel         = "rabbasca-warp-cell-internal",
-            initial_fuel_percent = 0.001,
-            fuel_categories      = { "rabbasca-warp-anomaly" },
-        },
-    }
-}
-ufo.minable = { result = "rabbasca-ufo", count = 1, mining_time = 1 }
-ufo.placeable_by = { item = "rabbasca-ufo", count = 1 }
-ufo.flags = { "placeable-player", "player-creation", "get-by-unit-number" }
-ufo.guns = {
-    "teslagun",
-    "teslagun",
-    "teslagun",
-}
-ufo.collision_mask = {
-    layers = { out_of_map = true },
-    collides_with_tiles_only = true
-}
-ufo.created_effect = {
-    type = "direct",
-    action_delivery = {
-        type = "instant",
-        source_effects = {
-            {
-                type = "script",
-                effect_id = "rabbasca_register_fuel_consumer",
-            },
-        }
-    },
-}
-ufo.spider_engine.legs = { leg = "rabbasca-ufo-leg", mount_position = { 0, 0 }, ground_position = { 0, 0 }, walking_group = 1 }
-local ufo_leg = util.merge {
-    data.raw["spider-leg"]["spidertron-leg-1"],
-    {
-        name = "rabbasca-ufo-leg",
-        initial_movement_speed = 1.8,
-        movement_acceleration = 3,
-        target_position_randomisation_distance = 0,
-    }
-}
-ufo_leg.collision_mask = table.deepcopy(ufo.collision_mask)
-ufo_leg.graphics_set = nil
-
 data:extend {
     stabilizer,
-    ufo, ufo_leg,
     anomaly_storage,
     relicary,
     relicary_access,

@@ -178,7 +178,9 @@ function M.summon_fleet(surface, position)
     for _, c in pairs(storage.stabilizer.fuel.consumers) do
         local e = c.entity
         if e.valid and e.name == "rabbasca-ufo" then
-            if e.burner.remaining_burning_fuel > fuel_cost then
+            if e.get_driver() or (not e.get_inventory(defines.inventory.spider_trunk).is_empty()) or (not e.get_inventory(defines.inventory.spider_trash).is_empty()) then
+                -- Dont
+            elseif e.burner.remaining_burning_fuel > fuel_cost then
                 e.burner.remaining_burning_fuel = e.burner.remaining_burning_fuel - fuel_cost
                 local p = { x = position.x + math.random(-3, 3), y = position.y + math.random(-3, 3) }
                 e.teleport(p, surface, false)

@@ -30,7 +30,7 @@ function M.on_mining_update()
             if e.chest.valid then e.chest.destroy { } end
             storage.stabilizer.miners.entities[i] = nil
             break
-        elseif storage.stabilizer.warping then
+        elseif storage.stabilizer.warping or (e.miner.mining_target and e.miner.burner.remaining_burning_fuel <= 0) then
             e.miner.teleport({0, -1})
         elseif #storage.stabilizer.anomalies.entities > 0 and not (e.miner.mining_target and e.miner.mining_target.valid) then
             local r = math.random(1, #storage.stabilizer.anomalies.entities)
