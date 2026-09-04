@@ -1,0 +1,1 @@
+data.raw["night-vision-equipment"]["rabbasca-tinfoil-hat-disabled"] = nil
