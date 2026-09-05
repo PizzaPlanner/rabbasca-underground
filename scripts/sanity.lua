@@ -9,11 +9,16 @@ local M = {
 
 if data then return M end
 
+local QUALITY_LEVELS = { }
+for _, q in pairs(prototypes.quality) do
+    QUALITY_LEVELS[q.name] = { level = q.level, mult = q.default_multiplier }
+end
+
 function M.insert_fuel(from, quality)
     if not (from and from.valid) then return end
     local player = from.is_entity_with_owner and from.last_user
     if not (player and player.connected and player.character) then return end
-    local items = {name = "rabbasca-sanity-mote", count = 1, quality = quality}
+    local items = {name = "rabbasca-rampant-imagination", count = 1, quality = quality}
     player.character.insert(items)
 end
 
@@ -39,17 +44,38 @@ function M.do_panic_attack(event, quality)
     local time_mult = has_hat and M.DURATION_MULT_HAT or 1
     for _, e in pairs(target.stickers or { }) do
         if e.name == sticker then
-            local quality_mult = (quality and prototypes.quality[quality] or prototypes.quality.normal).default_multiplier
-            local added = M.EXTEND_PANIC_DURATION * time_mult * quality_mult * quality_mult
-            e.time_to_live = e.time_to_live + added
-        return
+            local q_data = QUALITY_LEVELS[quality or "normal"]
+            local added = M.EXTEND_PANIC_DURATION * time_mult * q_data.mult * q_data.mult
+            if e.quality.level >= q_data.level then
+                e.time_to_live = e.time_to_live + added
+            else
+                local ttl = e.time_to_live + added
+                e.surface.create_entity { -- new sticker replaces old one automatically
+                    name = sticker,
+                    position = e.position,
+                    target = e.sticked_to,
+                    quality = quality
+                }.time_to_live = ttl
+            end
+            return
       end
     end
     target.surface.create_entity {
         name = sticker,
         position = target.position,
-        target = target
+        target = target,
+        quality = quality
     }.time_to_live = M.INITIAL_PANIC_DURATION * time_mult
+end
+
+function M.get_insanity(character)
+    local sani = 0
+    for _, s in pairs(character.stickers or { }) do
+        if s.name:find("^rabbasca%-insanity%-sticker") then
+            sani = math.max(sani, M.get_insanity_stage(s))
+        end
+    end
+    return sani
 end
 
 function M.get_insanity_stage(sticker)
@@ -108,37 +134,43 @@ function M.on_sanity_tick(sticker)
     
     local value = M.get_insanity_stage(sticker)
     if value <= 0 then return end
-    character.player.create_local_flying_text { text = { "rabbasca-extra.i-feel-insane", string.format("%i", value * 100) }, position = { x = character.position.x, y = character.position.y - 2 }, surface = character.surface }
+    character.player.create_local_flying_text { 
+        text = { "rabbasca-extra.i-feel-insane", string.format("%i", value * 100), quality = sticker.quality.name }, 
+        position = { x = character.position.x, y = character.position.y - 2 }, 
+        surface = character.surface,
+        time_to_live = 60,
+        speed = 1
+    }
     local is_friend = sticker.name == "rabbasca-insanity-sticker-buff"
     local force = is_friend and character.force or game.forces.enemy
     local surface  = M.SPAWN_WHERE_LOOKING and character.player and character.player.surface or character.surface
     local position = M.SPAWN_WHERE_LOOKING and character.player and character.player.position or character.position
     if not character.force.is_chunk_visible(surface, { x = math.floor(position.x / 32), y = math.floor(position.y / 32) }) then return end
-    if math.random() / 2 < value then
-        M.insert_fuel(sticker.sticked_to)
+    local fuel_chance = value * (is_friend and 2 or 1)
+    if math.random() < fuel_chance then
+        M.insert_fuel(character, sticker.quality)
     end
+    character.begin_crafting { count = 1000, recipe = "rabbasca-contained-imagination", silent = true }
     local l = math.log(1.75* value + 0.33) / 3 + 0.4
     if math.random() < l then 
-        M.spawn_wriggler(surface, position, force, character.quality)
-        M.spawn_wriggler(surface, position, force, character.quality)
+        M.spawn_wriggler(surface, position, force, sticker.quality)
+        M.spawn_wriggler(surface, position, force, sticker.quality)
     end
     if math.random() < 2.5 * l - 1 then 
-        M.spawn_crawler(surface, position, force, character.quality)
+        M.spawn_crawler(surface, position, force, sticker.quality)
     end
     if math.random() < 1.5 * l - 0.3 then 
-        M.spawn_wriggler(surface, position, force, character.quality)
-        M.spawn_wriggler(surface, position, force, character.quality)
-        M.spawn_wriggler(surface, position, force, character.quality)
+        M.spawn_wriggler(surface, position, force, sticker.quality)
+        M.spawn_wriggler(surface, position, force, sticker.quality)
+        M.spawn_wriggler(surface, position, force, sticker.quality)
     end
     if math.random() < 1.5 * l - 0.4 then 
         if is_friend then
             if surface.find_logistic_network_by_position(position, force) then
-                M.spawn_snagger(surface, position, force, character.quality)
-                M.spawn_snagger(surface, position, force, character.quality)
+                M.spawn_snagger(surface, position, force, sticker.quality)
+                M.spawn_snagger(surface, position, force, sticker.quality)
             end
-        else
-            character.begin_crafting{ count = 1, recipe = "rabbasca-imaginary-creation-autocraft", silent = true }
-        end        
+        end
     end
 end
 
@@ -156,6 +188,22 @@ script.on_event(defines.events.on_worker_robot_expired, function(event)
         end
     end
 end)
+
+-- script.on_event(defines.events.on_player_crafted_item, function(event)
+--     if not event.recipe.has_category("rabbasca-psychosis") then return end
+--     local character = game.players[event.player_index].character
+--     if not (character and character.valid) then return end
+--     local sanity = M.get_insanity(character)
+--     game.print(event.item_stack.name)
+--     event.item_stack.spoil_percent = math.max(event.item_stack.spoil_percent, 1 - sanity)
+--     if sanity <= 0 then
+--         event.item_stack.clear()        
+--     end
+-- end)
+
+-- script.on_event(defines.events.on_player_cancelled_crafting, function(event)
+--     game.print("TODO")
+-- end)
 
 -- script.on_event(defines.events.on_player_armor_inventory_changed, function(event)
 -- end)

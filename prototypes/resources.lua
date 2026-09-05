@@ -24,6 +24,7 @@ local st_anomaly = util.merge {
     randomize_visual_position = false
   }
 }
+st_anomaly.icon = nil
 st_anomaly.stateless_visualisation = {
   {
     count = 1,
@@ -83,6 +84,7 @@ local lithium_amide = util.merge {
     tree_removal_probability = 0,
   }
 }
+lithium_amide.icons = nil
 lithium_amide.map_color = { 0.74, 0.94, 0.92 }
 lithium_amide.minable.mining_time = 0.5
 lithium_amide.minable.results = {{ type = "item", name = "rabbasca-lithium-amide", amount = 1 }}
@@ -101,6 +103,7 @@ local mashup = util.merge {
     tree_removal_probability = 0,
   }
 }
+mashup.icon = nil
 mashup.map_color = { 0.74, 0.38, 0.1 }
 mashup.minable.mining_time = 0.5
 mashup.minable.results = {

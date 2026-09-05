@@ -65,28 +65,6 @@ wriggler.run_animation.layers = {
     wriggler_spritesheet("run-shadow", 21, 0.48, 0.25),
 }
 wriggler.attack_reaction = nil
--- {
---   {
---     range = 30,
---     reaction_modifier = 0,
---     action =
---     {
---       type = "direct",
---       probability = 0.02,
---       force = "not-same",
---       action_delivery =
---       {
---         type = "instant",
---         target_effects =
---         {
---           type = "insert-item",
---           -- always use at least 0.1 damage
---           item = "rabbasca-sanity-mote"
---         }
---       }
---     },
---   }
--- }
 wriggler.selection_box = {{0, 0}, {0, 0}}
 wriggler.corpse = nil
 wriggler.dying_explosion = nil
@@ -301,27 +279,6 @@ crawler.enraged_speed = crawler_speed / 60
 crawler.acceleration_rate = crawler_speed / 60 / 60
 crawler.alert_when_damaged = false
 crawler.attack_reaction = nil
--- {
---   {
---     range = 30,
---     reaction_modifier = 0,
---     action =
---     {
---       type = "direct",
---       probability = 0.07,
---       force = "not-same",
---       action_delivery =
---       {
---         type = "instant",
---         target_effects =
---         {
---           type = "insert-item",
---           item = "rabbasca-sanity-mote"
---         }
---       }
---     },
---   }
--- }
 crawler.animation.layers = { 
   demolisher_spritesheet("head-shadow", true, 0.5 * crawler_scale),
 }

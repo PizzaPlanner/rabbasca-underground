@@ -643,4 +643,25 @@ data:extend {
         main_product = "rabbasca-restored-knowledge",
         categories = { "crafting" }
     },
+    {
+        type = "recipe",
+        name = "rabbasca-restored-knowledge-2",
+        icons = Rabbasca.icons({
+            { proto = data.raw["item"]["rabbasca-restored-knowledge"] },
+            { icon = "__base__/graphics/icons/signal/signal-star.png", scale = 0.4, shift = { 8, -8} },
+        }),
+        enabled = false,
+        energy_required = 24,
+        ingredients = {
+            { type = "item", name = "rabbasca-obscure-theories",  amount = 12, ignored_by_stats = 12 },
+        },
+        results = { 
+            { type = "item", name = "rabbasca-restored-knowledge", amount = 1, shared_probability = { min = 0, max = 0.1 } },
+            { type = "item", name = "rabbasca-obscure-theories",  amount = 12, shared_probability = { min = 0.1, max = 1 }, ignored_by_productivity = 12, ignored_by_stats = 12 },
+        },
+        maximum_productivity = 249,
+        main_product = "rabbasca-restored-knowledge",
+        categories = { "rabbasca-psychosis" },
+        hide_from_player_crafting = true
+    },
 }

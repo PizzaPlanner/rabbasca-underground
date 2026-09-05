@@ -1,5 +1,6 @@
 require("prototypes.not-on-my-lawn-final-fixes")
 require("prototypes.stabilizer-config-final-fixes")
+require("prototypes.sanity.psychosis-final-fixes")
 
 require("compatibility.psychic-damage-final-fixes")
 require("compatibility.full-spaghetti-final-fixes")
@@ -8,5 +9,3 @@ require("compatibility.expand-warpfield-science-usage-final-fixes")
 
 require("compatibility.pickier-dollies-final-fixes")
 require("compatibility.maraxsis-nightvision-final-fixes")
-
-require("compatibility.purge-lab-inputs-final-fixes")

@@ -2,28 +2,18 @@ require("sanity.psychosis")
 require("sanity.units")
 require("sanity.science")
 require("sanity.tinfoil-hat")
-
+require("sanity.hellvent")
 data:extend {
--- Rabbasca.make_trigger_item({
---   name = "rabbasca-sanity-mote-init",
---   icon = "__rabbasca-assets__/graphics/recolor/icons/sanity-mote.png",
---   icon_size = 76,
---   localised_description = { "item-description.rabbasca-sanity-mote", { "gui-menu.multiplayer" }, { "description.last-user" } },
---   localised_name = { "item-name.rabbasca-sanity-mote" },
---   factoriopedia_alternative = "rabbasca-sanity-mote"
--- }, "rabbasca_on_sanity_mote_init"),
 {
-  name = "rabbasca-sanity-mote",
+  name = "rabbasca-rampant-imagination",
   type = "item",
   stack_size = 200,
   icon = "__rabbasca-assets__/graphics/recolor/icons/sanity-mote.png",
   icon_size = 76,
+  flags = { "excluded-from-trash-unrequested", "excluded-from-character-lift-weight" },
   subgroup = "rabbasca-security",
   order = "x[sanity-restore]",
-  localised_description = { "item-description.rabbasca-sanity-mote", { "gui-menu.multiplayer" }, { "description.last-user" } },
-  fuel_category = "rabbasca-imagination",
-  fuel_value = "800kJ",
-  burnt_result = "rabbasca-imaginary-science-pack-precursor",
+  localised_description = { "item-description.rabbasca-rampant-imagination", { "gui-menu.multiplayer" }, { "description.last-user" } },
   spoil_ticks = 1 * minute,
   spoil_result = "rabbasca-psychosis",
   auto_recycle = false,
@@ -86,87 +76,5 @@ data:extend {
   order = "a[basic-clips]-c[uranium-rounds-magazine]",
   stack_size = 5,
   weight = 1*kg
-},
-}
--- data.raw["item"]["rabbasca-sanity-mote-init"].flags = { "ignore-spoil-time-modifier" }
-
-data:extend {
-{
-    type = "technology",
-    name = "rabbasca-insanity-1",
-    icon = "__rabbasca-assets__/graphics/recolor/technologies/insanity.png",
-    icon_size = 160,
-    prerequisites = { "rabbasca-archives" },
-    effects = {
-      { type = "unlock-recipe", recipe = "rabbasca-sanity-mote-unlock" },
-      { type = "unlock-recipe", recipe = "rabbasca-imaginary-creation-autocraft" },
-      {
-        type = "change-recipe-productivity",
-        recipe = "rabbasca-restored-knowledge",
-        change = 0.25
-      },
-    },
-    research_trigger =
-    {
-      type = "craft-item",
-      item = "rabbasca-psychosis",
-    count = 5
-    }
-  },
-  {
-    type = "technology",
-    name = "rabbasca-insanity-2",
-    icon = "__rabbasca-assets__/graphics/recolor/technologies/insanity.png",
-    icon_size = 160,
-    prerequisites = { "rabbasca-insanity-1" },
-    effects = {
-      { type = "unlock-recipe", recipe = "rabbasca-imagination-altar" },
-      {
-        type = "change-recipe-productivity",
-        recipe = "rabbasca-restored-knowledge",
-        change = 0.25
-      },
-    },
-    research_trigger =
-    {
-      type = "craft-item",
-      item = "rabbasca-imaginary-science-pack-precursor",
-      count = 1
-    }
-},
-{
-    type = "recipe",
-    name = "rabbasca-imagination-altar",
-    enabled = false,
-    energy_required = 8,
-    allow_productivity = false,
-    hide_from_player_crafting = false,
-    ingredients = { 
-      { type = "item", name = "tungsten-plate", amount = 120 },
-      { type = "item", name = "holmium-plate", amount = 666 },
-      { type = "item", name = "quantum-processor", amount = 25 },
-      { type = "item", name = "beta-carotene-barrel", amount = 666 },
-      { type = "item", name = "rabbasca-sanity-mote", amount = 1 },
-    },
-    results = {
-      { type = "item", name = "rabbasca-imagination-altar", amount = 1 },
-    },
-    categories = { "crafting" }
-},
-{
-    type = "recipe",
-    name = "rabbasca-tinfoil-hat",
-    enabled = false,
-    energy_required = 5,
-    allow_productivity = false,
-    hide_from_player_crafting = false,
-    ingredients = { 
-      { type = "item", name = "carbon-fiber", amount = 1 },
-      { type = "item", name = "iron-plate", amount = 10 },
-    },
-    results = {
-      { type = "item", name = "rabbasca-tinfoil-hat", amount = 1 },
-    },
-    categories = { "crafting" }
 },
 }

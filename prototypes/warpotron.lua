@@ -142,5 +142,16 @@ local smg = {
 }
 
 data:extend {
-    ufo, ufo_leg, launcher, launcher_g, smg
+    ufo, ufo_leg, launcher, launcher_g, smg,
+{
+  name = "rabbasca-ufo",
+  type = "item-with-entity-data",
+  icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png",
+  icon_size = 64,
+  place_result = "rabbasca-ufo",
+  stack_size = 1,
+  weight = 5000 * kg,
+  subgroup = "transport",
+  order = "b[personal-transport]-c[spidertron]-r[warpotron]",
+},
 }
