@@ -10,7 +10,7 @@ data:extend {
   subgroup = "science-pack",
   order = "k-r[rabbasca]-2",
   spoil_ticks = 1 * hour,
-  spoil_result = "rabbasca-psychosis",
+  spoil_result = "rabbasca-rampant-imagination",
 },
 util.merge {
   data.raw["item"]["automation-science-pack"],
@@ -35,6 +35,7 @@ util.merge {
     icon_size = 256,
     prerequisites = { "rabbasca-insanity-2" },
     effects = {
+        { type = "unlock-recipe", recipe = "rabbasca-hellvent-refreshing" },
         { type = "unlock-recipe", recipe = "rabbasca-imaginary-science-pack-duplication" },
         { type = "laboratory-productivity", modifier = 0.1 }
     },
@@ -71,7 +72,7 @@ util.merge {
     icon_size = 160,
     prerequisites = { "rabbasca-archives" },
     effects = {
-      { type = "unlock-recipe", recipe = "rabbasca-rampant-imagination-dummy" },
+      { type = "unlock-recipe", recipe = "rabbasca-psychosis" },
       { type = "unlock-recipe", recipe = "rabbasca-contained-imagination" },
       {
         type = "change-recipe-productivity",
@@ -94,6 +95,8 @@ util.merge {
     prerequisites = { "rabbasca-insanity-1" },
     effects = {
       { type = "unlock-recipe", recipe = "rabbasca-hellvent" },
+      { type = "unlock-recipe", recipe = "rabbasca-rampant-imagination" },
+      { type = "unlock-recipe", recipe = "rabbasca-contained-imagination-refresh" },
       { type = "unlock-recipe", recipe = "rabbasca-imaginary-science-pack" },
       {
         type = "change-recipe-productivity",

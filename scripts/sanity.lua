@@ -1,7 +1,7 @@
 local M = { 
-    EXTEND_PANIC_DURATION = 15 * 60,
-    MAX_PANIC_DURATION = 300 * 60,
-    INITIAL_PANIC_DURATION = 25 * 60,
+    EXTEND_PANIC_DURATION = 10 * 60,
+    MAX_PANIC_DURATION = 600 * 60,
+    INITIAL_PANIC_DURATION = 30 * 60,
     DURATION_MULT_HAT = 0.5,
     DEFAULT_BUFF_INTERVAL = 4 * 60,
     SPAWN_WHERE_LOOKING = settings.startup["rabbasca-insanity-where-looking"].value,
@@ -26,7 +26,7 @@ function M.do_panic_attack(event, quality)
     local from = event.source_entity
     local player = nil
     if from and from.valid then
-        player = from.is_entity_with_owner and from.last_user
+        player = (from.is_entity_with_owner and from.last_user) or (from.type == "character" and from.player)
     end
     if not (player and player.connected and player.character and storage.access_whitelist[player.index]) then
         local surface = from and from.surface or game.surfaces[event.surface_index]
@@ -70,12 +70,14 @@ end
 
 function M.get_insanity(character)
     local sani = 0
+    local quali = "normal"
     for _, s in pairs(character.stickers or { }) do
         if s.name:find("^rabbasca%-insanity%-sticker") then
             sani = math.max(sani, M.get_insanity_stage(s))
+            if QUALITY_LEVELS[s.quality.name].level > QUALITY_LEVELS[quali].level then quali = s.quality.name end
         end
     end
-    return sani
+    return sani, quali
 end
 
 function M.get_insanity_stage(sticker)
@@ -146,11 +148,7 @@ function M.on_sanity_tick(sticker)
     local surface  = M.SPAWN_WHERE_LOOKING and character.player and character.player.surface or character.surface
     local position = M.SPAWN_WHERE_LOOKING and character.player and character.player.position or character.position
     if not character.force.is_chunk_visible(surface, { x = math.floor(position.x / 32), y = math.floor(position.y / 32) }) then return end
-    local fuel_chance = value * (is_friend and 2 or 1)
-    if math.random() < fuel_chance then
-        M.insert_fuel(character, sticker.quality)
-    end
-    character.begin_crafting { count = 1000, recipe = "rabbasca-contained-imagination", silent = true }
+    character.begin_crafting { count = 4, recipe = "rabbasca-psychosis", silent = true }
     local l = math.log(1.75* value + 0.33) / 3 + 0.4
     if math.random() < l then 
         M.spawn_wriggler(surface, position, force, sticker.quality)
@@ -189,17 +187,44 @@ script.on_event(defines.events.on_worker_robot_expired, function(event)
     end
 end)
 
--- script.on_event(defines.events.on_player_crafted_item, function(event)
---     if not event.recipe.has_category("rabbasca-psychosis") then return end
---     local character = game.players[event.player_index].character
---     if not (character and character.valid) then return end
---     local sanity = M.get_insanity(character)
---     game.print(event.item_stack.name)
---     event.item_stack.spoil_percent = math.max(event.item_stack.spoil_percent, 1 - sanity)
---     if sanity <= 0 then
---         event.item_stack.clear()        
---     end
--- end)
+script.on_event(defines.events.on_player_crafted_item, function(event)
+    if not (event.recipe.categories[1] == "rabbasca-psychosis-manual" and #event.recipe.categories == 1) then return end
+    local character = game.players[event.player_index].character
+    if not (character and character.valid) then return end
+    local sanity, quality = M.get_insanity(character)
+    if sanity <= 0 then
+        character.player.create_local_flying_text { 
+            text = { "rabbasca-extra.crafting-aborted-no-psychosis" },
+            position = { x = character.position.x, y = character.position.y - 2 },
+            surface = character.surface,
+        }
+        event.item_stack.clear()
+    elseif event.item_stack and quality ~= "normal" then
+        event.item_stack.set_stack({
+            name = event.item_stack.name,
+            quality = quality,
+            spoil_percent = event.item_stack.spoil_percent,
+            count = event.item_stack.count
+        })
+    end
+end)
+
+script.on_event(prototypes.recipe["rabbasca-hellvent-refreshing"].on_crafted_event, function(event)
+    local inv = game.create_inventory(10)
+    local e, _ = event.entity.apply_upgrade({ name = "rabbasca-hellvent-refreshing", quality = event.entity.quality }, inv)
+    if e then 
+        e.get_inventory(defines.inventory.crafter_trash).transfer_from_inventory(inv) 
+        e.set_recipe("rabbasca-contained-imagination-refresh", event.recipe_quality)
+    end
+    inv.destroy()
+end)
+
+script.on_event(prototypes.recipe["rabbasca-contained-imagination-refresh"].on_crafted_event, function(event)
+    local inv = game.create_inventory(10)
+    local e, _ = event.entity.apply_upgrade({ name = "rabbasca-hellvent", quality = event.entity.quality }, inv)
+    if e then e.get_inventory(defines.inventory.crafter_output).transfer_from_inventory(inv) end
+    inv.destroy()
+end)
 
 -- script.on_event(defines.events.on_player_cancelled_crafting, function(event)
 --     game.print("TODO")

@@ -20,6 +20,7 @@ Date: ????
   Bugfixes:
     - Fixed summon warpotron fleet could summon warpotrons with non-empty inventory or a driver
     - Fixed tinfoil hat not working in maraxsis' trench
+    - Fixed crash when resourcehighlighter is also installed
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.9
 Date: 2026-08-09

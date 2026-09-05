@@ -7,6 +7,8 @@ end
 data:extend {
 Rabbasca.make_trigger_item({
   name = "rabbasca-psychosis",
+  icon = "__rabbasca-assets__/graphics/recolor/icons/sanity-mote.png",
+  icon_size = 76,
   hidden = false,
   hidden_in_factoriopedia = false,
   stack_size = 10000,
@@ -15,7 +17,6 @@ Rabbasca.make_trigger_item({
     { name = { "tooltip.rabbasca-psychosis-duration-add" }, value = { "tooltip-value.rabbasca-psychosis-duration-add", time(settings.EXTEND_PANIC_DURATION), time(settings.EXTEND_PANIC_DURATION * settings.DURATION_MULT_HAT) } },
     { name = { "tooltip.rabbasca-psychosis-affinity" }, value = { "tooltip-value.rabbasca-psychosis-affinity" } }
   },
-  icons = Rabbasca.icons({{ icon = "__space-age__/graphics/icons/small-wriggler.png", tint = {0,0,0} }}),
 }, "rabbasca_on_sanity_attack"),
 }
 

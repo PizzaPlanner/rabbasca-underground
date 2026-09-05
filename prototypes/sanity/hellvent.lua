@@ -3,8 +3,8 @@ data:extend {
         type = "furnace",
         name = "rabbasca-hellvent",
         icons = { { icon = "__space-age__/graphics/icons/fluorine-vent.png", icon_size = 64 } },
-        flags = { "placeable-player", "not-repairable", "not-deconstructable", "no-logistic-connection" },
-        collision_box = { { -1.5, -1.5 }, { 1.5, 1.5 } },
+        flags = { "placeable-player", "player-creation", "not-repairable", "not-deconstructable", "no-logistic-connection" },
+        collision_box = { { -1.4, -1.4 }, { 1.4, 1.4 } },
         selection_box = { { -1.5, -1.5 }, { 1.5, 1.5 } },
         result_inventory_size = 10,
         source_inventory_size = 1,
@@ -13,11 +13,22 @@ data:extend {
         energy_usage = "10W",
         energy_source = { type = "void" },
         max_health = 666,
+        fast_replaceable_group = "rabbasca-hellvent",
         placeable_by = { count = 1, item = "rabbasca-hellvent" },
         production_health_effect = {
             producing = 33.33 / second,
             not_producing = -33.33 / second,
             damage_type = "rabbasca-psychic"
+        },
+        -- minable = { 
+        --     mining_time = 0.5,
+        --     result = "rabbasca-hellvent"
+        -- },   
+        dying_trigger_effect = {
+            type = "create-entity",
+            repeat_count = 3,
+            entity_name = "rabbasca-small-insanity-wriggler",
+            as_enemy = true,
         },
         graphics_set = {
             working_visualisations = {
@@ -113,7 +124,8 @@ data:extend {
                     type = "instant",
                     source_effects = {
                         type = "create-entity",
-                        entity_name = "rabbasca-small-insanity-crawler",
+                        repeat_count = 3,
+                        entity_name = "rabbasca-small-insanity-wriggler",
                         as_enemy = true,
                     }
                 }
@@ -130,14 +142,49 @@ data:extend {
         allow_quality = false,
         auto_recycle = false,
         hide_from_player_crafting = false,
-        ingredients = {
-            { type = "item", name = "rabbasca-contained-imagination", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1 }
-        },
+        ingredients = { },
         results = {
-            { type = "item", name = "rabbasca-hellvent",              amount = 1, always_fresh = true },
-            { type = "item", name = "rabbasca-contained-imagination", amount = 1, ignored_by_stats = 1, ignored_by_productivity = 1 }
+            { type = "item", name = "rabbasca-hellvent", amount = 1, always_fresh = true },
         },
         main_product = "rabbasca-hellvent",
-        categories = { "crafting" }
+        categories = { "rabbasca-psychosis-manual" }
     },
+}
+
+local vent2 = table.deepcopy(data.raw["furnace"]["rabbasca-hellvent"])
+vent2.name = "rabbasca-hellvent-refreshing"
+vent2.type = "assembling-machine"
+vent2.trash_inventory_size = vent2.result_inventory_size
+vent2.factoriopedia_alternative = "rabbasca-hellvent"
+vent2.create_ghost_on_death = false
+vent2.fixed_recipe = "rabbasca-contained-imagination-refresh"
+vent2.localised_name = { "entity-name.rabbasca-hellvent" }
+vent2.dying_trigger_effect = {
+    type = "create-entity",
+    entity_name = "rabbasca-hellvent",
+}
+
+data:extend{ vent2,
+{
+    type = "recipe",
+    name = "rabbasca-hellvent-refreshing",
+    icon = "__rabbasca-assets__/graphics/recolor/icons/imaginary-science-pack-precursor-reprocessing.png",
+    icon_size = 64,
+    subgroup = "rabbasca-security",
+    order = "x[sanity-restore]",
+    enabled = false,
+    energy_required = 0.25,
+    allow_quality = false,
+    allow_productivity = true,
+    auto_recycle = false,
+    allow_intermediates = false,
+    allow_as_intermediate = false,
+    hide_from_player_crafting = true,
+    ingredients = { 
+        { type = "item", name = "ice", amount = 1 },
+    },
+    results = { },
+    categories = { "rabbasca-psychosis" },
+    raise_on_crafted = true
+},
 }

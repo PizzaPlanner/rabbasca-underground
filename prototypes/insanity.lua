@@ -8,12 +8,13 @@ data:extend {
   name = "rabbasca-rampant-imagination",
   type = "item",
   stack_size = 200,
-  icon = "__rabbasca-assets__/graphics/recolor/icons/sanity-mote.png",
-  icon_size = 76,
+  icons = Rabbasca.icons{
+    { icon = "__rabbasca-assets__/graphics/recolor/icons/sanity-mote.png", icon_size = 76 },
+    { icon = "__base__/graphics/icons/signal/signal-fire.png", scale = 0.5, shift = { 8, 8 }, tint = { 1, 1, 0 } }
+  },
   flags = { "excluded-from-trash-unrequested", "excluded-from-character-lift-weight" },
   subgroup = "rabbasca-security",
   order = "x[sanity-restore]",
-  localised_description = { "item-description.rabbasca-rampant-imagination", { "gui-menu.multiplayer" }, { "description.last-user" } },
   spoil_ticks = 1 * minute,
   spoil_result = "rabbasca-psychosis",
   auto_recycle = false,
