@@ -32,6 +32,7 @@ function M.on_mining_update()
             break
         elseif storage.stabilizer.warping or (e.miner.mining_target and e.miner.burner.remaining_burning_fuel <= 0) then
             e.miner.teleport({0, -1})
+            e.miner.update_connections()
         elseif #storage.stabilizer.anomalies.entities > 0 and not (e.miner.mining_target and e.miner.mining_target.valid) then
             local r = math.random(1, #storage.stabilizer.anomalies.entities)
             for i = r, r+3 do
@@ -39,6 +40,7 @@ function M.on_mining_update()
                 if anom and anom.valid and not anom.surface.find_entity("rabbasca-collector-pylon", anom.position) then
                     e.miner.teleport(anom.position)
                     e.chest.teleport(anom.position)
+                    e.miner.update_connections()
                     break
                 end
             end
