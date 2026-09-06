@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.1
+Date: ????
+  Bugfixes:
+    - Fixed characters not autocrafting rampant imagination when looking at fog of war
+    - Fixed contained imagination rocket weight
+---------------------------------------------------------------------------------------------------
 Version: 0.10.0
 Date: 2026-09-06
   Changes:
