@@ -1,20 +1,20 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.10.0
-Date: ????
+Date: 2026-09-06
   Changes:
     - Reworked sanity mechanics to make it a more interesting experience
-    - Replaced sanity loss item by psychosis and removed sanity motes
-    - Psychosis now causes and extends the sanity effect
-    - Current sanity level is now determined by the remaining duration of the sanity effect
+    - Removed sanity loss and sanity motes in favor of psychosis, which now creates and extends the sanity (de)buff
+    - Restored rabbascan knowledge now has a chance to create psychosis instead of sanity loss
+    - Added imaginary items, including a new science pack, which spoil into more psychosis
+    - Current sanity level is now determined by the remaining psychosis duration
     - Psychosis now only applies sanity effects to the "Last user" of the entity it spoiled in
-    - Added Imaginary "science" pack and other imaginary items
-    - Sanity effect now has a chance on tick to create rampant imagination, which is used to craft imaginary items
-    - Imaginary items and rampant imagination will spoil into more psychosis if not dealt with
+    - Characters affected by psychosis will automatically craft rampant imagination
     - Added Imaginary pit, a crafting machine for imaginary items
+    - Imaginary pit can only be handcrafted under psychosis and will lose health when not crafting
     - Tinfoil hat no longer stops sanity effects completely
     - Added alternative recipe for restored rabbascan knowledge that does not cause psychosis
     - Reordered and added some technologies in order to make use of the new science pack
-    - Insanity creatures no longer affects nature (trees/rocks/etc.)
+    - Insanity creatures no longer damage nature (trees/rocks/etc.)
     - Warpotron now uses a variety of different weapons
     - Unfuelled anomaly extractors will now retreat to free their anomalies for fuelled extractors
   Bugfixes:

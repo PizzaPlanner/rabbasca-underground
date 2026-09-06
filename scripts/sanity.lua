@@ -24,6 +24,7 @@ end
 
 function M.do_panic_attack(event, quality)
     local from = event.source_entity
+    local count = event.count or 1
     local player = nil
     if from and from.valid then
         player = (from.is_entity_with_owner and from.last_user) or (from.type == "character" and from.player)
@@ -32,7 +33,7 @@ function M.do_panic_attack(event, quality)
         local surface = from and from.surface or game.surfaces[event.surface_index]
         local pos = from and from.position or event.source_position
         if surface and pos then
-            for _ = 1,math.random(3,7) do
+            for _ = 1 * count,math.random(3,7) * count do
                 M.spawn_wriggler(surface, pos, game.forces.enemy, quality)
             end
         end
@@ -41,12 +42,12 @@ function M.do_panic_attack(event, quality)
     local target = player.character
     local has_hat = M.get_protection_level(target) > 0
     local sticker = has_hat and "rabbasca-insanity-sticker-buff" or "rabbasca-insanity-sticker-debuff"
-    local time_mult = has_hat and M.DURATION_MULT_HAT or 1
+    local time_mult = (has_hat and M.DURATION_MULT_HAT or 1) * count
     for _, e in pairs(target.stickers or { }) do
         if e.name == sticker then
             local q_data = QUALITY_LEVELS[quality or "normal"]
-            local added = M.EXTEND_PANIC_DURATION * time_mult * q_data.mult * q_data.mult
-            if e.quality.level >= q_data.level then
+            local added = M.EXTEND_PANIC_DURATION * time_mult * q_data.mult
+            if has_hat or e.quality.level >= q_data.level then
                 e.time_to_live = e.time_to_live + added
             else
                 local ttl = e.time_to_live + added
@@ -64,7 +65,7 @@ function M.do_panic_attack(event, quality)
         name = sticker,
         position = target.position,
         target = target,
-        quality = quality
+        quality = has_hat and "normal" or quality
     }.time_to_live = M.INITIAL_PANIC_DURATION * time_mult
 end
 
@@ -226,26 +227,42 @@ script.on_event(prototypes.recipe["rabbasca-contained-imagination-refresh"].on_c
     inv.destroy()
 end)
 
--- script.on_event(defines.events.on_player_cancelled_crafting, function(event)
---     game.print("TODO")
--- end)
-
--- script.on_event(defines.events.on_player_armor_inventory_changed, function(event)
--- end)
-
--- script.on_event({defines.events.on_equipment_inserted, defines.events.on_equipment_removed}, function(event)
--- end)
+local SCARY_ITEMS = { "rabbasca-rampant-imagination", "rabbasca-contained-imagination", "rabbasca-imaginary-science-pack" }
+script.on_event(defines.events.on_entity_died, function(event)
+    local e = event.entity
+    if not (e and e.valid) then return end
+    local things_by_quality = { }
+    for i = 1, e.get_max_inventory_index() do
+        local inv = e.get_inventory(i)
+        if inv then
+            for _, item in pairs(SCARY_ITEMS) do
+                for quality, count in pairs(inv.get_item_quality_counts(item)) do
+                    things_by_quality[quality] = (things_by_quality[quality] or 0) + count
+                end
+            end
+        end
+    end
+    for quality, count in pairs(things_by_quality) do
+        game.print("PA "..quality..count.." from "..serpent.line(e))
+        M.do_panic_attack({ source_entity = e, count = count }, quality)
+    end
+end, {
+    { filter = "force", force = "player" },
+    { filter = "type", type = "unit", invert = true, mode = "and" },
+})
 
 if settings.global["rabbasca-debug-mode"].value then
     commands.add_command("rabbasca_ug_sani", nil, function(command)
         local to = tonumber(command.parameter) or 1
-        M.set_insanity(to, game.players[command.player_index])
-        game.players[command.player_index].print(serpent.line(storage.insanity))
+        local character = game.players[command.player_index].character
+        if not character then return end
+        M.do_panic_attack({ source_entity = character })
+        for _, s in pairs(character.stickers or { }) do
+            if s.name:find("^rabbasca%-insanity%-sticker") then
+                s.time_to_live = M.MAX_PANIC_DURATION * to
+            end
+        end
     end)
-
-    -- commands.add_command("rabbasca_ug_imagine", nil, function(command)
-    --     M.do_sanity_craft(game.players[command.player_index])
-    -- end)
 end
 
 return M

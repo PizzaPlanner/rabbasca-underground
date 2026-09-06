@@ -11,6 +11,7 @@ data:extend {
   order = "k-r[rabbasca]-2",
   spoil_ticks = 1 * hour,
   spoil_result = "rabbasca-psychosis",
+  destroyed_by_dropping_trigger = data.raw["item"]["rabbasca-psychosis"].spoil_to_trigger_result.trigger,
 },
 util.merge {
   data.raw["item"]["automation-science-pack"],
@@ -24,6 +25,7 @@ util.merge {
     order = "k-r[rabbasca]-2",
     spoil_ticks = 3 * minute,
     spoil_result = "rabbasca-psychosis",
+    destroyed_by_dropping_trigger = data.raw["item"]["rabbasca-psychosis"].spoil_to_trigger_result.trigger,
     spoil_quality_change = 1,
     lab_ignores_spoil_percent = true
   },

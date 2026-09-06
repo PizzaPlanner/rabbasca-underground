@@ -99,11 +99,11 @@ data:extend {
     allow_as_intermediate = false,
     hide_from_player_crafting = false,
     ingredients = { 
-        { type = "item", name = "rabbasca-contained-imagination", amount = 90, ignored_by_stats = 90 },
+        { type = "item", name = "rabbasca-contained-imagination", amount = 40, ignored_by_stats = 40 },
         { type = "item", name = "rabbasca-rampant-imagination", amount = 50 },
     },
     results = {
-        { type = "item", name = "rabbasca-contained-imagination", amount = 100, ignored_by_stats = 90, ignored_by_productivity = 100 },
+        { type = "item", name = "rabbasca-contained-imagination", amount = 50, ignored_by_stats = 40, ignored_by_productivity = 50 },
     },
     raise_on_crafted = true,
     categories = { "rabbasca-psychosis" }

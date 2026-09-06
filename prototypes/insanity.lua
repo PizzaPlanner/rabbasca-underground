@@ -17,6 +17,7 @@ data:extend {
   order = "b[rampant]",
   spoil_ticks = 1 * minute,
   spoil_result = "rabbasca-psychosis",
+  destroyed_by_dropping_trigger = data.raw["item"]["rabbasca-psychosis"].spoil_to_trigger_result.trigger,
   auto_recycle = false,
 },
 {

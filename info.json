@@ -8,7 +8,7 @@
     "dependencies": [
         "base >= 2.1.13",
         "~ planet-rabbasca >= 0.20.0",
-        "rabbasca-assets >= 2.2.0",
+        "rabbasca-assets >= 2.3.0",
         "+ SpidertronPatrols"
     ]
 }

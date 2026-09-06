@@ -2,7 +2,7 @@ data:extend {
     {
         type = "furnace",
         name = "rabbasca-hellvent",
-        icons = { { icon = "__space-age__/graphics/icons/fluorine-vent.png", icon_size = 64 } },
+        icons = { { icon = "__rabbasca-assets__/graphics/recolor/icons/hellvent.png", icon_size = 64 } },
         flags = { "placeable-player", "player-creation", "not-repairable", "not-deconstructable", "no-logistic-connection" },
         collision_box = { { -1.4, -1.4 }, { 1.4, 1.4 } },
         selection_box = { { -1.5, -1.5 }, { 1.5, 1.5 } },
@@ -55,7 +55,7 @@ data:extend {
                             frame_count = 64,
                             animation_speed = 0.35,
                             draw_as_glow = true,
-                            tint = { 0.82, 0.37, 0.05, 0.74 },
+                            tint = { 0.08, 0.05, 0.11, 0.74 },
                             scale = 0.75,
                             shift = { 0, -0.23 }
                         })
@@ -88,7 +88,7 @@ data:extend {
                         shift = util.by_pixel(0, 24 - 78),
                         scale = 1.5,
                         draw_as_glow = true,
-                        tint = util.multiply_color({ 0.85, 0, 0.53 }, 0.3),
+                        tint = util.multiply_color({ 0.05, 0.17, 0.66 }, 0.3),
                     }
                 }
             },
@@ -111,7 +111,7 @@ data:extend {
         name = "rabbasca-hellvent",
         type = "item",
         stack_size = 200,
-        icons = { { icon = "__space-age__/graphics/icons/fluorine-vent.png", icon_size = 64 } },
+        icons = { { icon = "__rabbasca-assets__/graphics/recolor/icons/hellvent.png", icon_size = 64 } },
         subgroup = "production-machine",
         order = "r[rabbasca]-i[imagination]",
         spoil_ticks = 3 * minute,
