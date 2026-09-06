@@ -15,8 +15,9 @@ data:extend {
     },
     unit = {
       time = 60,
-      count = 1000,
+      count = 2000,
       ingredients = {
+        { "chemical-science-pack",           1 },
         { "space-science-pack",              1 },
         { "military-science-pack",           1 },
         { "utility-science-pack",            1 },

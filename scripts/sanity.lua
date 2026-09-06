@@ -148,7 +148,7 @@ function M.on_sanity_tick(sticker)
     local surface  = M.SPAWN_WHERE_LOOKING and character.player and character.player.surface or character.surface
     local position = M.SPAWN_WHERE_LOOKING and character.player and character.player.position or character.position
     if not character.force.is_chunk_visible(surface, { x = math.floor(position.x / 32), y = math.floor(position.y / 32) }) then return end
-    character.begin_crafting { count = 4, recipe = "rabbasca-psychosis", silent = true }
+    character.begin_crafting { count = 5, recipe = "rabbasca-psychosis", silent = true }
     local l = math.log(1.75* value + 0.33) / 3 + 0.4
     if math.random() < l then 
         M.spawn_wriggler(surface, position, force, sticker.quality)

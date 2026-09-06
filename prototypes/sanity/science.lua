@@ -10,7 +10,7 @@ data:extend {
   subgroup = "science-pack",
   order = "k-r[rabbasca]-2",
   spoil_ticks = 1 * hour,
-  spoil_result = "rabbasca-rampant-imagination",
+  spoil_result = "rabbasca-psychosis",
 },
 util.merge {
   data.raw["item"]["automation-science-pack"],
@@ -35,7 +35,6 @@ util.merge {
     icon_size = 256,
     prerequisites = { "rabbasca-insanity-2" },
     effects = {
-        { type = "unlock-recipe", recipe = "rabbasca-hellvent-refreshing" },
         { type = "unlock-recipe", recipe = "rabbasca-imaginary-science-pack-duplication" },
         { type = "laboratory-productivity", modifier = 0.1 }
     },
@@ -50,7 +49,7 @@ util.merge {
     name = "rabbasca-inhibit-imagination",
     icon = "__rabbasca-assets__/graphics/recolor/technologies/imaginary-science-pack-precursor.png",
     icon_size = 256,
-    prerequisites = { "rabbasca-imaginary-science-pack" },
+    prerequisites = { "rabbasca-contained-imagination-refresh" },
     effects = {
         { type = "laboratory-productivity", modifier = -0.05 }
     },
@@ -96,7 +95,6 @@ util.merge {
     effects = {
       { type = "unlock-recipe", recipe = "rabbasca-hellvent" },
       { type = "unlock-recipe", recipe = "rabbasca-rampant-imagination" },
-      { type = "unlock-recipe", recipe = "rabbasca-contained-imagination-refresh" },
       { type = "unlock-recipe", recipe = "rabbasca-imaginary-science-pack" },
       {
         type = "change-recipe-productivity",
@@ -117,13 +115,13 @@ util.merge {
     icons = Rabbasca.icons({
       { proto = data.raw["recipe"]["rabbasca-restored-knowledge-2"] },
     }, 256),
-    prerequisites = { "rabbasca-tinfoil-hat", "rabbasca-warpfield-science-pack" },
+    prerequisites = { "rabbasca-tinfoil-hat", "rabbasca-knowledge-efficiency", "rabbasca-warpfield-science-pack" },
     effects = {
       { type = "unlock-recipe", recipe = "rabbasca-restored-knowledge-2" },
       {
         type = "change-recipe-productivity",
         recipe = "rabbasca-restored-knowledge-2",
-        change = 1
+        change = 3.5
       },
     },
     unit = {
@@ -136,6 +134,31 @@ util.merge {
         { "production-science-pack",         1 },
         { "cryogenic-science-pack",          1 },
         { "rabbasca-warpfield-science-pack", 1 },
+        { "rabbasca-imaginary-science-pack", 1 },
+      }
+    },
+  },
+  {
+    name = "rabbasca-contained-imagination-refresh",
+    type = "technology",
+    icons = Rabbasca.icons({
+      { proto = data.raw["recipe"]["rabbasca-contained-imagination-refresh"] },
+    }, 256),
+    prerequisites = { "rabbasca-imaginary-science-pack" },
+    effects = {
+      { type = "unlock-recipe", recipe = "rabbasca-contained-imagination-refresh" },
+      { type = "unlock-recipe", recipe = "rabbasca-hellvent-refreshing" },
+    },
+    unit = {
+      time = 30,
+      count = 1000,
+      ingredients = {
+        { "automation-science-pack",         1 },
+        { "logistic-science-pack",           1 },
+        { "chemical-science-pack",           1 },
+        { "space-science-pack",              1 },
+        { "cryogenic-science-pack",          1 },
+        { "athletic-science-pack",           1 },
         { "rabbasca-imaginary-science-pack", 1 },
       }
     },

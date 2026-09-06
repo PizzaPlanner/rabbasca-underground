@@ -1,23 +1,30 @@
-if not settings.startup["rabbasca-expand-warpfield-science-usage"].value then return end
+local t = data.raw["technology"]["harene-infusions"]
+table.insert(t.unit.ingredients, { "rabbasca-imaginary-science-pack", 1 })
+table.insert(t.prerequisites, "rabbasca-imaginary-science-pack")
 
 local techs = { "stellar-discovery-solar-system-edge", "promethium-science-pack", "research-productivity" }
 for _, tech in pairs(techs) do
     local t = data.raw["technology"][tech]
     if t and t.unit and t.unit.ingredients then
         local has_cryo_science = 0
-        local has_ath_science = false
+        local has_img_science = not settings.startup["rabbasca-expand-imaginary-science-usage"].value
+        local has_warp_science = not settings.startup["rabbasca-expand-warpfield-science-usage"].value
         for _, pack in pairs(t.unit.ingredients) do
             if pack[1] == "cryogenic-science-pack" then
                 has_cryo_science = pack[2]
             elseif pack[1] == "rabbasca-warpfield-science-pack" then
-                has_ath_science = true
+                has_warp_science = true
+            elseif pack[1] == "rabbasca-imaginary-science-pack" then
+                has_img_science = true
             end
         end
-        if has_cryo_science > 0 and not has_ath_science then
-            table.insert(t.unit.ingredients, { "rabbasca-warpfield-science-pack", has_cryo_science })
+        if has_cryo_science > 0 and not has_img_science then
             table.insert(t.unit.ingredients, { "rabbasca-imaginary-science-pack", has_cryo_science })
-            table.insert(t.prerequisites, "rabbasca-warpfield-science-pack")
             table.insert(t.prerequisites, "rabbasca-imaginary-science-pack")
+        end
+        if has_cryo_science > 0 and not has_warp_science then
+            table.insert(t.unit.ingredients, { "rabbasca-warpfield-science-pack", has_cryo_science })
+            table.insert(t.prerequisites, "rabbasca-warpfield-science-pack")
         end
     end
 end

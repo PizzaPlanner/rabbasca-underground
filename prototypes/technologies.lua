@@ -276,6 +276,7 @@ data:extend{
       time = 60,
       count = 600,
       ingredients = {
+        {"athletic-science-pack", 1},
         {"rabbasca-warpfield-science-pack", 1},
       }
     },
@@ -304,6 +305,7 @@ data:extend{
         {"military-science-pack", 1},
         {"utility-science-pack", 1},
         {"production-science-pack", 1},
+        {"athletic-science-pack", 1},
         {"rabbasca-warpfield-science-pack", 1},
         {"rabbasca-imaginary-science-pack", 1},
       }
@@ -316,11 +318,41 @@ data:extend{
       { proto = data.raw["item"]["rabbasca-restored-knowledge"] },
       { constant = "recipe-productivity" }
     }, 256),
-    prerequisites = { "rabbasca-warpfield-science-pack", "rabbasca-imaginary-science-pack" },
+    prerequisites = { "rabbasca-warpfield-science-pack", "rabbasca-insanity-2" },
     effects = {
       {
         type = "change-recipe-productivity",
         recipe = "rabbasca-restored-knowledge",
+        change = 0.25
+      },
+    },
+    ignore_tech_cost_multiplier = settings.startup["rabbasca-knowledge-efficiency-ignores-multiplier"].value,
+    max_level = 10,
+    unit = {
+      time = 60,
+      count_formula = "25 * L * L",
+      ingredients = {
+        {"rabbasca-warpfield-science-pack", 1},
+      }
+    }
+},
+{
+    type = "technology",
+    name = "rabbasca-knowledge-efficiency-11",
+    icons = Rabbasca.icons({
+      { proto = data.raw["item"]["rabbasca-restored-knowledge"] },
+      { constant = "recipe-productivity" }
+    }, 256),
+    prerequisites = { "rabbasca-warpfield-science-pack", "rabbasca-imaginary-science-pack", "rabbasca-restored-knowledge-mastery" },
+    effects = {
+      {
+        type = "change-recipe-productivity",
+        recipe = "rabbasca-restored-knowledge",
+        change = 0.25
+      },
+      {
+        type = "change-recipe-productivity",
+        recipe = "rabbasca-restored-knowledge-2",
         change = 0.25
       },
     },
@@ -379,6 +411,9 @@ data:extend{
       time = 60,
       count_formula = "75 + 82 * L * (L + 7)",
       ingredients = {
+        {"metallurgic-science-pack", 1},
+        {"electromagnetic-science-pack", 1},
+        {"cryogenic-science-pack", 1},
         {"athletic-science-pack", 1},
         {"rabbasca-warpfield-science-pack", 1},
       }

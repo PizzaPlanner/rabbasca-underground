@@ -12,6 +12,8 @@ Rabbasca.make_trigger_item({
   hidden = false,
   hidden_in_factoriopedia = false,
   stack_size = 10000,
+  subgroup = "rabbasca-imagination",
+  order = "a[psychosis]",
   custom_tooltip_fields = {
     { name = { "tooltip.rabbasca-psychosis-duration-new" }, value = { "tooltip-value.rabbasca-psychosis-duration-new", time(settings.INITIAL_PANIC_DURATION), time(settings.INITIAL_PANIC_DURATION * settings.DURATION_MULT_HAT) } },
     { name = { "tooltip.rabbasca-psychosis-duration-add" }, value = { "tooltip-value.rabbasca-psychosis-duration-add", time(settings.EXTEND_PANIC_DURATION), time(settings.EXTEND_PANIC_DURATION * settings.DURATION_MULT_HAT) } },
