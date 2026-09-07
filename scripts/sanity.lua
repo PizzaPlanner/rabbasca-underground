@@ -243,7 +243,6 @@ script.on_event(defines.events.on_entity_died, function(event)
         end
     end
     for quality, count in pairs(things_by_quality) do
-        game.print("PA "..quality..count.." from "..serpent.line(e))
         M.do_panic_attack({ source_entity = e, count = count }, quality)
     end
 end, {
