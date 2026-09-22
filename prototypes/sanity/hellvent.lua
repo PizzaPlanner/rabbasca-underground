@@ -115,6 +115,7 @@ data:extend {
         subgroup = "production-machine",
         order = "r[rabbasca]-i[imagination]",
         spoil_ticks = 3 * minute,
+        auto_recycle = false,
         spoil_to_trigger_result = {
             items_per_trigger = 10,
             trigger = {

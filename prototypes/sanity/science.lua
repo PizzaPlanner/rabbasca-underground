@@ -152,6 +152,7 @@ util.merge {
       { type = "unlock-recipe", recipe = "rabbasca-contained-imagination-refresh" },
       { type = "unlock-recipe", recipe = "rabbasca-hellvent-refreshing" },
     },
+    ignore_tech_cost_multiplier = true,
     unit = {
       time = 30,
       count = 1000,

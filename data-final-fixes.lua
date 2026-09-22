@@ -9,3 +9,4 @@ require("compatibility.expand-warpfield-science-usage-final-fixes")
 
 require("compatibility.pickier-dollies-final-fixes")
 require("compatibility.maraxsis-nightvision-final-fixes")
+require("compatibility.imagination-final-fixes")

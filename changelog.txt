@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.2
+Date: 2026-09-22
+  Changes:
+    - Updated some texts and hints
+  Balancing:
+    - Contained imagination reprocessing tech now ignores science multiplier
+    - Added compatibility to remove preserving/removal recipes from other mods for imaginary items
+  Bugfixes:
+    - Fixed imaginary pit could be recycled
+---------------------------------------------------------------------------------------------------
 Version: 0.10.1
 Date: 2026-09-07
   Bugfixes:
