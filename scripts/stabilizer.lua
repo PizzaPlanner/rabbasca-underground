@@ -99,11 +99,6 @@ function M.register_stabilizer(s)
     inv.insert({name = "rabbasca-powerspike", count = 1})
     inv.insert({name = "spoilage", count = 367})
     inv.insert({name = "ice", count = 114})
-    for i = 1, #inv do
-        if inv[i].valid_for_read and inv[i].name == "rabbasca-warp-cell-recharging" then
-            fuel.untether(inv[i].item)
-        end
-    end
     for i, pos in pairs({ {-6, -6}, {-6, 6}, {6, -6}, {6, 6}}) do
         local e = s.surface.create_entity { 
             name = "rabbasca-stability-pylon",
