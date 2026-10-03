@@ -172,23 +172,6 @@ function M.on_progress_floor_anomaly(entity)
     my_anomaly.text.text = { "rabbasca-extra.selfmade-anomaly", my_anomaly.amount }
 end
 
-function M.summon_fleet(surface, position)
-    if not storage.stabilizer then return end
-    local fuel_cost = prototypes.entity["rabbasca-ufo"].burner_prototype.initial_fuel.fuel_value / 2
-    for _, c in pairs(storage.stabilizer.fuel.consumers) do
-        local e = c.entity
-        if e.valid and e.name == "rabbasca-ufo" then
-            if e.get_driver() or (not e.get_inventory(defines.inventory.spider_trunk).is_empty()) or (not e.get_inventory(defines.inventory.spider_trash).is_empty()) then
-                -- Dont
-            elseif e.burner.remaining_burning_fuel > fuel_cost then
-                e.burner.remaining_burning_fuel = e.burner.remaining_burning_fuel - fuel_cost
-                local p = { x = position.x + math.random(-3, 3), y = position.y + math.random(-3, 3) }
-                e.teleport(p, surface, false)
-            end
-        end
-    end
-end
-
 function M.on_hunt_anomalies()
     storage.stabilizer.extra_anomalies = (storage.stabilizer.extra_anomalies or 0) + 0.03
 end

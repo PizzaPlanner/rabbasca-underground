@@ -15,6 +15,7 @@ local ufo = util.merge {
         torso_bob_speed = 0.07,
         radar_range = 3,
         height = 2,
+        automatic_weapon_cycling = false,
         allow_passengers = true,
         energy_source = {
             type                 = "burner",
@@ -63,6 +64,8 @@ local ufo_leg = util.merge {
 }
 ufo_leg.collision_mask = table.deepcopy(ufo.collision_mask)
 ufo_leg.graphics_set = nil
+ufo_leg.working_sound = nil -- doesnt do anything
+ufo_leg.walking_sound_volume_modifier = 0
 
 local launcher =  {
     type = "gun",
@@ -99,7 +102,7 @@ local launcher_g =  {
     attack_parameters =
     {
       type = "projectile",
-      ammo_category = "grenade",
+      ammo_category = "capsule",
       cooldown = 72,
       range = 48,
       projectile_creation_distance = -0.5,

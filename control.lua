@@ -1,4 +1,5 @@
 require("__planet-rabbasca__.api")
+local warpotron = require("scripts.warpotron")
 local underground = require("scripts.underground")
 local sanity = require("scripts.sanity")
 
@@ -25,11 +26,6 @@ local function handle_script_events(event)
     local from = Rabbasca.get_spoiled_in(event)
     if from then
       underground.warp.relocate_floorthing(from)
-    end
-  elseif effect_id == "rabbasca_on_summon_ufo" then
-    local from = Rabbasca.get_spoiled_in(event)
-    if from then
-      underground.summon_fleet(from.surface, from.position)
     end
   elseif effect_id == "rabbasca_on_send_pylon_underground" then
     local from = Rabbasca.get_spoiled_in(event)
@@ -66,6 +62,8 @@ script.on_event(defines.events.on_gui_opened, function(event)
           underground.ui.set_relicary_remote_ui(player)
         elseif entity.name == "rabbasca-remote-access-chest" and entity.force == player.force then
           underground.ui.set_remote_access_ui(player)
+        elseif entity.name == "rabbasca-ufo" and entity.force == player.force then
+          underground.ui.set_warpotron_ui(player)
         end
       end
     elseif event.gui_type == defines.gui_type.item and event.item then
@@ -82,6 +80,7 @@ script.on_event(defines.events.on_gui_closed, function(event)
             underground.ui.set_stabilizer_ui(player)
             underground.ui.set_relicary_remote_ui(player)
             underground.ui.set_remote_access_ui(player)
+            underground.ui.set_warpotron_ui(player)
         end
     end
 end)

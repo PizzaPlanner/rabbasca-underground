@@ -374,7 +374,6 @@ data:extend {
         energy_required = 12,
         ingredients = {
             { type = "fluid", name = "harene", amount = 5 },
-            { type = "fluid", name = "fluorine", amount = 75 },
             { type = "item", name = "carbon-fiber", amount = 5 },
             { type = "item", name = "display-panel", amount = 2 },
         },
@@ -559,18 +558,71 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-summon-ufo",
+        icons = Rabbasca.icons({
+            { icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png", icon_size = 64, },
+            { icon = "__rabbasca-assets__/graphics/icons/warp.png", scale = 0.5, shift = {8,8} },
+        }),
+        enabled = false,
+        subgroup = "rabbasca-security",
+        order = "w[warpotron-call]",
+        energy_required = 10,
+        allow_productivity = false,
+        hide_from_player_crafting = false,
+        ingredients = {
+            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1, ignored_by_stats = 1 },
+        },
+        results = { 
+            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1, independent_probability = 0.95, ignored_by_productivity = 1, ignored_by_stats = 1 }, },
+        raise_on_crafted = true,
+        categories = { "crafting" }
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-summon-ufo-with-filter-green",
+        icons = Rabbasca.icons({
+            { icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png", icon_size = 64, },
+            { icon = "__rabbasca-assets__/graphics/icons/warp.png", scale = 0.5, shift = {8,8} },
+            { icon = "__base__/graphics/icons/shortcut-toolbar/mip/new-green-wire-x56.png", icon_size = 56, scale = 0.5, shift = {-8,8} },
+        }),
+        subgroup = "rabbasca-security",
+        order = "w[warpotron-call]-2",
+        localised_name = { "recipe-name.rabbasca-summon-ufo-with-filter", "green-wire" },
+        localised_description = { "recipe-description.rabbasca-summon-ufo-with-filter", "green-wire" },
         enabled = false,
         energy_required = 10,
         allow_productivity = false,
         hide_from_player_crafting = false,
         ingredients = {
-            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1 },
+            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1, ignored_by_stats = 1 },
         },
         results = { 
-            { type = "item", name = "rabbasca-summon-ufo", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false },
-            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1, independent_probability = 0.6, ignored_by_productivity = 1 }, },
-        main_product = "rabbasca-summon-ufo",
-        categories = { "crafting" }
+            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1, independent_probability = 0.95, ignored_by_productivity = 1, ignored_by_stats = 1 }, },
+        raise_on_crafted = true,
+        categories = { "advanced-crafting" } -- no hand crafting
+    },
+    {
+        type = "recipe",
+        name = "rabbasca-summon-ufo-with-filter-red",
+        icons = Rabbasca.icons({
+            { icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png", icon_size = 64, },
+            { icon = "__rabbasca-assets__/graphics/icons/warp.png", scale = 0.5, shift = {8,8} },
+            { icon = "__base__/graphics/icons/shortcut-toolbar/mip/new-red-wire-x56.png", icon_size = 56, scale = 0.5, shift = {-8,8} },
+        }),
+        subgroup = "rabbasca-security",
+        order = "w[warpotron-call]-3",
+        localised_name = { "recipe-name.rabbasca-summon-ufo-with-filter", "red-wire" },
+        localised_description = { "recipe-description.rabbasca-summon-ufo-with-filter", "red-wire" },
+        enabled = false,
+        energy_required = 10,
+        allow_productivity = false,
+        hide_from_player_crafting = false,
+        ingredients = {
+            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1, ignored_by_stats = 1 },
+        },
+        results = { 
+            { type = "item", name = "rabbasca-spacetime-sensor", amount = 1, independent_probability = 0.95, ignored_by_productivity = 1, ignored_by_stats = 1 }, },
+        raise_on_crafted = true,
+        categories = { "advanced-crafting" } -- no hand crafting
     },
 }
 

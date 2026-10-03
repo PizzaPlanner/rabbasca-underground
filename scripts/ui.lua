@@ -269,6 +269,29 @@ function M.set_remote_access_ui(player)
     end
 end
 
+function M.set_warpotron_ui(player)
+    local frame = player.gui.relative.rabbasca_warpotron
+    if (not player.opened) or player.opened.name ~= "rabbasca-ufo" then
+        if frame then frame.destroy() end
+        return
+    end
+    if player.force.technologies["rabbasca-ufo-control-groups"].researched and not frame then
+        frame = player.gui.relative.add{
+            type = "frame",
+            name = "rabbasca_warpotron",
+            -- caption = "Warp group",
+            direction = "horizontal",
+            anchor = {
+                gui = defines.relative_gui_type.spider_vehicle_gui,
+                position = defines.relative_gui_position.top
+            }
+        }
+        local current = storage.warpotron_settings and storage.warpotron_settings[player.opened.unit_number]
+        frame.add { type = "label", caption = { "rabbasca-extra.ui-warpotron-group-label" } }
+        frame.add { type = "choose-elem-button", name = "rabbasca_warpotron_group_selector", elem_type = "signal", signal = current and current.group }
+    end
+end
+
 function M.set_relicary_remote_ui(player)
     local frame = player.gui.relative.rabbasca_relicary_remote
     if (not player.opened) or player.opened.name ~= "rabbasca-relicary-remote" then

@@ -313,6 +313,48 @@ data:extend{
 },
 {
     type = "technology",
+    name = "rabbasca-ufo-control-groups",
+    icons = Rabbasca.icons({
+      { icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png" },
+      { icon = "__base__/graphics/icons/shortcut-toolbar/mip/new-green-wire-x56.png", icon_size = 56, scale = 0.5, shift = {-8,8} },
+      { icon = "__base__/graphics/icons/shortcut-toolbar/mip/new-red-wire-x56.png", icon_size = 56, scale = 0.5, shift = {8,8} },
+    }, 256),
+    prerequisites = { "rabbasca-ufo", "circuit-network" },
+    effects = { 
+      {
+        type = "nothing",
+        icons = Rabbasca.icons({
+          { proto = data.raw["item"]["rabbasca-ufo"] },
+          { icon = "__base__/graphics/icons/shortcut-toolbar/mip/new-green-wire-x56.png", icon_size = 56, scale = 0.5, shift = {-8,8} },
+          { icon = "__base__/graphics/icons/shortcut-toolbar/mip/new-red-wire-x56.png", icon_size = 56, scale = 0.5, shift = {8,8} },
+        }),
+        effect_description = { "rabbasca-extra.unlock-ufo-filtering" }
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-summon-ufo-with-filter-green"
+      },
+      {
+        type = "unlock-recipe",
+        recipe = "rabbasca-summon-ufo-with-filter-red"
+      },
+    },
+    unit = {
+      time = 60,
+      count = 2000,
+      ingredients = {
+        {"space-science-pack", 1},
+        {"military-science-pack", 1},
+        {"utility-science-pack", 1},
+        {"production-science-pack", 1},
+        {"athletic-science-pack", 1},
+        {"rabbasca-warpfield-science-pack", 1},
+        {"rabbasca-imaginary-science-pack", 1},
+      }
+    },
+},
+{
+    type = "technology",
     name = "rabbasca-knowledge-efficiency",
     icons = Rabbasca.icons({
       { proto = data.raw["item"]["rabbasca-restored-knowledge"] },

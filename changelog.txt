@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.11.0
+Date: ????
+  Changes:
+    - Added new recipes to summon warpotron fleet with a control group filter
+    - Can now assign a control group filter to warpotrons in their gui
+    - Warpotron no longer auto-switches weapons when shooting
+  Balancing:
+    - Spacetime fluctuation sensor no longer requires fluorine to craft
+    - Increased chance of summon warpotron fleet recipe to return ingredients (60% -> 95%)
+  Bugfixes:
+    - Fixed warpotron movement was using walking sounds
+---------------------------------------------------------------------------------------------------
 Version: 0.10.3
 Date: 2026-09-22
   Changes:
