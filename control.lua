@@ -33,6 +33,8 @@ local function handle_script_events(event)
     if event.source_entity then underground.fuel.register_consumer(event.source_entity) end
   elseif effect_id == "rabbasca_register_floorthing" then
     if event.source_entity then underground.warp.register_floorthing(event.source_entity) end
+  elseif effect_id == "rabbasca_register_warpotron" then
+    if event.source_entity then underground.warpotron.register_warpotron(event.source_entity) end
   elseif effect_id == "rabbasca_on_sanity_attack" then
     sanity.do_panic_attack(event, event.quality)
   end

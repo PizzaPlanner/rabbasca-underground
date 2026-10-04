@@ -241,6 +241,9 @@ function M.init_underground(surface)
         force = game.forces.player
     }
     M.stab.register_stabilizer(stab)
+    for _, e in pairs(M.warpotron.get_warpotrons()) do
+        M.fuel.register_consumer(e)
+    end
 end
 
 function M.initiate_warp()

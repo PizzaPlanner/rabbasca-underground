@@ -7,7 +7,9 @@ local M = {
     SPAWN_WHERE_LOOKING = settings.startup["rabbasca-insanity-where-looking"].value,
 }
 
-if data then return M end
+if helpers.stage ~= "runtime" then return M end
+
+local eventhandler = require("event_handler")
 
 local QUALITY_LEVELS = { }
 for _, q in pairs(prototypes.quality) do
@@ -188,7 +190,7 @@ script.on_event(defines.events.on_worker_robot_expired, function(event)
     end
 end)
 
-script.on_event(defines.events.on_player_crafted_item, function(event)
+local function on_handcraft_psychosis(event)
     if not (event.recipe.categories[1] == "rabbasca-psychosis-manual" and #event.recipe.categories == 1) then return end
     local character = game.players[event.player_index].character
     if not (character and character.valid) then return end
@@ -208,7 +210,13 @@ script.on_event(defines.events.on_player_crafted_item, function(event)
             count = event.item_stack.count
         })
     end
-end)
+end
+
+eventhandler.add_lib({
+    events = {
+        [defines.events.on_player_crafted_item] = on_handcraft_psychosis,
+    }
+})
 
 script.on_event(prototypes.recipe["rabbasca-hellvent-refreshing"].on_crafted_event, function(event)
     local inv = game.create_inventory(10)

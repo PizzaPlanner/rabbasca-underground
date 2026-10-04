@@ -47,6 +47,10 @@ ufo.created_effect = {
         source_effects = {
             {
                 type = "script",
+                effect_id = "rabbasca_register_warpotron",
+            },
+            {
+                type = "script",
                 effect_id = "rabbasca_register_fuel_consumer",
             },
         }

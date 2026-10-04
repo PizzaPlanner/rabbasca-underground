@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.11.1
+Date: 2026-10-04
+  Changes:
+    - Existing warpotrons now re-register with new stabilizers automatically
+  Bugfixes:
+    - Fixed crafting summon warpotron fleet by hand would do nothing
+    - Fixed crash crafting summoning warpotron fleet when no stabilizer is present
+---------------------------------------------------------------------------------------------------
 Version: 0.11.0
 Date: 2026-10-04
   Changes:
