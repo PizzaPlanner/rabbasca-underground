@@ -4,6 +4,7 @@ local M = {
     fuel = require("scripts.fuel"),
     mining = require("scripts.mining"),
     stab = require("scripts.stabilizer"),
+    warpotron = require("scripts.warpotron"),
 }
 
 local function logistics_group_name()

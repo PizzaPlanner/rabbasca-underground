@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.11.0
-Date: ????
+Date: 2026-10-04
   Changes:
     - Added new recipes to summon warpotron fleet with a control group filter
     - Can now assign a control group filter to warpotrons in their gui

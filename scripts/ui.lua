@@ -279,16 +279,17 @@ function M.set_warpotron_ui(player)
         frame = player.gui.relative.add{
             type = "frame",
             name = "rabbasca_warpotron",
-            -- caption = "Warp group",
+            style = "subfooter_frame",
             direction = "horizontal",
             anchor = {
                 gui = defines.relative_gui_type.spider_vehicle_gui,
                 position = defines.relative_gui_position.top
             }
         }
+        frame.style.vertical_align = "center"
         local current = storage.warpotron_settings and storage.warpotron_settings[player.opened.unit_number]
-        frame.add { type = "label", caption = { "rabbasca-extra.ui-warpotron-group-label" } }
-        frame.add { type = "choose-elem-button", name = "rabbasca_warpotron_group_selector", elem_type = "signal", signal = current and current.group }
+        frame.add { type = "label", caption = { "rabbasca-extra.ui-warpotron-group-label" }, style = "subheader_label" }
+        frame.add { type = "choose-elem-button", name = "rabbasca_warpotron_group_selector", elem_type = "signal", signal = current and current.group }.style.size = 32
     end
 end
 

@@ -1,5 +1,4 @@
 require("__planet-rabbasca__.api")
-local warpotron = require("scripts.warpotron")
 local underground = require("scripts.underground")
 local sanity = require("scripts.sanity")
 
@@ -46,6 +45,7 @@ script.on_event(defines.events.on_object_destroyed, function(event)
     underground.on_stabilizer_died(event.registration_number)
     underground.fuel.on_consumer_died(event.registration_number)
     underground.warp.on_floorthing_died(event.registration_number)
+    underground.warpotron.on_cleanup(event.useful_id)
   end
 end)
 
