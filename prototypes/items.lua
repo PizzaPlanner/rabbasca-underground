@@ -20,27 +20,10 @@ Rabbasca.make_trigger_item({
   })
 }, "rabbasca_make_floor_anomaly"),
 Rabbasca.make_trigger_item({
-  name = "rabbasca-summon-ufo",
-  subgroup = "rabbasca-security",
-  order = "w[warpotron-call]",
-  hidden = false,
-  icons = Rabbasca.icons({
-    { icon = "__rabbasca-assets__/graphics/recolor/icons/warpotron.png", icon_size = 64, },
-    { icon = "__rabbasca-assets__/graphics/icons/warp.png", scale = 0.5, shift = {8,8} },
-  })
-}, "rabbasca_on_summon_ufo"),
-Rabbasca.make_trigger_item({
   name = "rabbasca-progress-hunt",
   icon = "__base__/graphics/icons/signal/signal-map-marker.png",
   icon_size = 64,
 }, "rabbasca_on_relichunter_progress"),
-Rabbasca.make_trigger_item({
-  name = "rabbasca-relocate-floorthing",
-  icons = Rabbasca.icons({
-    { icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-3.png", icon_size = 64 },
-    { proto = data.raw["virtual-signal"]["signal-shuffle"], scale = 0.5, shift = { 8, 8 } },
-  }),
-}, "rabbasca_on_pylon_relocate"),
 {
   name = "rabbasca-warp-trace",
   type = "item",

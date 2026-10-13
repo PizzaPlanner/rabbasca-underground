@@ -75,6 +75,7 @@ function M.on_warp_underground(event)
         end
         if not storage.stabilizer.entity.valid then return end
         M.replace_tiles(surface)
+        if not storage.stabilizer.entity.valid then return end
         M.replace_entities(surface, config.planets, data.to)
         surface.regenerate_decorative()
         M.change_affinity(last_location)

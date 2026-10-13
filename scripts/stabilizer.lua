@@ -106,10 +106,7 @@ function M.register_stabilizer(s)
             position = pos,
             force = s.force
         }
-    end
-    for _, e in pairs(storage.stabilizer.flooring.entities) do
-        e.on = false
-        e.entity.health = 12
+        warp.register_floorthing(e, true)
     end
     warp.warp_to({ planet = "aquilo", guaranteed_manifestations = { 
         { type = "resource", name = "rabbasca-lithium-amide", floor = "volcanic-smooth-stone" },

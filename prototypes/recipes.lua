@@ -491,13 +491,18 @@ data:extend {
     {
         type = "recipe",
         name = "rabbasca-relocate-floorthing",
+        icons = Rabbasca.icons({
+            { icon = "__rabbasca-assets__/graphics/by-hurricane/conduit-icon-3.png", icon_size = 64 },
+            { proto = data.raw["virtual-signal"]["signal-shuffle"], scale = 0.5, shift = { 8, 8 } },
+        }),
         enabled = true,
         hidden_in_factoriopedia = true,
         hide_from_player_crafting = true,
         energy_required = 30,
         ingredients = { },
-        results = { { type= "item", name = "rabbasca-relocate-floorthing", amount = 1, always_fresh = true, show_details_in_recipe_tooltip = false } },
+        results = { },
         categories = { "rabbasca-flooring" },
+        raise_on_crafted = true,
         crafting_machine_tint = { primary = { 0.53, 0.24, 0.8 } },
     },
     {

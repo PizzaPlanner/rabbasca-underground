@@ -444,6 +444,7 @@ function M.set_stabilizer_ui(player)
             right_label_caption = { "rabbasca-extra.ui-cellfreeze-right" },
             tooltip = { "rabbasca-extra.ui-cellfreeze-tooltip" },
         }
+        if game.simulation then inv_frame.add { type = "label", caption = "    " } end
         local inv = inv_frame.add{
             type = "inventory",
             slots_per_row = 5,

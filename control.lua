@@ -21,11 +21,6 @@ local function handle_script_events(event)
     end
   elseif effect_id == "rabbasca_register_anomaly_miner" then
     underground.mining.on_add_miner(event.source_entity)
-  elseif effect_id == "rabbasca_on_pylon_relocate" then
-    local from = Rabbasca.get_spoiled_in(event)
-    if from then
-      underground.warp.relocate_floorthing(from)
-    end
   elseif effect_id == "rabbasca_on_send_pylon_underground" then
     local from = Rabbasca.get_spoiled_in(event)
     underground.on_locate_progress(from)
@@ -181,6 +176,12 @@ end)
 script.on_event(defines.events.on_player_removed, function(event)
   if storage.insanity then storage.insanity[event.player_index] = nil end
   if storage.access_whitelist then storage.access_whitelist[event.player_index] = nil end
+end)
+
+script.on_event(defines.events.on_surface_created, function(event)
+  if (game.planets["rabbasca-underground"] and game.planets["rabbasca-underground"].surface and event.surface_index == game.planets["rabbasca-underground"].surface.index) then
+    underground.init_underground(game.surfaces[event.surface_index])
+  end
 end)
 
 script.on_event(defines.events.on_tick, underground.on_tick_underground)

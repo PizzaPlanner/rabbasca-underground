@@ -6,35 +6,31 @@ data:extend {
     hidden = true,
     hidden_in_factoriopedia = true
   },
+}
+
+PlanetsLib:extend { 
   {
     type = "planet",
     name = "rabbasca-underground",
     icon = "__rabbasca-assets__/graphics/by-hurricane/atom-forge-icon.png", 
     icon_size = 640,
-    hidden = true, -- dont show up in space map
+    hidden = true,
     hidden_in_factoriopedia = false,
     draw_orbit = false,
-    label_orientation = 0.625,
-    magnitude = 0.5,
-    distance = 75,
-    orientation = 0.125,
+    label_orientation = 0,
+    magnitude = 0.6,
+    starmap_icon_orientation = 0,
     subgroup = "satellites",
     -- subgroup = "rabbasca-warp-stabilizer",
     order = "c[gleba]-r[rabbasca]-a[surface]",
-    -- orbit = {
-    --   orientation = 0.625,
-    --   distance = 1.5,
-    --   parent = {
-    --     type = "planet",
-    --     name = "rabbasca",
-    --   },
-    --   sprite = {
-    --     type = "sprite",
-    --     filename = "__rabbasca-assets__/graphics/textures/stabilizer-orbit.png",
-    --     size = 470,
-    --     scale = 0.2,
-    --   }
-    -- },
+    orbit = {
+      orientation = 1,
+      distance = 1,
+      parent = {
+        type = "planet",
+        name = "aquilo",
+      },
+    },
     surface_properties = {
         ["rabbasca-underground"] = 1,
         ["gravity"] = 15,
@@ -56,6 +52,7 @@ data:extend {
           ["rabbasca-underground-out-of-map"] = {},
         }},
         entity = { settings = { 
+          ["rabbasca-warp-stabilizer"] = { },
           ["rabbasca-warp-anomaly"] = { },
         } }
       },

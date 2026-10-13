@@ -10,6 +10,46 @@ data:extend {
         type = "research",
         technology = "rabbasca-underground",
     },
+    simulation = {
+        planet = "rabbasca-underground",
+        generate_map = false,
+        checkboard = true,
+        init_update_count = 300,
+        init = [[
+            require("__rabbasca-underground__.scripts.tips-simulations")
+            simulation_briefing()
+        ]],
+        update = [[
+            require("__rabbasca-underground__.scripts.tips-simulations")
+            rabbasca_ug_sim_tick()
+        ]]
+    }
+},
+{
+    type = "tips-and-tricks-item",
+    name = "rabbasca-fuel-management",
+    category = "space-age",
+    tag = "[item=rabbasca-warp-cell]",
+    indent = 1,
+    order = "r[rabbasca]-u[aa-fuel]",
+    trigger = {
+        type = "research",
+        technology = "rabbasca-stabilizer-on-aquilo",
+    },
+    simulation = {
+        planet = "rabbasca-underground",
+        generate_map = false,
+        checkboard = true,
+        init_update_count = 300,
+        init = [[
+            require("__rabbasca-underground__.scripts.tips-simulations")
+            simulation_fuel_management()
+        ]],
+        update = [[
+            require("__rabbasca-underground__.scripts.tips-simulations")
+            rabbasca_ug_sim_tick()
+        ]]
+    }
 },
 {
     type = "tips-and-tricks-item",
@@ -36,6 +76,23 @@ data:extend {
     tag = "[entity=rabbasca-collector-pylon][entity=rabbasca-stability-pylon]",
     indent = 1,
     order = "r[rabbasca]-u[upgrades]",
-    trigger = { type = "unlock-recipe", recipe = "rabbasca-collector-pylon" }
+    trigger = { type = "unlock-recipe", recipe = "rabbasca-collector-pylon" },
+    simulation = {
+        planet = "rabbasca-underground",
+        -- mods = { "rabbasca-underground" },
+        generate_map = false,
+        checkboard = true,
+        game_view_settings = { default_show_value = false, show_controller_gui = true, update_entity_selection = true },
+        init_update_count = 300,
+        init = [[
+            require("__rabbasca-underground__.scripts.tips-simulations")
+            simulation_relocation()
+        ]],
+        update = [[
+            require("__rabbasca-underground__.scripts.tips-simulations")
+            rabbasca_ug_sim_tick()
+            refuel(true, true)
+        ]]
+    }
 }
 }

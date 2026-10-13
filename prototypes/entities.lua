@@ -47,6 +47,11 @@ stabilizer.flags = { "placeable-player", "player-creation" }
 stabilizer.next_upgrade = nil
 stabilizer.deconstruction_alternative = nil
 stabilizer.crafting_categories = { "rabbasca-warp-stabilizer" }
+stabilizer.autoplace = {
+  probability_expression = "0",
+  placement_density = 0,
+  default_enabled = false
+}
 local sprite_data = {
     line_length = 10,
     width = 4000 / 10,

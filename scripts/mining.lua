@@ -1,6 +1,7 @@
 local M = { }
 
 function M.on_add_miner(e)
+    if not storage.stabilizer then return end
     local chest = e.surface.create_entity {
         name = "rabbasca-miner-remote",
         position = e.position,

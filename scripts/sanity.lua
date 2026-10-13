@@ -9,8 +9,6 @@ local M = {
 
 if helpers.stage ~= "runtime" then return M end
 
-local eventhandler = require("event_handler")
-
 local QUALITY_LEVELS = { }
 for _, q in pairs(prototypes.quality) do
     QUALITY_LEVELS[q.name] = { level = q.level, mult = q.default_multiplier }
@@ -212,7 +210,7 @@ local function on_handcraft_psychosis(event)
     end
 end
 
-eventhandler.add_lib({
+Rabbasca.events.add_lib({
     events = {
         [defines.events.on_player_crafted_item] = on_handcraft_psychosis,
     }

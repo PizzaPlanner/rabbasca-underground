@@ -194,7 +194,6 @@ function M.replace_tiles(surface)
         table.insert(flooring_left, { name = "rabbasca-underground-out-of-map", position = t.position })
     end
     surface.set_tiles(flooring_left, true)
-
 end
 
 function M.is_box_safe(b)
@@ -323,6 +322,7 @@ function M.relocate_floorthing(e)
                 position = e.position,
                 on = nil
             }
+            e.set_recipe("rabbasca-floor-stability-work")
             return
         end
     end
@@ -348,14 +348,19 @@ function M.update_floorthings()
     end
 end
 
-function M.register_floorthing(e)
+function M.register_floorthing(e, force_safety)
+    if not storage.stabilizer then return end
     local id, _, _ = script.register_on_object_destroyed(e)
-    if storage.stabilizer.flooring.entities[id] then return end
+    if (not force_safety) and storage.stabilizer.flooring.entities[id] then return end
     storage.stabilizer.flooring.entities[id] = {
         entity = e,
         position = e.position,
         on = nil
     }
+    if force_safety then
+        storage.stabilizer.flooring.entities[id].on = false
+        e.health = 12
+    end
     e.set_recipe("rabbasca-floor-stability-work")
 end
 
@@ -375,5 +380,9 @@ function M.get_pylon_off_count()
     end
     return count
 end
+
+script.on_event(prototypes.recipe["rabbasca-relocate-floorthing"].on_crafted_event, function(event)
+    M.relocate_floorthing(event.entity)
+end)
 
 return M

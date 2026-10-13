@@ -32,7 +32,7 @@ function M.on_tick_underground(event)
     M.warp.update_floorthings()
     M.ui.update_cell_assignment()
     M.ui.update_remote_assignment()
-
+    
     if event.tick % 60 == 0 then
         M.mining.on_mining_update()
         if storage.stabilizer.anomalies then
@@ -206,22 +206,23 @@ function M.upload_science(caller, quality)
 end
 
 function M.on_locate_progress(vault)
+    local force = vault and vault.valid and vault.force or game.forces.player
     local surface = game.planets["rabbasca-underground"].surface
     if not surface then
+        storage.next_stab_force = force
         surface = game.planets["rabbasca-underground"].create_surface()
-        M.init_underground(surface)
     end
     local offset = {0, 10}
     local radius = 3 * 32
     local pos = surface.find_non_colliding_position("rabbasca-warp-pylon", offset, radius, 1)
     if not pos then
-        game.forces.player.print({ "rabbasca-extra.created-underground-pylon-error", offset.x, offset.y })
+        force.print({ "rabbasca-extra.created-underground-pylon-error", offset.x, offset.y })
         return
     end
     local spawner = surface.create_entity {
         name = "rabbasca-warp-pylon",
         position = pos,
-        force = game.forces.player,
+        force = force,
         snap_to_grid = true,
         raise_built = true
     }
@@ -238,12 +239,13 @@ function M.init_underground(surface)
     local stab = surface.create_entity {
         name = "rabbasca-warp-stabilizer",
         position = {0, 0},
-        force = game.forces.player
+        force = storage.next_stab_force or game.forces.player,
     }
     M.stab.register_stabilizer(stab)
     for _, e in pairs(M.warpotron.get_warpotrons()) do
         M.fuel.register_consumer(e)
     end
+    storage.next_stab_force = nil
 end
 
 function M.initiate_warp()

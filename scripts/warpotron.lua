@@ -1,5 +1,3 @@
-local eventhandler = require("event_handler")
-
 local M = { }
 
 local function filter_matches(network, entity)
@@ -113,7 +111,7 @@ local function on_change_filter(event)
     end
 end
 
-eventhandler.add_lib({
+Rabbasca.events.add_lib({
     events = {
         [defines.events.on_player_crafted_item] = on_summon_handcrafted,
         [prototypes.recipe["rabbasca-summon-ufo"].on_crafted_event] = on_summon_crafted,

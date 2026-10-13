@@ -101,6 +101,7 @@ local mashup = util.merge {
     stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/icons/carotenoid-ore.png" } },
     cliff_removal_probability = 0,
     tree_removal_probability = 0,
+    hidden_in_factoriopedia = true,
   }
 }
 mashup.icon = nil
@@ -142,6 +143,7 @@ local holmium_ore = util.merge {
     localised_name = { "item-name.holmium-ore" },
     stages = { sheet = { filename = "__rabbasca-assets__/graphics/recolor/textures/holmium-ore.png" } },
     localised_description = { "item-description.holmium-ore" },
+    hidden_in_factoriopedia = true,
     -- subgroup = "rabbasca-ug-processes",
     -- order = "a[resources]-f[holmium]"
   }
