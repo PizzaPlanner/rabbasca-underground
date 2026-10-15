@@ -17,6 +17,7 @@ require("prototypes.tips-and-tricks")
 require("prototypes.warp-locations")
 require("prototypes.sounds")
 require("prototypes.insanity")
+require("prototypes.achievements")
 -- require("prototypes.remote-access")
 
 require("compatibility.lignumis")

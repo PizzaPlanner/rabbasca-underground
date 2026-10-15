@@ -20,6 +20,11 @@ function M.progress_powerspike(num)
                 end
             end
         end
+        if storage.stabilizer.powerspikes.created >= 100 then
+            for _, player in pairs(storage.stabilizer.entity.force.connected_players) do
+                player.unlock_achievement("rabbasca-employee-of-the-month")
+            end
+        end
         if storage.stabilizer.powerspikes.next <= 0 then
             -- unlock another one
             M.progress_powerspike(0)
@@ -53,6 +58,7 @@ function M.register_stabilizer(s)
         settings = {
             autopilot = true,
         },
+        is_pasta_day = settings.startup["rabbasca-underground-full-spaghetti-mode"].value,
         relics = { pity = 0 },
         fuel = { consumers = { }, cells = { }, inventory = fuel.create_inventory() },
         miners = { entities = { } },
@@ -117,6 +123,9 @@ end
 
 function M.abandon(player)
     if storage.stabilizer and storage.stabilizer.entity then
+        for _, p in pairs(storage.stabilizer.entity.force.connected_players) do
+            p.unlock_achievement("rabbasca-stabilizer-oopsie")
+        end
         storage.stabilizer.entity.die(nil, player and player.character)
         if player then
             game.print({ "rabbasca-extra.stabilizer-abandoned", player.name })

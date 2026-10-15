@@ -59,6 +59,7 @@ end
 function M.on_config_changed(handler)
     if not storage.stabilizer then return end
     storage.stabilizer.config = prototypes.mod_data["rabbasca-stabilizer-config"].data -- re-cache in case it changed
+    storage.stabilizer.is_pasta_day = storage.stabilizer.is_pasta_day and settings.startup["rabbasca-underground-full-spaghetti-mode"].value
     M.warp.recalc_tiles()
     if storage.stabilizer.warping and storage.stabilizer.config.planets[storage.stabilizer.warping.to] == nil then
         storage.stabilizer.warping = nil
@@ -203,6 +204,12 @@ function M.upload_science(caller, quality)
     storage.vault_items = storage.vault_items or { }
     storage.vault_items["rabbasca-warpfield-science-pack"] = storage.vault_items["rabbasca-warpfield-science-pack"] or { }
     storage.vault_items["rabbasca-warpfield-science-pack"][quality] = (storage.vault_items["rabbasca-warpfield-science-pack"][quality] or 0) + count
+    if storage.stabilizer and storage.stabilizer.is_pasta_day then
+        storage.stabilizer.is_pasta_day = false
+        for _, player in pairs(caller.force.connected_players) do
+            player.unlock_achievement("rabbasca-full-spaghetti")
+        end
+    end
 end
 
 function M.on_locate_progress(vault)
@@ -226,8 +233,13 @@ function M.on_locate_progress(vault)
         snap_to_grid = true,
         raise_built = true
     }
-    if spawner and vault then
-        vault.set_recipe(nil)
+    if spawner then
+        for _, p in pairs(spawner.force.connected_players) do
+            p.create_local_flying_text{ text = { "rabbasca-extra.created-underground-pylon" }, surface = surface, position = spawner.position }
+        end
+        if vault and vault.type == "assembling-machine" then
+            vault.set_recipe(nil)
+        end
     end
 end
 
