@@ -1,5 +1,6 @@
 local M = { 
     ENERGY_PER_CELL      = prototypes.item["rabbasca-warp-cell"].fuel_value,
+    ENERGY_PER_BUFFER =    prototypes.item["rabbasca-warp-cell-internal"].fuel_value,
     ENERGY_PER_STAB_CELL = prototypes.item["rabbasca-warp-cell-internal-big"].fuel_value,
     WARP_CELL_SPOIL_PERCENT_PER_TICK = 1 / prototypes.item["rabbasca-warp-cell"].get_spoil_ticks()
 }

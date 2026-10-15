@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.12.0
+Date: 2026-10-15
+  Changes:
+    - Added 5 achievements
+    - Updated some tips and tricks with simulations and added new ones
+    - After successful device relocation, floor integrity devices will swap recipe back to maintain floor integity
+    - Resources which can only be manifested by anomalies are now hidden in factoriopedia
+    - Updated to factorio 2.1.22's api changes
+    - Raised minimum factorio version to 2.1.22
+---------------------------------------------------------------------------------------------------
 Version: 0.11.1
 Date: 2026-10-04
   Changes:

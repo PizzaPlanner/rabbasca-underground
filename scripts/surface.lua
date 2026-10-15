@@ -180,7 +180,7 @@ function M.replace_entities(surface, config, planet)
         e.update_connections()
         if e.type == "offshore-pump" then
             local fluid = e.get_fluid_source_fluid()
-            e.set_fluid_filter(1, fluid and { fluid = fluid, force = true })
+            e.set_fluid_filter(1, fluid)
         end
     end
 end
@@ -323,6 +323,11 @@ function M.relocate_floorthing(e)
                 on = nil
             }
             e.set_recipe("rabbasca-floor-stability-work")
+            if math.sqrt(e.position.x * e.position.x + e.position.y * e.position.y) > 96 then
+                for _, player in pairs(e.force.connected_players) do
+                    player.unlock_achievement("rabbasca-out-of-bounds")
+                end
+            end
             return
         end
     end
