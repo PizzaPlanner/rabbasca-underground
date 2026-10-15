@@ -8,20 +8,28 @@ function refuel(miners, floories)
     if game.tick % 10 ~= 0 then return end
     if floories then
         for _, e in pairs(storage.stabilizer.entity.surface.find_entities_filtered{name = "rabbasca-stability-pylon"}) do
-            e.burner.remaining_burning_fuel = underground.fuel.ENERGY_PER_CELL
+            e.burner.currently_burning = "rabbasca-warp-cell-internal"
+            e.burner.remaining_burning_fuel = underground.fuel.ENERGY_PER_BUFFER
         end
     end
     if miners then
-        for _, e in pairs(storage.stabilizer.entity.surface.find_entities_filtered{name = "rabbasca-collector-pylon"}) do
-            e.burner.remaining_burning_fuel = underground.fuel.ENERGY_PER_CELL
+        local i = 0
+        for _, e in pairs(storage.stabilizer.miners.entities) do
+            e.miner.burner.currently_burning = "rabbasca-warp-cell-internal"
+            e.miner.burner.remaining_burning_fuel = underground.fuel.ENERGY_PER_BUFFER
         end
     end
 end
 
+local keep_refuelled = false
 -- script.on_event(on_tick) is blocked by story 
-function rabbasca_ug_sim_tick()
-    underground.on_tick_underground({ tick = game.tick })
-end
+script.on_nth_tick(2, function(event)
+    underground.on_tick_underground(event)
+    if keep_refuelled then
+        refuel(true, true)
+    end
+end)
+
 
 function simulation_relocation()
     local surface = game.create_surface("rabbasca-underground", game.planets["rabbasca-underground"].prototype.map_gen_settings)
@@ -40,6 +48,8 @@ function simulation_relocation()
     game.simulation.camera_zoom = 0.5
     game.simulation.camera_player_cursor_position = { 4, 4 }
     game.simulation.gui_tooltip_interval = 0.5
+
+    keep_refuelled = true
     local story_table =
     {
       {
@@ -58,7 +68,6 @@ function simulation_relocation()
         {
             condition = function() 
                 local target = game.simulation.get_widget_position({type = "recipe-slot", recipe = "rabbasca-relocate-floorthing" })
-                -- if not target then return false end
                 return game.simulation.move_cursor({position = target, speed = 0.25})
             end
         },
@@ -68,7 +77,7 @@ function simulation_relocation()
         },
         {
             condition = story_elapsed_check(2),
-            action = function() player.opened = nil end
+            action = function() player.opened.crafting_progress = 0.7 player.opened = nil end
         },
         {
             condition = function() 
@@ -84,7 +93,7 @@ function simulation_relocation()
             condition = story_elapsed_check(0.5),
         },
         {
-            condition = function() return game.simulation.move_cursor({position = {12, 6}}) end,
+            condition = function() return game.simulation.move_cursor({position = {16, 9}}) end,
             action = function() game.simulation.control_press{ control = "build-ghost", notify = true } end
         },
         {
@@ -94,7 +103,7 @@ function simulation_relocation()
             end
         },
         {
-            condition = story_elapsed_check(5),
+            condition = story_elapsed_check(9),
         },
         { 
             condition = function() 
@@ -108,16 +117,11 @@ function simulation_relocation()
           action = function() game.simulation.control_up{control = "build"} end
         },
         {
-            condition = story_elapsed_check(10),
-            action = function()
-                player.cursor_stack.clear()
-                player.create_local_flying_text{ text = "speed x5", create_at_cursor = true }
-                game.speed = 5
-            end,
-        },
-        {
-            condition = story_elapsed_check(6),
-            action = function() game.simulation.camera_zoom = 0.2 end
+            condition = story_elapsed_check(5),
+            action = function() 
+                game.simulation.camera_zoom = 0.2
+                game.simulation.hide_cursor = true
+             end
         }
       }
     }
@@ -140,38 +144,69 @@ function simulation_briefing()
     game.simulation.camera_player = player
     game.simulation.camera_alt_info = true
     game.simulation.camera_zoom = 0.9
-    game.simulation.camera_player_cursor_position = stab.position
+    game.simulation.hide_cursor = true
+    -- game.simulation.camera_player_cursor_position = stab.position
 
     stab.set_recipe("rabbasca-warp-trace")    
     storage.warp_inventory.insert("harene-infused-cryogenic-plant")
+    storage.warp_inventory.insert("storage-tank")
     storage.warp_inventory.insert("concrete")
+    storage.warp_inventory.insert("heating-tower")
+    storage.warp_inventory.insert("rabbasca-energetic-concrete")
+    storage.warp_inventory.insert("stack-inserter")
+    storage.warp_inventory.insert("harene-infused-stack-inserter")
+    storage.warp_inventory.insert("turbo-transport-belt")
+
+    local chest = surface.create_entity {
+        name = "steel-chest",
+        position = { 32, -3 },
+        force = player.force,
+    }
+    chest.get_inventory(defines.inventory.chest).insert({ name = "rabbasca-lithium-amide", count = "1000" })
     
     local story_table =
     {{
-        { condition = story_elapsed_check(12), },
+        { condition = story_elapsed_check(8), },
         {
             action = function()
-                surface.create_entity {
+                local pylon = surface.create_entity {
                     name = "rabbasca-warp-pylon",
                     position = {0, 10},
                     force = player.force,
                     snap_to_grid = true,
                     raise_built = true
                 }
+                player.create_local_flying_text{ text = { "rabbasca-extra.created-underground-pylon" }, surface = surface, position = pylon.position }
             end
         },
         { 
             condition = story_elapsed_check(4), 
             action = function()
                 surface.create_entity{ name = "entity-ghost", inner_name = "harene-infused-cryogenic-plant", force = player.force, position = {-10, 0}, raise_built = true }.set_recipe("rabbasca-underground-aquilo-extract-atmosphere")
+                surface.create_entity{ name = "entity-ghost", inner_name = "storage-tank", force = player.force, position = {-9, -4}, raise_built = true }
+                surface.create_entity{ name = "entity-ghost", inner_name = "heating-tower", force = player.force, position = {-6, -4}, raise_built = true }
+                surface.create_entity{ name = "entity-ghost", inner_name = "harene-infused-stack-inserter", force = player.force, position = {-4, -5}, raise_built = true, direction = defines.direction.east }
                 for x = 12,32 do
-                    surface.create_entity{ name = "tile-ghost", inner_name = "concrete", force = player.force, position = {x, 0}, raise_built = true }
+                    surface.create_entity{ name = "tile-ghost", inner_name = "concrete", force = player.force, position = {x, -5}, raise_built = true }
                 end
-                for x = 6,32 do
-                    surface.create_entity{ name = "entity-ghost", inner_name = "transport-belt", force = player.force, position = {x, 0}, raise_built = true, direction = defines.direction.west }
+                for x = -3,32 do
+                    surface.create_entity{ name = "entity-ghost", inner_name = "turbo-transport-belt", force = player.force, position = {x, -5}, raise_built = true, direction = defines.direction.west }
                 end
+                surface.create_entity{ name = "tile-ghost", inner_name = "rabbasca-energetic-concrete", force = player.force, position = {32, -4}, raise_built = true }
+                surface.create_entity{ name = "entity-ghost", inner_name = "harene-infused-stack-inserter", force = player.force, position = {32, -4}, raise_built = true, direction = defines.direction.south }
+                surface.create_entity{ name = "entity-ghost", inner_name = "harene-infused-stack-inserter", force = player.force, position = {0, 4}, raise_built = true, direction = defines.direction.south }
             end
         },
+        {
+            condition = function() 
+                local plant = surface.find_entity("harene-infused-cryogenic-plant", {-10, 0})
+                if plant then
+                    plant.set_recipe("rabbasca-underground-aquilo-extract-atmosphere")
+                    return true
+                end
+                return false
+            end
+        }
     }}
     tip_story_init(story_table)
 end

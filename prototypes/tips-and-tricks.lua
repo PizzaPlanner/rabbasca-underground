@@ -19,10 +19,6 @@ data:extend {
             require("__rabbasca-underground__.scripts.tips-simulations")
             simulation_briefing()
         ]],
-        update = [[
-            require("__rabbasca-underground__.scripts.tips-simulations")
-            rabbasca_ug_sim_tick()
-        ]]
     }
 },
 {
@@ -45,10 +41,6 @@ data:extend {
             require("__rabbasca-underground__.scripts.tips-simulations")
             simulation_fuel_management()
         ]],
-        update = [[
-            require("__rabbasca-underground__.scripts.tips-simulations")
-            rabbasca_ug_sim_tick()
-        ]]
     }
 },
 {
@@ -88,11 +80,6 @@ data:extend {
             require("__rabbasca-underground__.scripts.tips-simulations")
             simulation_relocation()
         ]],
-        update = [[
-            require("__rabbasca-underground__.scripts.tips-simulations")
-            rabbasca_ug_sim_tick()
-            refuel(true, true)
-        ]]
     }
 }
 }
